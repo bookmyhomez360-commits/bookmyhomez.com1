@@ -1,4 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth'; // <-- 1. Import cheyandi
 import {
   getFirestore,
   collection,
@@ -25,6 +26,10 @@ const firebaseConfig = {
 
 // Initialize Firebase App
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
+// Initialize Firebase Auth & Provider <-- 2. Ikkada add cheyandi
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
 
 // Get Firestore instance using databaseId if provided
 export const db = firebaseConfigData.firestoreDatabaseId
