@@ -31,16 +31,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
 
   if (!isOpen) return null;
 
-  // Real Google Sign-In Popup
   const handleGoogleLogin = async () => {
     setError('');
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const firebaseUser = result.user;
-
-      // Check if this is your admin email
-      const isAdmin = firebaseUser.email === 'bookmyhomez30@gmail.com'; // Mee admin email ikkada untundi
+      const isAdmin = firebaseUser.email === 'bookmyhomez30@gmail.com';
 
       const userData: User = {
         id: firebaseUser.uid,
@@ -53,13 +50,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
       onLoginSuccess(userData);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Google Sign-In failed. Please try again.');
+      setError(err.message || 'Google Sign-In failed.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Email & Password Login / Register
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -97,7 +93,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
       onLoginSuccess(userData);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Authentication failed. Please check your credentials.');
+      setError(err.message || 'Authentication failed.');
     } finally {
       setLoading(false);
     }
@@ -107,7 +103,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 text-white overflow-hidden">
         
-        {/* Close Button */}
         <button 
           onClick={onClose}
           className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors p-1"
@@ -133,7 +128,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
           </div>
         )}
 
-        {/* Google Sign In Button */}
         <button
           type="button"
           disabled={loading}
@@ -155,7 +149,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
           <div className="flex-grow border-t border-slate-800"></div>
         </div>
 
-        {/* Email / Password Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {isRegistering && (
             <div>
@@ -213,7 +206,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
           </button>
         </form>
 
-        {/* Toggle Login / Register */}
         <div className="mt-6 text-center">
           <button
             type="button"
