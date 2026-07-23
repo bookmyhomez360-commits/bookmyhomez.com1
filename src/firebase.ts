@@ -16,12 +16,13 @@ import { Property, User } from './types';
 import { INITIAL_PROPERTIES, REGISTERED_USERS } from './data/initialProperties';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDb_M1SsUqhPsU1tLYdXYyu01W4vpYUU8",
+  apiKey: "AIzaSyDb_M1SsUqhPsU1tYLtDXYyu01W4vpYUU8",
   authDomain: "bookmyhomez-72feb.firebaseapp.com",
   projectId: "bookmyhomez-72feb",
-  storageBucket: "bookmyhomez-72feb.appspot.com",
+  storageBucket: "bookmyhomez-72feb.firebasestorage.app",
   messagingSenderId: "85958849713",
   appId: "1:85958849713:web:fce1f2114f11ae19219e90",
+  measurementId: "G-BPLNWQKLNS"
 };
 
 // Initialize Firebase App
