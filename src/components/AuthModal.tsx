@@ -37,13 +37,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const firebaseUser = result.user;
-      const isAdmin = firebaseUser.email === 'bookmyhomez30@gmail.com';
+      const isAdmin = firebaseUser.email === 'bookmyhomez360@gmail.com';
 
       const userData: User = {
         id: firebaseUser.uid,
         name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
         email: firebaseUser.email || '',
-        role: isAdmin ? 'Admin' : 'Verified Owner',
+        role: isAdmin ? 'Administrator' : 'Verified Owner',
         avatar: firebaseUser.photoURL || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
       };
 
