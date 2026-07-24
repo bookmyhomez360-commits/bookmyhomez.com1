@@ -1,3 +1,4 @@
+import { savePropertyToFirestore } from '../firebase';
 import React, { useState } from 'react';
 import { WizardData, Property, CategoryType } from '../types';
 import {
