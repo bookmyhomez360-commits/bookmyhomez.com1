@@ -921,7 +921,9 @@ export const WizardModal: React.FC<WizardModalProps> = ({
             }}
             className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-600/20 transition cursor-pointer flex items-center gap-2"
           >
-         <Check className="w-4 h-4" /> {isEditing ? 'Update Property' : 'Publish Property'}
+       <Check className="w-4 h-4" /> {isEditing ? 'Update Property' : 'Publish Property'}
         </button>
-      );
-    };
+      </div>
+    </div>
+  </div>
+);
