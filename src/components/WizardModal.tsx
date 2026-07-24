@@ -89,8 +89,8 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     price: 12500000,
     deposit: 100000,
     availDate: '2026-03-01',
-    images: [
-    ],
+    images: [],
+    videos: [],
   });
 
   if (!isOpen) return null;
@@ -580,63 +580,71 @@ export const WizardModal: React.FC<WizardModalProps> = ({
           {/* STEP 4 */}
           {wizardStep === 4 && (
             <div className="space-y-6">
-              <div>
-                <label className="block text-xs font-bold text-slate-300 mb-3 flex items-center gap-2">
-                  <Armchair className="w-4 h-4 text-indigo-400" /> Flat Furnishings & Appliances (Select Qty)
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {[
-                    'Sofa',
-                    'Fridge',
-                    'AC',
-                    'TV',
-                    'Wardrobe',
-                    'Washing Machine',
-                    'Microwave',
-                    'Chimney',
-                  ].map((item) => (
-                    <div
-                      key={item}
-                      className="bg-slate-950 p-3 rounded-2xl border border-slate-800 flex flex-col items-center"
-                    >
-                      <span className="text-xs font-bold text-white mb-2">{item}</span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() =>
-                            setWizardData((prev) => ({
-                              ...prev,
-                              furnishings: {
-                                ...prev.furnishings,
-                                [item]: Math.max(0, (prev.furnishings[item] || 0) - 1),
-                              },
-                            }))
-                          }
-                          className="w-7 h-7 rounded-lg bg-slate-900 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer"
-                        >
-                          -
-                        </button>
-                        <span className="text-xs font-black text-indigo-400 w-5 text-center">
-                          {wizardData.furnishings[item] || 0}
-                        </span>
-                        <button
-                          onClick={() =>
-                            setWizardData((prev) => ({
-                              ...prev,
-                              furnishings: {
-                                ...prev.furnishings,
-                                [item]: (prev.furnishings[item] || 0) + 1,
-                              },
-                            }))
-                          }
-                          className="w-7 h-7 rounded-lg bg-slate-900 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer"
-                        >
-                          +
-                        </button>
+              {wizardData.furnishing !== 'Unfurnished' && (
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-3 flex items-center gap-2">
+                    <Armchair className="w-4 h-4 text-indigo-400" /> Flat Furnishings & Appliances ({wizardData.furnishing}) - Select Qty
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[
+                      'Sofa',
+                      'Fridge',
+                      'AC',
+                      'TV',
+                      'Wardrobe',
+                      'Washing Machine',
+                      'Microwave',
+                      'Chimney',
+                    ].map((item) => (
+                      <div
+                        key={item}
+                        className="bg-slate-950 p-3 rounded-2xl border border-slate-800 flex flex-col items-center"
+                      >
+                        <span className="text-xs font-bold text-white mb-2">{item}</span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() =>
+                              setWizardData((prev) => ({
+                                ...prev,
+                                furnishings: {
+                                  ...prev.furnishings,
+                                  [item]: Math.max(0, (prev.furnishings?.[item] || 0) - 1),
+                                },
+                              }))
+                            }
+                            className="w-7 h-7 rounded-lg bg-slate-900 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer"
+                          >
+                            -
+                          </button>
+                          <span className="text-xs font-black text-indigo-400 w-5 text-center">
+                            {wizardData.furnishings?.[item] || 0}
+                          </span>
+                          <button
+                            onClick={() =>
+                              setWizardData((prev) => ({
+                                ...prev,
+                                furnishings: {
+                                  ...prev.furnishings,
+                                  [item]: (prev.furnishings?.[item] || 0) + 1,
+                                },
+                              }))
+                            }
+                            className="w-7 h-7 rounded-lg bg-slate-900 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer"
+                          >
+                            +
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {wizardData.furnishing === 'Unfurnished' && (
+                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center text-xs text-slate-400">
+                  Property is Unfurnished. No appliances or furnishings configuration required.
+                </div>
+              )}
 
               <div>
                 <label className="block text-xs font-bold text-slate-300 mb-3 flex items-center gap-2">
@@ -910,9 +918,9 @@ export const WizardModal: React.FC<WizardModalProps> = ({
 
                   alert("Property posted successfully for everyone!");
                   onClose();
-                } catch (error) {
+                } catch (error: any) {
                   console.error("Error saving property:", error);
-                  alert("Failed to save property. Please try again.");
+                  alert("Failed to save property: " + (error.message || "Unknown error"));
                 }
               }}
               className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-600/20 transition cursor-pointer flex items-center gap-2"
