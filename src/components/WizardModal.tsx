@@ -141,20 +141,24 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
-  const addDemoImage = () => {
-    if (wizardData.images.length < 30) {
-      const presets = [
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=80',
-        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1000&q=80',
-        'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1000&q=80',
-      ];
-      setWizardData((prev) => ({
-        ...prev,
-        images: [...prev.images, presets[prev.images.length % presets.length]],
-      }));
-    } else {
-      alert('Maximum 30 images allowed.');
-    }
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newImages: string[] = [];
+    Array.from(files).forEach((file) => {
+      const imageUrl = URL.createObjectURL(file);
+      newImages.push(imageUrl);
+    });
+
+    setWizardData((prev) => {
+      const updatedImages = [...prev.images, ...newImages];
+      if (updatedImages.length > 30) {
+        alert('Maximum 30 images allowed.');
+        return { ...prev, images: updatedImages.slice(0, 30) };
+      }
+      return { ...prev, images: updatedImages };
+    });
   };
 
   return (
@@ -710,16 +714,21 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                     </div>
                   ))}
 
-                  <div
-                    onClick={addDemoImage}
-                    className="h-28 rounded-2xl border-2 border-dashed border-slate-800 hover:border-indigo-500 bg-slate-950 flex flex-col items-center justify-center cursor-pointer text-slate-400 hover:text-white transition"
-                  >
+                  {/* రియల్ ఫైల్ అప్‌లోడ్ కోసం హిడెన్ ఇన్‌పుట్ ట్యాగ్ */}
+                  <label className="h-28 rounded-2xl border-2 border-dashed border-slate-800 hover:border-indigo-500 bg-slate-950 flex flex-col items-center justify-center cursor-pointer text-slate-400 hover:text-white transition">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
                     <PlusCircle className="w-5 h-5 mb-1" />
                     <span className="text-[11px] font-bold">Add Photo</span>
                     <span className="text-[9px] text-slate-500">
                       ({wizardData.images.length}/30)
                     </span>
-                  </div>
+                  </label>
                 </div>
               </div>
 
