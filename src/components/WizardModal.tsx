@@ -804,7 +804,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
               </div>
             </div>
           )}
-
+          
           {/* STEP 6 */}
           {wizardStep === 6 && (
             <div className="space-y-6">
