@@ -780,7 +780,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                 </label>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                  {/* Uploaded Videos Preview */}
                   {wizardData.videos?.map((vid, idx) => (
                     <div
                       key={idx}
@@ -801,7 +800,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                     </div>
                   ))}
 
-                  {/* Upload Videos Button */}
                   {(!wizardData.videos || wizardData.videos.length < 2) && (
                     <label className="h-28 rounded-2xl border-2 border-dashed border-slate-800 hover:border-indigo-500 bg-slate-950 flex flex-col items-center justify-center cursor-pointer text-slate-400 hover:text-white transition">
                       <input
@@ -904,9 +902,9 @@ export const WizardModal: React.FC<WizardModalProps> = ({
               onClick={async () => {
                 try {
                   const propertyToSave = {
-                    id: wizardData.id || Date.now(),
+                    id: editingId || Date.now(),
                     ...wizardData,
-                    createdAt: wizardData.createdAt || new Date().toISOString()
+                    createdAt: new Date().toISOString()
                   };
 
                   await savePropertyToFirestore(propertyToSave);
