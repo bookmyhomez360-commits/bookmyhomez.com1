@@ -123,7 +123,13 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-3">
           {/* List Property Button with Prominent Blue Background */}
           <button
-            onClick={openWizard}
+            onClick={() => {
+              if (currentUser) {
+                openWizard();
+              } else {
+                openAuthModal();
+              }
+            }}
             className="bg-blue-600 hover:bg-blue-500 text-white font-black px-4 py-2.5 rounded-xl text-xs shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center gap-2 cursor-pointer"
           >
             <PlusCircle className="w-4 h-4" />
@@ -191,15 +197,19 @@ export const Header: React.FC<HeaderProps> = ({
                     <Building className="w-4 h-4 text-indigo-400" /> My Properties ({myPropertiesCount})
                   </button>
 
-                  <button
-                    onClick={() => {
-                      openWizard();
-                      setShowProfileDropdown(false);
-                    }}
-                    className="w-full text-left px-4 py-2.5 text-xs text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 transition cursor-pointer"
-                  >
-                    <CirclePlus className="w-4 h-4 text-amber-400" /> Post New Listing
-                  </button>
+                 <button
+            onClick={() => {
+              if (currentUser) {
+                openWizard();
+              } else {
+                openAuthModal();
+              }
+              setShowProfileDropdown(false);
+            }}
+            className="w-full text-left px-4 py-2.5 text-xs text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 transition cursor-pointer"
+          >
+            <CirclePlus className="w-4 h-4 text-amber-400" /> Post New Listing
+          </button>
 
                   <div className="border-t border-slate-800 my-1"></div>
 
