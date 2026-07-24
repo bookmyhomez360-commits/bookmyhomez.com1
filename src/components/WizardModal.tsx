@@ -1,6 +1,7 @@
-import { savePropertyToFirestore } from '../firebase';
 import React, { useState } from 'react';
-import { WizardData, Property, CategoryType } from '../types';
+import { WizardData, CategoryType } from '../types';
+import { db } from '../firebase'; // మీ ప్రాజెక్ట్‌లో firebase.ts నుండి db లేదా firestore ని ఇంపోర్ట్ చేసుకోండి
+import { collection, addDoc, setDoc, doc } from 'firebase/firestore';
 import {
   X,
   MapPin,
@@ -13,7 +14,6 @@ import {
   Video,
   CheckCircle,
   Lock,
-  CloudUpload,
   ArrowLeft,
   ArrowRight,
   Check,
@@ -62,12 +62,13 @@ export const WizardModal: React.FC<WizardModalProps> = ({
   isOpen,
   isEditing,
   editingId,
+  currentUser,
   onClose,
-  onPublish,
   formatCurrency,
 }) => {
   const [wizardStep, setWizardStep] = useState(1);
   const [societySearchQuery, setSocietySearchQuery] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [wizardData, setWizardData] = useState<WizardData>({
     title: '',
@@ -198,6 +199,39 @@ export const WizardModal: React.FC<WizardModalProps> = ({
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = (error) => reject(error);
     });
+  };
+
+  // ఫైర్‌బేస్‌లో సేవ్ చేయడానికి డైరెక్ట్ ఫంక్షన్
+  const handlePublishProperty = async () => {
+    try {
+      setIsSubmitting(true);
+      const propertyId = editingId ? String(editingId) : String(Date.now());
+      
+      const propertyPayload = {
+        ...wizardData,
+        id: propertyId,
+        ownerId: currentUser?.uid || 'anonymous_user',
+        ownerEmail: currentUser?.email || 'unknown',
+        createdAt: new Date().toISOString(),
+      };
+
+      if (isEditing && editingId) {
+        // ఎడిట్ చేస్తుంటే ఉన్న డాక్యుమెంట్‌ను అప్‌డేట్ చేస్తుంది
+        await setDoc(doc(db, 'properties', propertyId), propertyPayload, { merge: true });
+      } else {
+        // కొత్త ప్రాపర్టీ అయితే ఫైర్‌బేస్‌లో సేవ్ చేస్తుంది
+        await addDoc(collection(db, 'properties'), propertyPayload);
+      }
+
+      alert('Property published successfully to Firebase!');
+      setIsSubmitting(false);
+      onClose();
+      window.location.reload(); // డేటా రిఫ్రెష్ కావడానికి
+    } catch (error: any) {
+      console.error('Firebase save error:', error);
+      alert('Failed to publish property: ' + (error.message || 'Check console logs'));
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -906,26 +940,11 @@ export const WizardModal: React.FC<WizardModalProps> = ({
             </button>
           ) : (
             <button
-              onClick={async () => {
-                try {
-                  const propertyToSave = {
-                    id: editingId || Date.now(),
-                    ...wizardData,
-                    createdAt: new Date().toISOString()
-                  };
-
-                  await savePropertyToFirestore(propertyToSave);
-
-                  alert("Property posted successfully for everyone!");
-                  onClose();
-                } catch (error: any) {
-                  console.error("Error saving property:", error);
-                  alert("Failed to save property: " + (error.message || "Unknown error"));
-                }
-              }}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-600/20 transition cursor-pointer flex items-center gap-2"
+              disabled={isSubmitting}
+              onClick={handlePublishProperty}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-600/20 transition cursor-pointer flex items-center gap-2 disabled:opacity-50"
             >
-              <Check className="w-4 h-4" /> {isEditing ? 'Update Property' : 'Publish Property'}
+              <Check className="w-4 h-4" /> {isSubmitting ? 'Publishing...' : (isEditing ? 'Update Property' : 'Publish Property')}
             </button>
           )}
         </div>
