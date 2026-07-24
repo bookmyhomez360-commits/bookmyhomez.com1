@@ -82,6 +82,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     propertyAge: '1-5 Years',
     bathrooms: '0',
     balconies: '0',
+    bedrooms: '0',
     furnishing: 'Fully Furnished',
     furnishings: { Sofa: 0, Fridge: 0, AC: 0, TV: 0, Wardrobe: 0 },
     amenities: ['Lift', 'Power Backup', 'CCTV Security'],
@@ -89,8 +90,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     deposit: 100000,
     availDate: '2026-03-01',
     images: [
-      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80',
     ],
   });
 
