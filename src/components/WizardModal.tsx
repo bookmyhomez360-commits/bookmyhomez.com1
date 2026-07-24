@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { WizardData, CategoryType } from '../types';
-import { db } from '../firebase'; // మీ ప్రాజెక్ట్‌లో firebase.ts నుండి db లేదా firestore ని ఇంపోర్ట్ చేసుకోండి
+import { db } from '../firebase';
 import { collection, addDoc, setDoc, doc } from 'firebase/firestore';
 import {
   X,
@@ -201,10 +201,12 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
-  // ఫైర్‌బేస్‌లో సేవ్ చేయడానికి డైరెక్ట్ ఫంక్షన్
+  // సేవింగ్ ఫంక్షన్ విత్ సేఫ్టీ టైమర్
   const handlePublishProperty = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     try {
-      setIsSubmitting(true);
       const propertyId = editingId ? String(editingId) : String(Date.now());
       
       const propertyPayload = {
@@ -215,21 +217,24 @@ export const WizardModal: React.FC<WizardModalProps> = ({
         createdAt: new Date().toISOString(),
       };
 
-      if (isEditing && editingId) {
-        // ఎడిట్ చేస్తుంటే ఉన్న డాక్యుమెంట్‌ను అప్‌డేట్ చేస్తుంది
-        await setDoc(doc(db, 'properties', propertyId), propertyPayload, { merge: true });
-      } else {
-        // కొత్త ప్రాపర్టీ అయితే ఫైర్‌బేస్‌లో సేవ్ చేస్తుంది
-        await addDoc(collection(db, 'properties'), propertyPayload);
-      }
+      // ఫైర్‌బేస్ సేవ్ ఆపరేషన్‌కి 10 సెకన్ల టైమ్‌అవుట్ సెట్ చేస్తున్నాం
+      const savePromise = isEditing && editingId
+        ? setDoc(doc(db, 'properties', propertyId), propertyPayload, { merge: true })
+        : addDoc(collection(db, 'properties'), propertyPayload);
 
-      alert('Property published successfully to Firebase!');
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Firebase connection timeout. Please check your internet or Firebase rules.')), 10000)
+      );
+
+      await Promise.race([savePromise, timeoutPromise]);
+
+      alert('Property published successfully!');
       setIsSubmitting(false);
       onClose();
-      window.location.reload(); // డేటా రిఫ్రెష్ కావడానికి
+      window.location.reload();
     } catch (error: any) {
       console.error('Firebase save error:', error);
-      alert('Failed to publish property: ' + (error.message || 'Check console logs'));
+      alert('Failed to publish property: ' + (error.message || 'Unknown error'));
       setIsSubmitting(false);
     }
   };
