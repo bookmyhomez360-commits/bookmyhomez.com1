@@ -153,12 +153,13 @@ export const WizardModal: React.FC<WizardModalProps> = ({
 
     setWizardData((prev) => {
       const updatedImages = [...prev.images, ...newImages];
-      if (updatedImages.length > 50) {
-        alert('Maximum 50 images allowed.');
+      if (updatedImages.length > 30) {
+        alert('Maximum 30 images allowed.');
         return { ...prev, images: updatedImages.slice(0, 30) };
       }
       return { ...prev, images: updatedImages };
     });
+  };
 
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
