@@ -80,10 +80,10 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     bhk: '3 BHK',
     area: 1500,
     propertyAge: '1-5 Years',
-    bathrooms: '2',
-    balconies: '1',
+    bathrooms: '0',
+    balconies: '0',
     furnishing: 'Fully Furnished',
-    furnishings: { Sofa: 1, Fridge: 1, AC: 2, TV: 1, Wardrobe: 2 },
+    furnishings: { Sofa: 0, Fridge: 0, AC: 0, TV: 0, Wardrobe: 0 },
     amenities: ['Lift', 'Power Backup', 'CCTV Security'],
     price: 12500000,
     deposit: 100000,
@@ -142,15 +142,19 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
     const newImages: string[] = [];
-    Array.from(files).forEach((file) => {
-      const imageUrl = URL.createObjectURL(file);
-      newImages.push(imageUrl);
-    });
+    for (const file of Array.from(files)) {
+      try {
+        const base64String = await convertFileToBase64(file);
+        newImages.push(base64String);
+      } catch (err) {
+        console.error("Error converting image:", err);
+      }
+    }
 
     setWizardData((prev) => {
       const updatedImages = [...prev.images, ...newImages];
@@ -162,15 +166,19 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
-  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
     const newVideos: string[] = [];
-    Array.from(files).forEach((file) => {
-      const videoUrl = URL.createObjectURL(file);
-      newVideos.push(videoUrl);
-    });
+    for (const file of Array.from(files)) {
+      try {
+        const base64String = await convertFileToBase64(file);
+        newVideos.push(base64String);
+      } catch (err) {
+        console.error("Error converting video:", err);
+      }
+    }
 
     setWizardData((prev) => {
       const existingVideos = prev.videos || [];
@@ -181,6 +189,16 @@ export const WizardModal: React.FC<WizardModalProps> = ({
         return { ...prev, videos: updatedVideos.slice(0, 2) };
       }
       return { ...prev, videos: updatedVideos };
+    });
+  };
+
+ // Helper function for Base64 conversion
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
     });
   };
 
@@ -876,22 +894,36 @@ export const WizardModal: React.FC<WizardModalProps> = ({
           )}
 
           {wizardStep < 6 ? (
-            <button
-              onClick={() => setWizardStep((prev) => prev + 1)}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-lg shadow-indigo-600/30 transition cursor-pointer flex items-center gap-1.5"
-            >
-              Next Step <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          ) : (
-            <button
-              onClick={() => onPublish(wizardData, isEditing, editingId)}
-              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black px-7 py-3 rounded-xl text-xs shadow-xl shadow-amber-500/20 transition cursor-pointer flex items-center gap-2"
-            >
-              <CloudUpload className="w-4 h-4" /> Publish via POST (/api/properties)
-            </button>
-          )}
-        </div>
+          <button
+            onClick={() => setWizardStep((prev) => prev + 1)}
+            className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-lg shadow-indigo-600/20 transition cursor-pointer flex items-center gap-2"
+          >
+            Next <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        ) : (
+         <button
+            onClick={async () => {
+              try {
+                const propertyToSave = {
+                  id: wizardData.id || Date.now(),
+                  ...wizardData,
+                  createdAt: wizardData.createdAt || new Date().toISOString()
+                };
 
+                await savePropertyToFirestore(propertyToSave);
+
+                alert("Property posted successfully for everyone!");
+                onClose();
+              } catch (error) {
+                console.error("Error saving property:", error);
+                alert("Failed to save property. Please try again.");
+              }
+            }}
+            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-600/20 transition cursor-pointer flex items-center gap-2"
+          >
+            <Check className="w-4 h-4" /> {isEditing ? 'Update Property' : 'Publish Property'}
+          </button>
+        )}
       </div>
     </div>
   );
