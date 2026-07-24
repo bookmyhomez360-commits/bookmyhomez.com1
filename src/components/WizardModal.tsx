@@ -153,11 +153,32 @@ export const WizardModal: React.FC<WizardModalProps> = ({
 
     setWizardData((prev) => {
       const updatedImages = [...prev.images, ...newImages];
-      if (updatedImages.length > 30) {
-        alert('Maximum 30 images allowed.');
+      if (updatedImages.length > 50) {
+        alert('Maximum 50 images allowed.');
         return { ...prev, images: updatedImages.slice(0, 30) };
       }
       return { ...prev, images: updatedImages };
+    });
+
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newVideos: string[] = [];
+    Array.from(files).forEach((file) => {
+      const videoUrl = URL.createObjectURL(file);
+      newVideos.push(videoUrl);
+    });
+
+    setWizardData((prev) => {
+      const existingVideos = prev.videos || [];
+      const updatedVideos = [...existingVideos, ...newVideos];
+      
+      if (updatedVideos.length > 2) {
+        alert('Maximum 2 videos allowed.');
+        return { ...prev, videos: updatedVideos.slice(0, 2) };
+      }
+      return { ...prev, videos: updatedVideos };
     });
   };
 
@@ -688,6 +709,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                   Support up to 30 images and 2 videos. First image is automatically set as Cover Photo.
                 </p>
 
+                {/* Photos Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
                   {wizardData.images.map((img, idx) => (
                     <div
@@ -714,7 +736,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                     </div>
                   ))}
 
-                  {/* రియల్ ఫైల్ అప్‌లోడ్ కోసం హిడెన్ ఇన్‌పుట్ ట్యాగ్ */}
+                  {/* Upload Photos Button */}
                   <label className="h-28 rounded-2xl border-2 border-dashed border-slate-800 hover:border-indigo-500 bg-slate-950 flex flex-col items-center justify-center cursor-pointer text-slate-400 hover:text-white transition">
                     <input
                       type="file"
@@ -724,7 +746,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                       className="hidden"
                     />
                     <PlusCircle className="w-5 h-5 mb-1" />
-                    <span className="text-[11px] font-bold">Add Photo</span>
+                    <span className="text-[11px] font-bold">Upload Photos</span>
                     <span className="text-[9px] text-slate-500">
                       ({wizardData.images.length}/30)
                     </span>
@@ -732,20 +754,51 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                 </div>
               </div>
 
+              {/* Video Walkthrough Section */}
               <div className="pt-4 border-t border-slate-800">
                 <label className="block text-xs font-bold text-slate-300 mb-2">
                   Video Walkthrough (Max 2 videos)
                 </label>
-                <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex items-center gap-3">
-                  <Video className="w-6 h-6 text-indigo-400" />
-                  <div className="text-xs">
-                    <p className="font-bold text-white">
-                      Video Walkthrough HD Preset Attached
-                    </p>
-                    <p className="text-[10px] text-slate-500">
-                      1 video uploaded successfully
-                    </p>
-                  </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                  {/* Uploaded Videos Preview */}
+                  {wizardData.videos?.map((vid, idx) => (
+                    <div
+                      key={idx}
+                      className="relative h-28 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center"
+                    >
+                      <video src={vid} className="w-full h-full object-cover" />
+                      <button
+                        onClick={() =>
+                          setWizardData((prev) => ({
+                            ...prev,
+                            videos: (prev.videos || []).filter((_, i) => i !== idx),
+                          }))
+                        }
+                        className="absolute top-2 right-2 w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs opacity-80 hover:opacity-100 cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* Upload Videos Button */}
+                  {(!wizardData.videos || wizardData.videos.length < 2) && (
+                    <label className="h-28 rounded-2xl border-2 border-dashed border-slate-800 hover:border-indigo-500 bg-slate-950 flex flex-col items-center justify-center cursor-pointer text-slate-400 hover:text-white transition">
+                      <input
+                        type="file"
+                        accept="video/*"
+                        multiple
+                        onChange={handleVideoUpload}
+                        className="hidden"
+                      />
+                      <Video className="w-5 h-5 mb-1 text-indigo-400" />
+                      <span className="text-[11px] font-bold">Upload Videos</span>
+                      <span className="text-[9px] text-slate-500">
+                        ({wizardData.videos?.length || 0}/2)
+                      </span>
+                    </label>
+                  )}
                 </div>
               </div>
             </div>
