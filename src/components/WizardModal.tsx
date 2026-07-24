@@ -142,7 +142,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
- const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
@@ -192,7 +192,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
- // Helper function for Base64 conversion
   const convertFileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -894,36 +893,38 @@ export const WizardModal: React.FC<WizardModalProps> = ({
           )}
 
           {wizardStep < 6 ? (
-          <button
-            onClick={() => setWizardStep((prev) => prev + 1)}
-            className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-lg shadow-indigo-600/20 transition cursor-pointer flex items-center gap-2"
-          >
-            Next <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        ) : (
-         <button
-            onClick={async () => {
-              try {
-                const propertyToSave = {
-                  id: wizardData.id || Date.now(),
-                  ...wizardData,
-                  createdAt: wizardData.createdAt || new Date().toISOString()
-                };
+            <button
+              onClick={() => setWizardStep((prev) => prev + 1)}
+              className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-lg shadow-indigo-600/20 transition cursor-pointer flex items-center gap-2"
+            >
+              Next <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <button
+              onClick={async () => {
+                try {
+                  const propertyToSave = {
+                    id: wizardData.id || Date.now(),
+                    ...wizardData,
+                    createdAt: wizardData.createdAt || new Date().toISOString()
+                  };
 
-                await savePropertyToFirestore(propertyToSave);
+                  await savePropertyToFirestore(propertyToSave);
 
-                alert("Property posted successfully for everyone!");
-                onClose();
-              } catch (error) {
-                console.error("Error saving property:", error);
-                alert("Failed to save property. Please try again.");
-              }
-            }}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-600/20 transition cursor-pointer flex items-center gap-2"
-          >
-          <Check className="w-4 h-4" /> {isEditing ? 'Update Property' : 'Publish Property'}
-        </button>
+                  alert("Property posted successfully for everyone!");
+                  onClose();
+                } catch (error) {
+                  console.error("Error saving property:", error);
+                  alert("Failed to save property. Please try again.");
+                }
+              }}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-600/20 transition cursor-pointer flex items-center gap-2"
+            >
+              <Check className="w-4 h-4" /> {isEditing ? 'Update Property' : 'Publish Property'}
+            </button>
+          )}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
