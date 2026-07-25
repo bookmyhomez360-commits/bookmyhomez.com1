@@ -142,6 +142,39 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
+  // ఇమేజ్ సైజ్ తగ్గించడానికి ఆటోమేటిక్ కంప్రెషన్ ఫంక్షన్
+  const compressImage = async (base64Str: string, maxWidth = 800, maxHeight = 800, quality = 0.7): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((height * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = (error) => reject(error);
+    });
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
@@ -150,9 +183,11 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     for (const file of Array.from(files)) {
       try {
         const base64String = await convertFileToBase64(file);
-        newImages.push(base64String);
+        // అప్‌లోడ్ చేసిన ప్రతి ఇమేజ్‌ని ఆటోమేటిక్‌గా కంప్రెస్ చేస్తుంది
+        const compressedBase64 = await compressImage(base64String);
+        newImages.push(compressedBase64);
       } catch (err) {
-        console.error("Error converting image:", err);
+        console.error("Error compressing image:", err);
       }
     }
 
@@ -217,7 +252,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
         createdAt: new Date().toISOString(),
       };
 
-      // ఫైర్‌బేస్ సేవ్ ఆపరేషన్‌కి 10 సెకన్ల టైమ్‌అవుట్ సెట్ చేస్తున్నాం
       const savePromise = isEditing && editingId
         ? setDoc(doc(db, 'properties', propertyId), propertyPayload, { merge: true })
         : addDoc(collection(db, 'properties'), propertyPayload);
