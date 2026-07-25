@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth'; // <--- ఇక్కడ GoogleAuthProvider ని ఇంపోర్ట్ చేయాలి
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { 
   getFirestore, 
   collection, 
@@ -29,8 +29,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-
-// ఇది మిస్ అవ్వడం వల్లే రైల్వేలో బిల్డ్ ఫెయిల్ అయింది
 export const googleProvider = new GoogleAuthProvider();
 
 // Firestore Operations
