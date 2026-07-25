@@ -142,8 +142,8 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
-  // ఇమేజ్ సైజ్ తగ్గించడానికి ఆటోమేటిక్ కంప్రెషన్ ఫంక్షన్
-  const compressImage = async (base64Str: string, maxWidth = 800, maxHeight = 800, quality = 0.7): Promise<string> => {
+  // ఇమేజ్ సైజును గట్టిగా తగ్గించడానికి అప్‌డేటెడ్ కంప్రెషన్ ఫంక్షన్ (Max 500px)
+  const compressImage = async (base64Str: string, maxWidth = 500, maxHeight = 500, quality = 0.5): Promise<string> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.src = base64Str;
@@ -183,7 +183,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     for (const file of Array.from(files)) {
       try {
         const base64String = await convertFileToBase64(file);
-        // అప్‌లోడ్ చేసిన ప్రతి ఇమేజ్‌ని ఆటోమేటిక్‌గా కంప్రెస్ చేస్తుంది
         const compressedBase64 = await compressImage(base64String);
         newImages.push(compressedBase64);
       } catch (err) {
@@ -201,12 +200,18 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
+  // వీడియో సైజ్ చెకింగ్ వాలిడేషన్ లాజిక్ (3MB కన్నా ఎక్కువ ఉంటే వార్నింగ్ ఇస్తుంది)
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
     const newVideos: string[] = [];
     for (const file of Array.from(files)) {
+      if (file.size > 3 * 1024 * 1024) {
+        alert(`Video "${file.name}" is too large (${(file.size / (1024 * 1024)).toFixed(2)}MB). Please upload a short video under 3MB.`);
+        continue;
+      }
+
       try {
         const base64String = await convertFileToBase64(file);
         newVideos.push(base64String);
@@ -236,7 +241,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
-  // సేవింగ్ ఫంక్షన్ విత్ సేఫ్టీ టైమర్
   const handlePublishProperty = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
@@ -805,7 +809,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                   <Camera className="w-4 h-4 text-indigo-400" /> Photos & Video Upload
                 </h4>
                 <p className="text-xs text-slate-400 mb-4">
-                  Support up to 30 images and 2 videos. First image is automatically set as Cover Photo.
+                  Support up to 30 compressed images and 2 short videos (under 3MB). First image is automatically set as Cover Photo.
                 </p>
 
                 {/* Photos Grid */}
@@ -856,7 +860,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
               {/* Video Walkthrough Section */}
               <div className="pt-4 border-t border-slate-800">
                 <label className="block text-xs font-bold text-slate-300 mb-2">
-                  Video Walkthrough (Max 2 videos)
+                  Video Walkthrough (Max 2 videos, under 3MB each)
                 </label>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
