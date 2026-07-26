@@ -142,7 +142,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
-  // ఇమేజ్ సైజును గట్టిగా తగ్గించడానికి అప్‌డేటెడ్ కంప్రెషన్ ఫంక్షన్ (Max 500px)
   const compressImage = async (base64Str: string, maxWidth = 500, maxHeight = 500, quality = 0.5): Promise<string> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -200,29 +199,49 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
-  // వీడియో సైజ్ చెకింగ్ వాలిడేషన్ లాజిక్ (3MB కన్నా ఎక్కువ ఉంటే వార్నింగ్ ఇస్తుంది)
+  // క్లౌడినరీ ద్వారా వీడియో అప్‌లోడ్ లాజిక్ (50MB వరకు అనుమతిస్తుంది)
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
-    const newVideos: string[] = [];
+    const newVideoUrls: string[] = [];
+    
     for (const file of Array.from(files)) {
-      if (file.size > 3 * 1024 * 1024) {
-        alert(`Video "${file.name}" is too large (${(file.size / (1024 * 1024)).toFixed(2)}MB). Please upload a short video under 3MB.`);
+      if (file.size > 50 * 1024 * 1024) {
+        alert(`Video "${file.name}" is too large. Please upload a video under 50MB.`);
         continue;
       }
 
       try {
-        const base64String = await convertFileToBase64(file);
-        newVideos.push(base64String);
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'ztgcemri'); // మీ క్లౌడినరీ అన్‌సైన్డ్ ప్రిసెట్ పేరు
+
+        const response = await fetch(
+          'https://api.cloudinary.com/v1_1/kl6agwow/video/upload', // మీ క్లౌడ్ నేమ్ (kl6agwow)
+          {
+            method: 'POST',
+            body: formData,
+          }
+        );
+
+        const data = await response.json();
+        
+        if (data.secure_url) {
+          newVideoUrls.push(data.secure_url);
+        } else {
+          throw new Error('Upload failed');
+        }
+
       } catch (err) {
-        console.error("Error converting video:", err);
+        console.error("Error uploading video to Cloudinary:", err);
+        alert('Failed to upload video. Please try again.');
       }
     }
 
     setWizardData((prev) => {
       const existingVideos = prev.videos || [];
-      const updatedVideos = [...existingVideos, ...newVideos];
+      const updatedVideos = [...existingVideos, ...newVideoUrls];
       
       if (updatedVideos.length > 2) {
         alert('Maximum 2 videos allowed.');
@@ -809,7 +828,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                   <Camera className="w-4 h-4 text-indigo-400" /> Photos & Video Upload
                 </h4>
                 <p className="text-xs text-slate-400 mb-4">
-                  Support up to 30 compressed images and 2 short videos (under 3MB). First image is automatically set as Cover Photo.
+                  Support up to 30 compressed images and 2 videos (up to 50MB via Cloudinary). First image is automatically set as Cover Photo.
                 </p>
 
                 {/* Photos Grid */}
@@ -860,7 +879,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
               {/* Video Walkthrough Section */}
               <div className="pt-4 border-t border-slate-800">
                 <label className="block text-xs font-bold text-slate-300 mb-2">
-                  Video Walkthrough (Max 2 videos, under 3MB each)
+                  Video Walkthrough (Max 2 videos, up to 50MB each)
                 </label>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
