@@ -119,10 +119,13 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           </button>
         </div>
 
-        {/* Price Tag */}
+        {/* Price Tag with Daily / Monthly Rent Integration */}
         <div className="absolute bottom-3 left-3 text-white">
-          <div className="text-2xl font-black text-emerald-400 drop-shadow-md">
+          <div className="text-3xl font-black text-emerald-400 mb-6 drop-shadow-md">
             ₹{formatCurrency(property.price)}
+            <span className="text-xs text-slate-400 font-normal ml-1">
+              {property.category === 'Rent' ? (property.rentType === 'Daily' ? '/ day' : '/ month') : ''}
+            </span>
           </div>
         </div>
       </div>
