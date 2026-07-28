@@ -4,7 +4,7 @@ import { SplashScreen } from './components/SplashScreen';
 import { Header } from './components/Header';
 import { PropertyCard } from './components/PropertyCard';
 import { PropertyDetailsModal } from './components/PropertyDetailsModal';
-import { WizardModal } from './components/WizardModal';
+import  WizardModal  from './components/WizardModal';
 import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
 import {
