@@ -74,6 +74,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     title: '',
     propType: 'Residential',
     category: 'Buy',
+    rentType: 'Monthly',
     status: 'Available',
     city: 'Bengaluru',
     locality: 'Indiranagar',
@@ -403,6 +404,39 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                 </div>
               </div>
 
+              {/* Rent Type Selection (Monthly or Daily) if Rent intent is selected */}
+              {wizardData.category === 'Rent' && (
+                <div className="pt-2">
+                  <label className="block text-xs font-bold text-slate-300 mb-2">
+                    Rental Duration Type *
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setWizardData({ ...wizardData, rentType: 'Monthly' })}
+                      className={`p-3 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                        wizardData.rentType === 'Monthly' || !wizardData.rentType
+                          ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg'
+                          : 'bg-slate-950 text-slate-400 border-slate-800'
+                      }`}
+                    >
+                      Monthly Rent
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setWizardData({ ...wizardData, rentType: 'Daily' })}
+                      className={`p-3 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                        wizardData.rentType === 'Daily'
+                          ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg'
+                          : 'bg-slate-950 text-slate-400 border-slate-800'
+                      }`}
+                    >
+                      Daily Rent (Short Stay)
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="pt-4 border-t border-slate-800">
                 <label className="block text-xs font-bold text-slate-300 mb-2">
                   Initial Availability Status *
@@ -536,7 +570,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
             </div>
           )}
 
-          {/* STEP 3 - CONFIGURATION, BEDROOMS, FACING, PROPERTY AGE */}
+          {/* STEP 3 */}
           {wizardStep === 3 && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -814,7 +848,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-slate-800">
                 <div>
                   <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">
-                    Monthly Rent / Price (₹) *
+                    {wizardData.category === 'Rent' && wizardData.rentType === 'Daily' ? 'Daily Rent Price (₹) *' : 'Price / Monthly Rent (₹) *'}
                   </label>
                   <input
                     type="number"
@@ -931,9 +965,10 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                   {wizardData.videos?.map((vid, idx) => (
                     <div
                       key={idx}
-                      className="relative h-28 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center"
+                      className="relative h-36 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center"
                     >
-                      <video src={vid} className="w-full h-full object-cover" />
+                      {/* Added controls and proper styling so video plays correctly */}
+                      <video src={vid} controls className="w-full h-full object-cover" />
                       <button
                         onClick={() =>
                           setWizardData((prev) => ({
@@ -941,7 +976,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                             videos: (prev.videos || []).filter((_, i) => i !== idx),
                           }))
                         }
-                        className="absolute top-2 right-2 w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs opacity-80 hover:opacity-100 cursor-pointer"
+                        className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs opacity-80 hover:opacity-100 cursor-pointer"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -949,7 +984,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                   ))}
 
                   {(!wizardData.videos || wizardData.videos.length < 2) && (
-                    <label className="h-28 rounded-2xl border-2 border-dashed border-slate-800 hover:border-indigo-500 bg-slate-950 flex flex-col items-center justify-center cursor-pointer text-slate-400 hover:text-white transition">
+                    <label className="h-36 rounded-2xl border-2 border-dashed border-slate-800 hover:border-indigo-500 bg-slate-950 flex flex-col items-center justify-center cursor-pointer text-slate-400 hover:text-white transition">
                       <input
                         type="file"
                         accept="video/*"
@@ -957,7 +992,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                         onChange={handleVideoUpload}
                         className="hidden"
                       />
-                      <Video className="w-5 h-5 mb-1 text-indigo-400" />
+                      <Video className="w-6 h-6 mb-1 text-indigo-400" />
                       <span className="text-[11px] font-bold">Upload Videos</span>
                       <span className="text-[9px] text-slate-500">
                         ({wizardData.videos?.length || 0}/2)
@@ -976,7 +1011,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-xs bg-indigo-500/20 text-indigo-300 font-black px-3 py-1 rounded-full uppercase">
-                      {wizardData.category}
+                      {wizardData.category} {wizardData.category === 'Rent' ? `(${wizardData.rentType || 'Monthly'})` : ''}
                     </span>
                     <span
                       className={`text-xs font-black px-3 py-1 rounded-full uppercase ${
@@ -989,7 +1024,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                     </span>
                   </div>
                   <span className="text-xl font-black text-emerald-400">
-                    ₹{formatCurrency(wizardData.price)}
+                    ₹{formatCurrency(wizardData.price)} {wizardData.category === 'Rent' ? (wizardData.rentType === 'Daily' ? '/ day' : '/ month') : ''}
                   </span>
                 </div>
 
