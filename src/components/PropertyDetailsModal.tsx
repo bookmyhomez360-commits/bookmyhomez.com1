@@ -177,10 +177,10 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
         </p>
 
         <div className="text-3xl font-black text-emerald-400 mb-6">
-          ₹{formatCurrency(property.price)}
-          {property.category === 'Rent' && (
-            <span className="text-xs text-slate-400 font-normal ml-1">/ month</span>
-          )}
+            ₹{formatCurrency(property.price)}
+            <span className="text-xs text-slate-400 font-normal ml-1">
+              {property.category === 'Rent' ? (property.rentType === 'Daily' ? '/ day' : '/ month') : ''}
+            </span>
         </div>
 
         {/* Comprehensive Property Details Grid */}
