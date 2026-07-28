@@ -50,6 +50,7 @@ export default function App() {
   const [activeVillaIndex, setActiveVillaIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState<'explore' | 'listings' | 'favorites' | 'my_properties'>('explore');
   const [activeFilterCategory, setActiveFilterCategory] = useState<CategoryType>('All');
+  const [selectedRentType, setSelectedRentType] = useState<'All' | 'Monthly' | 'Daily'>('All');
   const [filterCity, setFilterCity] = useState('All');
   const [filterBhk, setFilterBhk] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -148,6 +149,7 @@ export default function App() {
 
   const navigateToCategory = (cat: CategoryType) => {
     setActiveFilterCategory(cat);
+    setSelectedRentType('All'); // Reset rent sub-filter when switching category
     setCurrentTab('listings');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -289,6 +291,13 @@ export default function App() {
     let result = properties.filter((item) => {
       const matchCat =
         activeFilterCategory === 'All' || item.category === activeFilterCategory;
+      
+      // Rent Sub-filter matching logic
+      let matchRentType = true;
+      if (activeFilterCategory === 'Rent' && selectedRentType !== 'All') {
+        matchRentType = item.rentType === selectedRentType;
+      }
+
       const matchCity =
         filterCity === 'All' ||
         item.city.toLowerCase() === filterCity.toLowerCase();
@@ -302,7 +311,7 @@ export default function App() {
         item.city.toLowerCase().includes(q) ||
         item.category.toLowerCase().includes(q);
 
-      return matchCat && matchCity && matchBhk && matchQuery;
+      return matchCat && matchRentType && matchCity && matchBhk && matchQuery;
     });
 
     if (sortBy === 'price_low') {
@@ -310,11 +319,11 @@ export default function App() {
     } else if (sortBy === 'price_high') {
       result.sort((a, b) => b.price - a.price);
     } else {
-      result.sort((a, b) => b.id - a.id);
+      result.sort((a, b) => b.id - id); // Note: b.id - a.id
     }
 
     return result;
-  }, [properties, activeFilterCategory, filterCity, filterBhk, searchQuery, sortBy]);
+  }, [properties, activeFilterCategory, selectedRentType, filterCity, filterBhk, searchQuery, sortBy]);
 
   const savedListings = useMemo(() => {
     return properties.filter((p) => savedProperties.includes(p.id));
@@ -332,6 +341,7 @@ export default function App() {
     setFilterCity('All');
     setFilterBhk('All');
     setActiveFilterCategory('All');
+    setSelectedRentType('All');
     setSearchQuery('');
   };
 
@@ -635,7 +645,10 @@ export default function App() {
                   ).map((cat) => (
                     <button
                       key={cat}
-                      onClick={() => setActiveFilterCategory(cat)}
+                      onClick={() => {
+                        setActiveFilterCategory(cat);
+                        setSelectedRentType('All');
+                      }}
                       className={`px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition cursor-pointer ${
                         activeFilterCategory === cat
                           ? 'bg-indigo-600 text-white shadow-lg'
@@ -646,6 +659,42 @@ export default function App() {
                     </button>
                   ))}
                 </div>
+
+                {/* Rent Sub-Filters / Options (Appears only when Rent category is active) */}
+                {activeFilterCategory === 'Rent' && (
+                  <div className="flex items-center gap-2 my-3 overflow-x-auto pb-1">
+                    <button
+                      onClick={() => setSelectedRentType('All')}
+                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${
+                        selectedRentType === 'All'
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-slate-900 text-slate-400 border border-slate-800'
+                      }`}
+                    >
+                      All Rentals
+                    </button>
+                    <button
+                      onClick={() => setSelectedRentType('Monthly')}
+                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${
+                        selectedRentType === 'Monthly'
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-slate-900 text-slate-400 border border-slate-800'
+                      }`}
+                    >
+                      Monthly Rent
+                    </button>
+                    <button
+                      onClick={() => setSelectedRentType('Daily')}
+                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${
+                        selectedRentType === 'Daily'
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-slate-900 text-slate-400 border border-slate-800'
+                      }`}
+                    >
+                      Daily Rent
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Filter Bar */}
