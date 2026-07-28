@@ -144,55 +144,43 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
-  const compressImage = async (base64Str: string, maxWidth = 600, maxHeight = 600, quality = 0.5): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.src = base64Str;
-      img.onload = () => {
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          }
-        } else {
-          if (height > maxHeight) {
-            width = Math.round((width * maxHeight) / height);
-            height = maxHeight;
-          }
-        }
-
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0, width, height);
-
-        resolve(canvas.toDataURL('image/jpeg', quality));
-      };
-      img.onerror = (error) => reject(error);
-    });
-  };
-
+  // Image Upload via Cloudinary to prevent Firestore 1MB document size limit
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
-    const newImages: string[] = [];
+    const newImageUrls: string[] = [];
+    
     for (const file of Array.from(files)) {
       try {
-        const base64String = await convertFileToBase64(file);
-        const compressedBase64 = await compressImage(base64String);
-        newImages.push(compressedBase64);
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'ztgcemri');
+
+        const response = await fetch(
+          'https://api.cloudinary.com/v1_1/kl6agwow/image/upload',
+          {
+            method: 'POST',
+            body: formData,
+          }
+        );
+
+        const data = await response.json();
+        
+        if (data.secure_url) {
+          newImageUrls.push(data.secure_url);
+        } else {
+          throw new Error('Image upload failed');
+        }
+
       } catch (err) {
-        console.error("Error compressing image:", err);
+        console.error("Error uploading image to Cloudinary:", err);
+        alert('Failed to upload image. Please try again.');
       }
     }
 
     setWizardData((prev) => {
-      const updatedImages = [...(prev.images || []), ...newImages];
+      const updatedImages = [...(prev.images || []), ...newImageUrls];
       if (updatedImages.length > 30) {
         alert('Maximum 30 images allowed.');
         return { ...prev, images: updatedImages.slice(0, 30) };
@@ -231,7 +219,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
         if (data.secure_url) {
           newVideoUrls.push(data.secure_url);
         } else {
-          throw new Error('Upload failed');
+          throw new Error('Video upload failed');
         }
 
       } catch (err) {
@@ -249,15 +237,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
         return { ...prev, videos: updatedVideos.slice(0, 2) };
       }
       return { ...prev, videos: updatedVideos };
-    });
-  };
-
-  const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
     });
   };
 
@@ -404,7 +383,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                 </div>
               </div>
 
-              {/* Rent Type Selection (Monthly or Daily) if Rent intent is selected */}
               {wizardData.category === 'Rent' && (
                 <div className="pt-2">
                   <label className="block text-xs font-bold text-slate-300 mb-2">
@@ -907,7 +885,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                   <Camera className="w-4 h-4 text-indigo-400" /> Photos & Video Upload
                 </h4>
                 <p className="text-xs text-slate-400 mb-4">
-                  Support up to 30 compressed images and 2 videos (up to 50MB via Cloudinary). First image is automatically set as Cover Photo.
+                  Upload up to 30 images via Cloudinary (avoids Firestore size limit). First image is automatically set as Cover Photo.
                 </p>
 
                 {/* Photos Grid */}
@@ -1003,7 +981,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
             </div>
           )}
           
-          {/* STEP 6 - SUMMARY & COMPREHENSIVE DETAILS PREVIEW */}
+          {/* STEP 6 - SUMMARY & PREVIEW */}
           {wizardStep === 6 && (
             <div className="space-y-6">
               <div className="bg-slate-950 p-6 rounded-3xl border border-slate-800 space-y-4">
@@ -1033,7 +1011,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                   {wizardData.locality}, {wizardData.city}
                 </p>
 
-                {/* Detailed Grid Preview */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-800 text-xs">
                   <div>
                     <span className="text-slate-500 block">Sub-Type:</span>
@@ -1087,7 +1064,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                   </div>
                 </div>
 
-                {/* Amenities & Furnishings Preview */}
                 <div className="pt-3 border-t border-slate-800">
                   <span className="text-slate-500 block text-xs mb-1">Amenities:</span>
                   <div className="flex flex-wrap gap-1">
