@@ -13,6 +13,7 @@ import {
   Share2,
   ChevronLeft,
   ChevronRight,
+  Video,
 } from 'lucide-react';
 
 interface PropertyDetailsModalProps {
@@ -96,7 +97,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
             className="w-full h-full object-cover transition-all duration-300"
           />
 
-          {/* Image Navigation Arrows (Visible if multiple images exist) */}
+          {/* Image Navigation Arrows */}
           {images.length > 1 && (
             <>
               <button
@@ -148,7 +149,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           </button>
         </div>
 
-        {/* Thumbnails Row for Easy Sliding */}
+        {/* Thumbnails Row */}
         {images.length > 1 && (
           <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
             {images.map((imgUrl, idx) => (
@@ -164,6 +165,24 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
                 <img src={imgUrl} alt="thumb" className="w-full h-full object-cover" />
               </button>
             ))}
+          </div>
+        )}
+
+        {/* Property Video Walkthrough Section (Newly Added) */}
+        {property.videoUrl && (
+          <div className="mb-6">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <Video className="w-4 h-4 text-indigo-400" /> Property Video Walkthrough
+            </h4>
+            <div className="rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 aspect-video">
+              <iframe
+                src={property.videoUrl}
+                title="Property Video"
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
           </div>
         )}
 
