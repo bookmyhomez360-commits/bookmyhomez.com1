@@ -32,21 +32,31 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
   formatCurrency,
 }) => {
   const [copied, setCopied] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
   if (!property) return null;
 
+  // Combine images and direct video into one media array so they slide together
   const images =
     property.images && property.images.length > 0
       ? property.images
       : ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80'];
 
-  const handlePrevImage = () => {
-    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  // If property has a direct video (property.videoUrl or property.video), add it to media list
+  const directVideo = property.videoUrl || (property as any).video;
+  const mediaList = directVideo ? [...images, directVideo] : images;
+
+  const isVideoItem = (url: string) => {
+    // Check if it's a video file or video link
+    return url === directVideo && (!url.includes('youtube.com') && !url.includes('youtu.be'));
   };
 
-  const handleNextImage = () => {
-    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  const handlePrevMedia = () => {
+    setCurrentMediaIndex((prev) => (prev === 0 ? mediaList.length - 1 : prev - 1));
+  };
+
+  const handleNextMedia = () => {
+    setCurrentMediaIndex((prev) => (prev === mediaList.length - 1 ? 0 : prev + 1));
   };
 
   const isOwner =
@@ -78,6 +88,8 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
     }
   };
 
+  const currentMedia = mediaList[currentMediaIndex];
+
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
       <div className="bg-slate-900 border border-slate-800 w-full max-w-3xl rounded-3xl p-6 relative max-h-[90vh] overflow-y-auto">
@@ -89,38 +101,55 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           <X className="w-5 h-5" />
         </button>
 
-        {/* Cover Image Slider Container */}
-        <div className="relative h-72 rounded-2xl overflow-hidden mb-4 bg-slate-950 group">
-          <img
-            src={images[currentImageIndex]}
-            alt={property.title}
-            className="w-full h-full object-cover transition-all duration-300"
-          />
+        {/* Media Slider Container (Handles both Photos and Direct Videos) */}
+        <div className="relative h-72 rounded-2xl overflow-hidden mb-4 bg-slate-950 group flex items-center justify-center">
+          {isVideoItem(currentMedia) ? (
+            <video
+              src={currentMedia}
+              controls
+              autoPlay
+              className="w-full h-full object-contain bg-black"
+            />
+          ) : currentMedia.includes('youtube.com') || currentMedia.includes('youtu.be') ? (
+            <iframe
+              src={currentMedia}
+              title="Property Video"
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          ) : (
+            <img
+              src={currentMedia}
+              alt={property.title}
+              className="w-full h-full object-cover transition-all duration-300"
+            />
+          )}
 
-          {/* Image Navigation Arrows */}
-          {images.length > 1 && (
+          {/* Media Navigation Arrows */}
+          {mediaList.length > 1 && (
             <>
               <button
-                onClick={handlePrevImage}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-950/70 text-white flex items-center justify-center hover:bg-slate-900 transition cursor-pointer border border-slate-700 shadow-lg"
+                onClick={handlePrevMedia}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-950/70 text-white flex items-center justify-center hover:bg-slate-900 transition cursor-pointer border border-slate-700 shadow-lg z-10"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
-                onClick={handleNextImage}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-950/70 text-white flex items-center justify-center hover:bg-slate-900 transition cursor-pointer border border-slate-700 shadow-lg"
+                onClick={handleNextMedia}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-950/70 text-white flex items-center justify-center hover:bg-slate-900 transition cursor-pointer border border-slate-700 shadow-lg z-10"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
 
-              {/* Image Counter Badge */}
-              <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md text-slate-300 text-[11px] font-bold px-2.5 py-1 rounded-md border border-slate-700">
-                {currentImageIndex + 1} / {images.length}
+              {/* Media Counter Badge */}
+              <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md text-slate-300 text-[11px] font-bold px-2.5 py-1 rounded-md border border-slate-700 z-10">
+                {currentMediaIndex + 1} / {mediaList.length}
               </div>
             </>
           )}
 
-          <div className="absolute top-3 left-3 flex gap-2">
+          <div className="absolute top-3 left-3 flex gap-2 z-10">
             <span className="bg-slate-950/80 backdrop-blur-md text-indigo-300 text-xs font-bold px-3 py-1 rounded-full uppercase border border-indigo-500/30">
               {property.category}
             </span>
@@ -142,47 +171,35 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
 
           <button
             onClick={handleShare}
-            className="absolute bottom-3 right-3 bg-slate-950/80 backdrop-blur-md text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-700 hover:bg-indigo-600 transition cursor-pointer"
+            className="absolute bottom-3 right-3 bg-slate-950/80 backdrop-blur-md text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-700 hover:bg-indigo-600 transition cursor-pointer z-10"
           >
             <Share2 className="w-4 h-4 text-indigo-400" />
             <span>{copied ? 'Link Copied!' : 'Share Property'}</span>
           </button>
         </div>
 
-        {/* Thumbnails Row */}
-        {images.length > 1 && (
+        {/* Thumbnails Row (Includes photos and video thumbnail preview) */}
+        {mediaList.length > 1 && (
           <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-            {images.map((imgUrl, idx) => (
+            {mediaList.map((mediaUrl, idx) => (
               <button
                 key={idx}
-                onClick={() => setCurrentImageIndex(idx)}
-                className={`relative w-16 h-14 rounded-xl overflow-hidden shrink-0 border-2 transition cursor-pointer ${
-                  currentImageIndex === idx
+                onClick={() => setCurrentMediaIndex(idx)}
+                className={`relative w-16 h-14 rounded-xl overflow-hidden shrink-0 border-2 transition cursor-pointer flex items-center justify-center bg-slate-950 ${
+                  currentMediaIndex === idx
                     ? 'border-indigo-500 scale-105 shadow-md shadow-indigo-500/30'
                     : 'border-slate-800 opacity-60 hover:opacity-100'
                 }`}
               >
-                <img src={imgUrl} alt="thumb" className="w-full h-full object-cover" />
+                {isVideoItem(mediaUrl) ? (
+                  <div className="flex flex-col items-center justify-center text-indigo-400">
+                    <Video className="w-6 h-6" />
+                  </div>
+                ) : (
+                  <img src={mediaUrl} alt="thumb" className="w-full h-full object-cover" />
+                )}
               </button>
             ))}
-          </div>
-        )}
-
-        {/* Property Video Walkthrough Section (Newly Added) */}
-        {property.videoUrl && (
-          <div className="mb-6">
-            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <Video className="w-4 h-4 text-indigo-400" /> Property Video Walkthrough
-            </h4>
-            <div className="rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 aspect-video">
-              <iframe
-                src={property.videoUrl}
-                title="Property Video"
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
           </div>
         )}
 
