@@ -144,7 +144,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
-  const compressImage = async (base64Str: string, maxWidth = 800, maxHeight = 800, quality = 0.7): Promise<string> => {
+  const compressImage = async (base64Str: string, maxWidth = 600, maxHeight = 600, quality = 0.5): Promise<string> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.src = base64Str;
@@ -1139,5 +1139,4 @@ export const WizardModal: React.FC<WizardModalProps> = ({
   );
 };
 
-// Default export జోడించబడింది, దీనివల్ల బిల్డ్ ఎర్రర్ రాదు
 export default WizardModal;
