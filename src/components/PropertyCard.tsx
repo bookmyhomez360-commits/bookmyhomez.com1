@@ -139,6 +139,25 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               {property.locality}, {property.city}
             </span>
           </p>
+
+          {/* Quick Property Specs Highlights in Card */}
+          <div className="flex flex-wrap gap-1.5 my-2.5 text-[11px] text-slate-300">
+            <span className="bg-slate-950 px-2 py-1 rounded-md border border-slate-800 font-bold">
+              {property.bhk || property.subType || 'Apartment'}
+            </span>
+            <span className="bg-slate-950 px-2 py-1 rounded-md border border-slate-800">
+              {property.area} sq.ft
+            </span>
+            {property.facing && (
+              <span className="bg-slate-950 px-2 py-1 rounded-md border border-slate-800 text-indigo-400 font-bold">
+                {property.facing} Facing
+              </span>
+            )}
+            <span className="bg-slate-950 px-2 py-1 rounded-md border border-slate-800">
+              {property.furnishing || 'Semi Furnished'}
+            </span>
+          </div>
+
           <p className="text-[11px] text-slate-500 mb-4 flex items-center justify-between">
             <span>
               Listed by:{' '}
