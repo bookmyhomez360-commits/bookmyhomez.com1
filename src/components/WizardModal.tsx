@@ -32,7 +32,7 @@ interface WizardModalProps {
 const STEP_TITLES = [
   'Basic Intent & Title',
   'Property Location & GPS',
-  'Property Configuration Details',
+  'Property Configuration & Details',
   'Furnishings, Amenities & Pricing',
   'Media Photos & Video Upload',
   'Summary & Final Preview',
@@ -81,11 +81,12 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     bhk: '3 BHK',
     area: 1500,
     propertyAge: '1-5 Years',
-    bathrooms: '0',
-    balconies: '0',
-    bedrooms: '0',
+    bathrooms: '2',
+    balconies: '1',
+    bedrooms: '3',
+    facing: 'East',
     furnishing: 'Fully Furnished',
-    furnishings: { Sofa: 0, Fridge: 0, AC: 0, TV: 0, Wardrobe: 0 },
+    furnishings: { Sofa: 1, Fridge: 1, AC: 2, TV: 1, Wardrobe: 2 },
     amenities: ['Lift', 'Power Backup', 'CCTV Security'],
     price: 12500000,
     deposit: 100000,
@@ -142,7 +143,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
-  const compressImage = async (base64Str: string, maxWidth = 500, maxHeight = 500, quality = 0.5): Promise<string> => {
+  const compressImage = async (base64Str: string, maxWidth = 800, maxHeight = 800, quality = 0.7): Promise<string> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.src = base64Str;
@@ -157,7 +158,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
           }
         } else {
           if (height > maxHeight) {
-            width = Math.round((height * maxHeight) / height);
+            width = Math.round((width * maxHeight) / height);
             height = maxHeight;
           }
         }
@@ -190,7 +191,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     }
 
     setWizardData((prev) => {
-      const updatedImages = [...prev.images, ...newImages];
+      const updatedImages = [...(prev.images || []), ...newImages];
       if (updatedImages.length > 30) {
         alert('Maximum 30 images allowed.');
         return { ...prev, images: updatedImages.slice(0, 30) };
@@ -199,7 +200,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
-  // క్లౌడినరీ ద్వారా వీడియో అప్‌లోడ్ లాజిక్ (50MB వరకు అనుమతిస్తుంది)
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
@@ -215,10 +215,10 @@ export const WizardModal: React.FC<WizardModalProps> = ({
       try {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('upload_preset', 'ztgcemri'); // మీ క్లౌడినరీ అన్‌సైన్డ్ ప్రిసెట్ పేరు
+        formData.append('upload_preset', 'ztgcemri');
 
         const response = await fetch(
-          'https://api.cloudinary.com/v1_1/kl6agwow/video/upload', // మీ క్లౌడ్ నేమ్ (kl6agwow)
+          'https://api.cloudinary.com/v1_1/kl6agwow/video/upload',
           {
             method: 'POST',
             body: formData,
@@ -280,7 +280,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
         : addDoc(collection(db, 'properties'), propertyPayload);
 
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Firebase connection timeout. Please check your internet or Firebase rules.')), 10000)
+        setTimeout(() => reject(new Error('Firebase connection timeout.')), 10000)
       );
 
       await Promise.race([savePromise, timeoutPromise]);
@@ -536,7 +536,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
             </div>
           )}
 
-          {/* STEP 3 */}
+          {/* STEP 3 - CONFIGURATION, BEDROOMS, FACING, PROPERTY AGE */}
           {wizardStep === 3 && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -601,20 +601,24 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
                 <div>
                   <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">
-                    Age of Property (yrs)
+                    Bedrooms
                   </label>
-                  <input
-                    type="text"
-                    value={wizardData.propertyAge}
+                  <select
+                    value={wizardData.bedrooms}
                     onChange={(e) =>
-                      setWizardData({ ...wizardData, propertyAge: e.target.value })
+                      setWizardData({ ...wizardData, bedrooms: e.target.value })
                     }
-                    placeholder="e.g. 1-5 Years"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white"
-                  />
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white font-bold"
+                  >
+                    <option value="1">1 Bedroom</option>
+                    <option value="2">2 Bedrooms</option>
+                    <option value="3">3 Bedrooms</option>
+                    <option value="4">4 Bedrooms</option>
+                    <option value="5+">5+ Bedrooms</option>
+                  </select>
                 </div>
 
                 <div>
@@ -626,7 +630,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                     onChange={(e) =>
                       setWizardData({ ...wizardData, bathrooms: e.target.value })
                     }
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white font-bold"
                   >
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -644,7 +648,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                     onChange={(e) =>
                       setWizardData({ ...wizardData, balconies: e.target.value })
                     }
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white font-bold"
                   >
                     <option value="0">0</option>
                     <option value="1">1</option>
@@ -655,20 +659,61 @@ export const WizardModal: React.FC<WizardModalProps> = ({
 
                 <div>
                   <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">
-                    Furnishing Status
+                    Facing Direction
                   </label>
                   <select
-                    value={wizardData.furnishing}
+                    value={wizardData.facing || 'East'}
                     onChange={(e) =>
-                      setWizardData({ ...wizardData, furnishing: e.target.value })
+                      setWizardData({ ...wizardData, facing: e.target.value })
                     }
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white font-bold text-indigo-400"
                   >
-                    <option value="Fully Furnished">Fully Furnished</option>
-                    <option value="Semi Furnished">Semi Furnished</option>
-                    <option value="Unfurnished">Unfurnished</option>
+                    <option value="North">North</option>
+                    <option value="East">East</option>
+                    <option value="West">West</option>
+                    <option value="South">South</option>
+                    <option value="North-East">North-East</option>
+                    <option value="North-West">North-West</option>
+                    <option value="South-East">South-East</option>
+                    <option value="South-West">South-West</option>
                   </select>
                 </div>
+
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">
+                    Property Age
+                  </label>
+                  <select
+                    value={wizardData.propertyAge}
+                    onChange={(e) =>
+                      setWizardData({ ...wizardData, propertyAge: e.target.value })
+                    }
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white font-bold"
+                  >
+                    <option value="Under Construction">Under Construction</option>
+                    <option value="0-1 Years">0-1 Years (New)</option>
+                    <option value="1-5 Years">1-5 Years</option>
+                    <option value="5-10 Years">5-10 Years</option>
+                    <option value="10+ Years">10+ Years</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">
+                  Furnishing Status
+                </label>
+                <select
+                  value={wizardData.furnishing}
+                  onChange={(e) =>
+                    setWizardData({ ...wizardData, furnishing: e.target.value })
+                  }
+                  className="w-full sm:w-1/3 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white font-bold text-indigo-400"
+                >
+                  <option value="Fully Furnished">Fully Furnished</option>
+                  <option value="Semi Furnished">Semi Furnished</option>
+                  <option value="Unfurnished">Unfurnished</option>
+                </select>
               </div>
             </div>
           )}
@@ -833,7 +878,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
 
                 {/* Photos Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-                  {wizardData.images.map((img, idx) => (
+                  {wizardData.images?.map((img, idx) => (
                     <div
                       key={idx}
                       className="relative h-28 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 group"
@@ -870,7 +915,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                     <PlusCircle className="w-5 h-5 mb-1" />
                     <span className="text-[11px] font-bold">Upload Photos</span>
                     <span className="text-[9px] text-slate-500">
-                      ({wizardData.images.length}/30)
+                      ({wizardData.images?.length || 0}/30)
                     </span>
                   </label>
                 </div>
@@ -924,7 +969,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
             </div>
           )}
           
-          {/* STEP 6 */}
+          {/* STEP 6 - SUMMARY & COMPREHENSIVE DETAILS PREVIEW */}
           {wizardStep === 6 && (
             <div className="space-y-6">
               <div className="bg-slate-950 p-6 rounded-3xl border border-slate-800 space-y-4">
@@ -954,24 +999,69 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                   {wizardData.locality}, {wizardData.city}
                 </p>
 
+                {/* Detailed Grid Preview (All inputted specs displayed) */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-800 text-xs">
                   <div>
-                    <span className="text-slate-500 block">Type:</span>
+                    <span className="text-slate-500 block">Sub-Type:</span>
                     <span className="font-bold text-white">{wizardData.subType}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block">Config:</span>
+                    <span className="text-slate-500 block">BHK Config:</span>
                     <span className="font-bold text-white">{wizardData.bhk}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block">Area:</span>
+                    <span className="text-slate-500 block">Bedrooms:</span>
+                    <span className="font-bold text-white">{wizardData.bedrooms}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block">Bathrooms:</span>
+                    <span className="font-bold text-white">{wizardData.bathrooms}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block">Balconies:</span>
+                    <span className="font-bold text-white">{wizardData.balconies}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block">Built-up Area:</span>
                     <span className="font-bold text-white">{wizardData.area} sq.ft</span>
                   </div>
                   <div>
+                    <span className="text-slate-500 block">Facing:</span>
+                    <span className="font-bold text-indigo-400">{wizardData.facing}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block">Property Age:</span>
+                    <span className="font-bold text-white">{wizardData.propertyAge}</span>
+                  </div>
+                  <div>
                     <span className="text-slate-500 block">Furnishing:</span>
-                    <span className="font-bold text-white">
-                      {wizardData.furnishing}
+                    <span className="font-bold text-white">{wizardData.furnishing}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block">Deposit:</span>
+                    <span className="font-bold text-white">₹{formatCurrency(wizardData.deposit)}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block">Available From:</span>
+                    <span className="font-bold text-white">{wizardData.availDate}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block">Media Uploaded:</span>
+                    <span className="font-bold text-indigo-400">
+                      {wizardData.images?.length || 0} Photos, {wizardData.videos?.length || 0} Videos
                     </span>
+                  </div>
+                </div>
+
+                {/* Amenities & Furnishings Preview */}
+                <div className="pt-3 border-t border-slate-800">
+                  <span className="text-slate-500 block text-xs mb-1">Amenities:</span>
+                  <div className="flex flex-wrap gap-1">
+                    {wizardData.amenities.map((amenity, i) => (
+                      <span key={i} className="bg-slate-900 text-indigo-300 text-[10px] font-bold px-2 py-0.5 rounded-md border border-slate-800">
+                        {amenity}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
