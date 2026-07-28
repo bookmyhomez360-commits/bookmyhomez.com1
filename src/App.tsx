@@ -149,7 +149,7 @@ export default function App() {
 
   const navigateToCategory = (cat: CategoryType) => {
     setActiveFilterCategory(cat);
-    setSelectedRentType('All'); // Reset rent sub-filter when switching category
+    setSelectedRentType('All');
     setCurrentTab('listings');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -292,7 +292,6 @@ export default function App() {
       const matchCat =
         activeFilterCategory === 'All' || item.category === activeFilterCategory;
       
-      // Rent Sub-filter matching logic
       let matchRentType = true;
       if (activeFilterCategory === 'Rent' && selectedRentType !== 'All') {
         matchRentType = item.rentType === selectedRentType;
@@ -319,7 +318,7 @@ export default function App() {
     } else if (sortBy === 'price_high') {
       result.sort((a, b) => b.price - a.price);
     } else {
-      result.sort((a, b) => b.id - id); // Note: b.id - a.id
+      result.sort((a, b) => b.id - a.id); // ఇక్కడ సరిదిద్దబడింది
     }
 
     return result;
@@ -388,7 +387,6 @@ export default function App() {
                 </div>
 
                 <div className="relative z-10 max-w-4xl mx-auto text-center">
-                  {/* Dynamic House Text Container - Keyed to activeVillaIndex for staggered entry */}
                   {(() => {
                     const currentVilla = REAL_VILLA_LIST[activeVillaIndex] || REAL_VILLA_LIST[0];
                     return (
@@ -660,7 +658,7 @@ export default function App() {
                   ))}
                 </div>
 
-                {/* Rent Sub-Filters / Options (Appears only when Rent category is active) */}
+                {/* Rent Sub-Filters / Options */}
                 {activeFilterCategory === 'Rent' && (
                   <div className="flex items-center gap-2 my-3 overflow-x-auto pb-1">
                     <button
