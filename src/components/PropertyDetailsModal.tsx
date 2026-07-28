@@ -127,8 +127,8 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           )}
         </div>
 
-        {/* Specs Highlights Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-slate-950/60 rounded-2xl border border-slate-800 mb-6 text-xs">
+        {/* Comprehensive Property Details Grid (All inputted fields included) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs mb-6">
           <div>
             <span className="text-slate-500 block">Sub-Type:</span>
             <span className="font-bold text-white flex items-center gap-1 mt-0.5">
@@ -144,9 +144,39 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
             </span>
           </div>
           <div>
+            <span className="text-slate-500 block">Bedrooms:</span>
+            <span className="font-bold text-white mt-0.5 block">
+              {property.bedrooms || 'N/A'}
+            </span>
+          </div>
+          <div>
+            <span className="text-slate-500 block">Bathrooms:</span>
+            <span className="font-bold text-white mt-0.5 block">
+              {property.bathrooms || 'N/A'}
+            </span>
+          </div>
+          <div>
+            <span className="text-slate-500 block">Balconies:</span>
+            <span className="font-bold text-white mt-0.5 block">
+              {property.balconies || 'N/A'}
+            </span>
+          </div>
+          <div>
             <span className="text-slate-500 block">Built-up Area:</span>
             <span className="font-bold text-white mt-0.5 block">
               {property.area} sq.ft
+            </span>
+          </div>
+          <div>
+            <span className="text-slate-500 block">Facing:</span>
+            <span className="font-bold text-indigo-400 mt-0.5 block">
+              {property.facing || 'N/A'}
+            </span>
+          </div>
+          <div>
+            <span className="text-slate-500 block">Property Age:</span>
+            <span className="font-bold text-white mt-0.5 block">
+              {property.propertyAge || 'N/A'}
             </span>
           </div>
           <div>
@@ -155,17 +185,37 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
               {property.furnishing || 'Semi Furnished'}
             </span>
           </div>
+          <div>
+            <span className="text-slate-500 block">Deposit:</span>
+            <span className="font-bold text-white mt-0.5 block">
+              ₹{property.deposit ? formatCurrency(property.deposit) : '0'}
+            </span>
+          </div>
+          <div>
+            <span className="text-slate-500 block">Available From:</span>
+            <span className="font-bold text-white mt-0.5 block">
+              {property.availDate || 'Immediate'}
+            </span>
+          </div>
+          <div>
+            <span className="text-slate-500 block">Status:</span>
+            <span className="font-bold text-emerald-400 mt-0.5 block">
+              {property.status || 'Available'}
+            </span>
+          </div>
         </div>
 
         {/* Description */}
-        <div className="mb-6">
-          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-            Description & Highlights
-          </h4>
-          <p className="text-xs text-slate-300 leading-relaxed bg-slate-950/40 p-4 rounded-xl border border-slate-800">
-            {property.description}
-          </p>
-        </div>
+        {property.description && (
+          <div className="mb-6">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+              Description & Highlights
+            </h4>
+            <p className="text-xs text-slate-300 leading-relaxed bg-slate-950/40 p-4 rounded-xl border border-slate-800">
+              {property.description}
+            </p>
+          </div>
+        )}
 
         {/* Amenities */}
         {property.amenities && property.amenities.length > 0 && (
