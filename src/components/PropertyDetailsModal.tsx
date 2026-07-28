@@ -11,6 +11,8 @@ import {
   Home,
   Check,
   Share2,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 interface PropertyDetailsModalProps {
@@ -29,7 +31,22 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
   formatCurrency,
 }) => {
   const [copied, setCopied] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   if (!property) return null;
+
+  const images =
+    property.images && property.images.length > 0
+      ? property.images
+      : ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80'];
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
 
   const isOwner =
     currentUser &&
@@ -66,22 +83,42 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-9 h-9 rounded-xl bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer"
+          className="absolute top-4 right-4 w-9 h-9 rounded-xl bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer z-20"
         >
           <X className="w-5 h-5" />
         </button>
 
-        {/* Cover Image */}
-        <div className="relative h-72 rounded-2xl overflow-hidden mb-6 bg-slate-950">
+        {/* Cover Image Slider Container */}
+        <div className="relative h-72 rounded-2xl overflow-hidden mb-4 bg-slate-950 group">
           <img
-            src={
-              property.images && property.images[0]
-                ? property.images[0]
-                : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80'
-            }
+            src={images[currentImageIndex]}
             alt={property.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-all duration-300"
           />
+
+          {/* Image Navigation Arrows (Visible if multiple images exist) */}
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={handlePrevImage}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-950/70 text-white flex items-center justify-center hover:bg-slate-900 transition cursor-pointer border border-slate-700 shadow-lg"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleNextImage}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-950/70 text-white flex items-center justify-center hover:bg-slate-900 transition cursor-pointer border border-slate-700 shadow-lg"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+
+              {/* Image Counter Badge */}
+              <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md text-slate-300 text-[11px] font-bold px-2.5 py-1 rounded-md border border-slate-700">
+                {currentImageIndex + 1} / {images.length}
+              </div>
+            </>
+          )}
+
           <div className="absolute top-3 left-3 flex gap-2">
             <span className="bg-slate-950/80 backdrop-blur-md text-indigo-300 text-xs font-bold px-3 py-1 rounded-full uppercase border border-indigo-500/30">
               {property.category}
@@ -111,6 +148,25 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           </button>
         </div>
 
+        {/* Thumbnails Row for Easy Sliding */}
+        {images.length > 1 && (
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+            {images.map((imgUrl, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentImageIndex(idx)}
+                className={`relative w-16 h-14 rounded-xl overflow-hidden shrink-0 border-2 transition cursor-pointer ${
+                  currentImageIndex === idx
+                    ? 'border-indigo-500 scale-105 shadow-md shadow-indigo-500/30'
+                    : 'border-slate-800 opacity-60 hover:opacity-100'
+                }`}
+              >
+                <img src={imgUrl} alt="thumb" className="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Title & Location */}
         <h2 className="text-2xl font-black text-white mb-1">{property.title}</h2>
         <p className="text-xs text-slate-400 mb-3 flex items-center gap-1">
@@ -127,7 +183,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           )}
         </div>
 
-        {/* Comprehensive Property Details Grid (All inputted fields included) */}
+        {/* Comprehensive Property Details Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs mb-6">
           <div>
             <span className="text-slate-500 block">Sub-Type:</span>
