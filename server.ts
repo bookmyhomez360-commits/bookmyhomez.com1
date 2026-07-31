@@ -7,11 +7,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Initialize Firebase Admin (Me project lo unna firebase config batti initialize avtundi)
+// Initialize Firebase Admin safely
 if (!admin.apps.length) {
   try {
     admin.initializeApp({
-      // credential: admin.credential.cert(...) // service account unte ikkada ivvandi, leda default ga work avtundi
+      // Credentials or default configuration
     });
   } catch (error) {
     console.error('Firebase initialization error:', error);
@@ -20,9 +20,15 @@ if (!admin.apps.length) {
 
 const db = admin.apps.length ? admin.firestore() : null;
 
-// ==========================================
-// Voiceflow Property Search API Endpoint
-// ==========================================
+// 1. GET Route: Browser lo direct ga URL open chesinappudu error (502 Bad Gateway) raakunda undadaniki
+app.get('/api/search-properties', (req, res) => {
+    return res.json({ 
+        status: "success", 
+        message: "API is working! Please send a POST request from Voiceflow." 
+    });
+});
+
+// 2. POST Route: Voiceflow nundi data receive chesukuni properties pampincheku
 app.post('/api/search-properties', async (req, res) => {
     try {
         const { intent, location, budget } = req.body;
@@ -30,12 +36,11 @@ app.post('/api/search-properties', async (req, res) => {
 
         let matchedProperties = [];
 
-        // 1. Firebase Database nundi data fetch cheyadam
+        // Firebase database nundi data fetch cheyadam
         if (db) {
             let query = db.collection('properties');
             
             if (location) {
-                // Location match ayye properties filter cheyachu
                 query = query.where('location', '==', location);
             }
             
@@ -45,7 +50,7 @@ app.post('/api/search-properties', async (req, res) => {
             });
         }
 
-        // 2. Database lo properties lekunte fallback data (Testing kosam)
+        // Database lo properties lekunte fallback data (Testing kosam)
         if (matchedProperties.length === 0) {
             matchedProperties = [
                 { 
@@ -65,7 +70,7 @@ app.post('/api/search-properties', async (req, res) => {
             ];
         }
 
-        // 3. Voiceflow ki JSON response pampadam
+        // Voiceflow ki JSON response pampadam
         return res.json({
             success: true,
             message: "Here are the matching properties found in our database:",
@@ -81,7 +86,7 @@ app.post('/api/search-properties', async (req, res) => {
     }
 });
 
-// Server Port Setup
+// Server Port Setup (Railway environment port automatic ga adapt avtundi)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
