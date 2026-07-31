@@ -11,7 +11,7 @@ app.use(express.json());
 if (!admin.apps.length) {
   try {
     admin.initializeApp({
-      // Credentials or default configuration
+      // credential: admin.credential.cert(...)
     });
   } catch (error) {
     console.error('Firebase initialization error:', error);
@@ -20,7 +20,7 @@ if (!admin.apps.length) {
 
 const db = admin.apps.length ? admin.firestore() : null;
 
-// 1. GET Route: Browser lo direct ga URL open chesinappudu error (502 Bad Gateway) raakunda undadaniki
+// 1. GET Route: Browser lo direct ga URL open chesinappudu error raakunda undadaniki
 app.get('/api/search-properties', (req, res) => {
     return res.json({ 
         status: "success", 
@@ -29,23 +29,23 @@ app.get('/api/search-properties', (req, res) => {
 });
 
 // 2. POST Route: Voiceflow nundi data receive chesukuni properties pampincheku
-app.post('/api/search-properties', async (req, res) => {
+app.post('/api/search-properties', async (req: express.Request, res: express.Response) => {
     try {
         const { intent, location, budget } = req.body;
         console.log('Voiceflow Search Request Received:', { intent, location, budget });
 
-        let matchedProperties = [];
+        let matchedProperties: any[] = [];
 
         // Firebase database nundi data fetch cheyadam
         if (db) {
-            let query = db.collection('properties');
+            let query: any = db.collection('properties');
             
             if (location) {
                 query = query.where('location', '==', location);
             }
             
             const snapshot = await query.get();
-            snapshot.forEach(doc => {
+            snapshot.forEach((doc: any) => {
                 matchedProperties.push({ id: doc.id, ...doc.data() });
             });
         }
@@ -86,7 +86,7 @@ app.post('/api/search-properties', async (req, res) => {
     }
 });
 
-// Server Port Setup (Railway environment port automatic ga adapt avtundi)
+// Server Port Setup
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
