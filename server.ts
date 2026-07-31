@@ -88,6 +88,6 @@ app.post('/api/search-properties', async (req: express.Request, res: express.Res
 
 // Server Port Setup
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
 });
