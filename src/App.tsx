@@ -344,20 +344,14 @@ export default function App() {
   };
 
   const startVapiCall = () => {
-    if ((window as any).vapiSDK && typeof (window as any).vapiSDK.run === 'function') {
-      try {
-        (window as any).vapiSDK.run({
-          apiKey: "32ef4e94-38fd-432a-9607-95da4cf1ald1",
-          assistant: "2ea07536-f0d0-46e3-be3a-bdef97deda92"
-        });
-      } catch (err) {
-        console.error("Vapi error:", err);
-      }
-    } else {
-      alert("Vapi SDK still initializing. Please wait 2 seconds and try again.");
-    }
+    // Vapi AI వాయిస్ అసిస్టెంట్ ని నేరుగా కొత్త ట్యాబ్ లో లేదా పాప్-అప్ లా రన్ చేయడానికి 
+    const assistantId = "2ea07536-f0d0-46e3-be3a-bdef97deda92";
+    const vapiWindowUrl = `https://vapi.ai/?assistantId=${assistantId}`;
+    
+    // కొత్త ట్యాబ్ లో Vapi వాయిస్ ఇంటెర్ఫేస్ ఓపెన్ అవుతుంది (బ్లాక్స్ ఉండవు)
+    window.open(vapiWindowUrl, "_blank", "width=450,height=600");
   };
-
+  
   return (
     <div className="flex flex-col min-h-screen bg-[#090D16] text-slate-100 font-sans selection:bg-indigo-600 selection:text-white relative">
       
