@@ -344,14 +344,13 @@ export default function App() {
   };
 
   const startVapiCall = () => {
-    // ఇది మీ మిగతా కోడ్‌ని పాడుచేయకుండా నేరుగా Vapi వెబ్ కాల్ లింక్‌ని ఓపెన్ చేస్తుంది
     const assistantId = "2ea07536-f0d0-46e3-be3a-bdef97deda92";
-    const apiKey = "32ef4e94-38fd-432a-9607-95da4cf1ald1";
     
-    const callUrl = `https://vapi.ai/?assistantId=${assistantId}&apiKey=${apiKey}`;
+    // హోమ్‌పేజీ రాకుండా నేరుగా కాల్ స్క్రీన్ ఓపెన్ అయ్యే డైరెక్ట్ లింక్
+    const callUrl = `https://vapi.ai/embed/${assistantId}/call`; 
     
-    const width = 450;
-    const height = 650;
+    const width = 400;
+    const height = 600;
     const left = (window.innerWidth - width) / 2;
     const top = (window.innerHeight - height) / 2;
 
