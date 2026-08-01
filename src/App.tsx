@@ -344,13 +344,17 @@ export default function App() {
   };
 
   const startVapiCall = () => {
-    if ((window as any).vapiSDK) {
-      (window as any).vapiSDK.run({
-        apiKey: "32ef4e94-38fd-432a-9607-95da4cf1ald1",
-        assistant: "2ea07536-f0d0-46e3-be3a-bdef97deda92"
-      });
+    if ((window as any).vapiSDK && typeof (window as any).vapiSDK.run === 'function') {
+      try {
+        (window as any).vapiSDK.run({
+          apiKey: "32ef4e94-38fd-432a-9607-95da4cf1ald1",
+          assistant: "2ea07536-f0d0-46e3-be3a-bdef97deda92"
+        });
+      } catch (err) {
+        console.error("Vapi error:", err);
+      }
     } else {
-      alert("Vapi SDK is still loading, please try again in a moment.");
+      alert("Vapi SDK still initializing. Please wait 2 seconds and try again.");
     }
   };
 
