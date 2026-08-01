@@ -342,20 +342,28 @@ export default function App() {
     setSelectedRentType('All');
     setSearchQuery('');
   };
+
   const startVapiCall = () => {
-    const width = 450;
-    const height = 650;
-    const left = (window.innerWidth - width) / 2;
-    const top = (window.innerHeight - height) / 2;
-    
-    const assistantId = "2ea07536-f0d0-46e3-be3a-bdef97deda92";
-    const url = `https://vapi.ai/?assistantId=${assistantId}`;
-    
-    window.open(
-      url,
-      "VapiAI_Voice_Call",
-      `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
-    );
+    if ((window as any).vapiSDK) {
+      try {
+        (window as any).vapiSDK.run({
+          apiKey: "32ef4e94-38fd-432a-9607-95da4cf1ald1",
+          assistant: "2ea07536-f0d0-46e3-be3a-bdef97deda92",
+          config: {
+            position: "bottom-right",
+            offset: "20px",
+            width: "50px",
+            height: "50px",
+            idle: { color: "rgb(29, 78, 216)" },
+            active: { color: "rgb(255, 0, 0)" }
+          }
+        });
+      } catch (e) {
+        console.error("Vapi initialization error:", e);
+      }
+    } else {
+      alert("Vapi SDK is still loading, please try again in a moment.");
+    }
   };
   
   return (
