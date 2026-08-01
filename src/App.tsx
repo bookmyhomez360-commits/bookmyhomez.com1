@@ -342,9 +342,8 @@ export default function App() {
     setSelectedRentType('All');
     setSearchQuery('');
   };
-
- const startVapiCall = () => {
-    // Vapi అధికారిక వెబ్ SDK ని డైనమిక్ గా లోడ్ చేసి నేరుగా కాల్ స్టార్ట్ చేయడం
+  
+  const startVapiCall = () => {
     const existingScript = document.getElementById('vapi-script');
     if (existingScript) {
       existingScript.remove();
@@ -357,25 +356,21 @@ export default function App() {
     script.onload = () => {
       if ((window as any).vapiSDK) {
         try {
-          (window as any).vapiSDK.run({
+          const vapiInstance = (window as any).vapiSDK.run({
             apiKey: "32ef4e94-38fd-432a-9607-95da4cf1ald1",
-            assistant: "2ea07536-f0d0-46e3-be3a-bdef97deda92",
-            config: {
-              position: "bottom-right",
-              offset: "20px",
-              width: "50px",
-              height: "50px",
-              idle: { color: "rgb(29, 78, 216)" },
-              active: { color: "rgb(255, 0, 0)" }
-            }
+            assistant: "2ea07536-f0d0-46e3-be3a-bdef97deda92"
           });
+          
+          // ఒకవేళ రన్ ఇన్‌స్టెన్స్ ఉంటే వెంటనే కాల్ స్టార్ట్ అవ్వడానికి
+          if (vapiInstance && typeof vapiInstance.start === 'function') {
+            vapiInstance.start("2ea07536-f0d0-46e3-be3a-bdef97deda92");
+          }
         } catch (e) {
           console.error("Vapi run error:", e);
         }
       }
     };
     document.body.appendChild(script);
-    alert("Vapi AI Assistant is ready! Click the floating mic button that appears on the screen to talk.");
   };
   
   return (
