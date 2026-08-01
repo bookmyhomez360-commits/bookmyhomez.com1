@@ -1,3 +1,4 @@
+import Vapi from '@vapi-ai/web';
 import { useState, useEffect, useMemo } from 'react';
 import { ThreeBackground, REAL_VILLA_LIST } from './components/ThreeBackground';
 import { SplashScreen } from './components/SplashScreen';
@@ -46,6 +47,7 @@ import {
 } from 'lucide-react';
 
 export default function App() {
+  const vapi = new Vapi('32ef4e94-38fd-432a-9607-95da4cf1ald1');
   const [showSplashScreen, setShowSplashScreen] = useState(true);
   const [activeVillaIndex, setActiveVillaIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState<'explore' | 'listings' | 'favorites' | 'my_properties'>('explore');
@@ -956,6 +958,25 @@ export default function App() {
           navigateToCategory={navigateToCategory}
           filterByLocation={filterByLocation}
         />
+<button 
+  onClick={() => vapi.start('2ea07536-f0d0-46e3-be3a-bdef97deda92')}
+  style={{
+    position: 'fixed',
+    bottom: '20px',
+    left: '20px',
+    zIndex: 9999,
+    backgroundColor: '#1d4ed8',
+    color: '#ffffff',
+    padding: '12px 24px',
+    borderRadius: '50px',
+    border: 'none',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+  }}
+>
+  🎙️ Talk to AI
+</button>
 
       </div>
     </div>
