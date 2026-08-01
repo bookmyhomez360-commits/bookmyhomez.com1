@@ -342,35 +342,20 @@ export default function App() {
     setSelectedRentType('All');
     setSearchQuery('');
   };
-  
   const startVapiCall = () => {
-    const existingScript = document.getElementById('vapi-script');
-    if (existingScript) {
-      existingScript.remove();
-    }
-
-    const script = document.createElement('script');
-    script.id = 'vapi-script';
-    script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
-    script.async = true;
-    script.onload = () => {
-      if ((window as any).vapiSDK) {
-        try {
-          const vapiInstance = (window as any).vapiSDK.run({
-            apiKey: "32ef4e94-38fd-432a-9607-95da4cf1ald1",
-            assistant: "2ea07536-f0d0-46e3-be3a-bdef97deda92"
-          });
-          
-          // ఒకవేళ రన్ ఇన్‌స్టెన్స్ ఉంటే వెంటనే కాల్ స్టార్ట్ అవ్వడానికి
-          if (vapiInstance && typeof vapiInstance.start === 'function') {
-            vapiInstance.start("2ea07536-f0d0-46e3-be3a-bdef97deda92");
-          }
-        } catch (e) {
-          console.error("Vapi run error:", e);
-        }
-      }
-    };
-    document.body.appendChild(script);
+    const width = 450;
+    const height = 650;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+    
+    const assistantId = "2ea07536-f0d0-46e3-be3a-bdef97deda92";
+    const url = `https://vapi.ai/?assistantId=${assistantId}`;
+    
+    window.open(
+      url,
+      "VapiAI_Voice_Call",
+      `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
+    );
   };
   
   return (
