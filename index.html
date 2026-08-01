@@ -9,38 +9,28 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
-    <!-- Vapi AI Web Widget / Button Script -->
+    <!-- Vapi Web SDK Script -->
+    <script src="https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js" defer async></script>
+    
     <script>
-      var vapiInstance = null;
-      const assistantId = "2ea07536-f0d0-46e3-be3a-bdef97deda92"; // Your Real Estate Intake Agent ID
-      
-      // Vapi SDK load చేసి widget/button ని ఏర్పాటు చేయడం కోసం 
-      (function () {
-        var script = document.createElement('script');
-        script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
-        script.defer = true;
-        script.async = true;
-        script.onload = function () {
-          window.vapiSDK.run({
-            apiKey: "32ef4e94-38fd-432a-9607-95da4cf1a1de", // ఒకవేళ పబ్లిక్ కీ అవసరమైతే ఇక్కడ ఇవ్వవచ్చు లేదా డైరెక్ట్ అసిస్టెంట్ తో లోడ్ అవుతుంది
-            assistant: assistantId,
-            config: {
-              // మీరు ఇక్కడ విడ్జెట్ డిజైన్ లేదా బటన్ స్టైల్స్ మార్చుకోవచ్చు
-              position: "top-right",
-              offset: "20px",
-              width: "50px",
-              height: "50px",
-              idle: {
-                color: "rgb(93, 124, 202)",
-              },
-              active: {
-                color: "rgb(255, 0, 0)",
-              },
-            }
-          });
-        };
-        document.head.appendChild(script);
-      })();
+      window.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+          if (window.vapiSDK) {
+            window.vapiSDK.run({
+              apiKey: "32ef4e94-38fd-432a-9607-95da4cf1ald1",
+              assistant: "2ea07536-f0d0-46e3-be3a-bdef97deda92",
+              config: {
+                position: "bottom-left",
+                offset: "20px",
+                width: "50px",
+                height: "50px",
+                idle: { color: "rgb(29, 78, 216)" },
+                active: { color: "rgb(255, 0, 0)" }
+              }
+            });
+          }
+        }, 1000);
+      });
     </script>
   </body>
 </html>
