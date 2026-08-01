@@ -344,26 +344,9 @@ export default function App() {
   };
 
   const startVapiCall = () => {
-    if ((window as any).vapiSDK) {
-      try {
-        (window as any).vapiSDK.run({
-          apiKey: "32ef4e94-38fd-432a-9607-95da4cf1ald1",
-          assistant: "2ea07536-f0d0-46e3-be3a-bdef97deda92",
-          config: {
-            position: "bottom-right",
-            offset: "20px",
-            width: "50px",
-            height: "50px",
-            idle: { color: "rgb(29, 78, 216)" },
-            active: { color: "rgb(255, 0, 0)" }
-          }
-        });
-      } catch (e) {
-        console.error("Vapi initialization error:", e);
-      }
-    } else {
-      alert("Vapi SDK is still loading, please try again in a moment.");
-    }
+    const assistantId = "2ea07536-f0d0-46e3-be3a-bdef97deda92";
+    const vapiWindowUrl = `https://vapi.ai/?assistantId=${assistantId}`;
+    window.open(vapiWindowUrl, "_blank", "width=450,height=650");
   };
   
   return (
