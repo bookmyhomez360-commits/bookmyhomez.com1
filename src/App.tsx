@@ -344,21 +344,40 @@ export default function App() {
   };
 
   const startVapiCall = () => {
-    const assistantId = "2ea07536-f0d0-46e3-be3a-bdef97deda92";
-    
-    // హోమ్‌పేజీ రాకుండా నేరుగా కాల్ స్క్రీన్ ఓపెన్ అయ్యే డైరెక్ట్ లింక్
-    const callUrl = `https://vapi.ai/embed/${assistantId}/call`; 
-    
-    const width = 400;
-    const height = 600;
-    const left = (window.innerWidth - width) / 2;
-    const top = (window.innerHeight - height) / 2;
+    // Vapi అధికారిక వెబ్ SDK ని లోడ్ చేయడం
+    const existingScript = document.getElementById('vapi-sdk-script');
+    if (existingScript) {
+      existingScript.remove();
+    }
 
-    window.open(
-      callUrl,
-      "VapiVoiceCall",
-      `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
-    );
+    const script = document.createElement('script');
+    script.id = 'vapi-sdk-script';
+    script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+    script.async = true;
+    
+    script.onload = () => {
+      if ((window as any).vapiSDK) {
+        try {
+          // నేరుగా కాల్ స్టార్ట్ చేయడం
+          (window as any).vapiSDK.run({
+            apiKey: "32ef4e94-38fd-432a-9607-95da4cf1ald1",
+            assistant: "2ea07536-f0d0-46e3-be3a-bdef97deda92",
+            config: {
+              position: "bottom-right",
+              offset: "20px",
+              width: "50px",
+              height: "50px",
+              idle: { color: "rgb(29, 78, 216)" },
+              active: { color: "rgb(255, 0, 0)" }
+            }
+          });
+        } catch (err) {
+          console.error("Vapi SDK Error:", err);
+        }
+      }
+    };
+    
+    document.body.appendChild(script);
   };
 
   return (
