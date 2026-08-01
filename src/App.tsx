@@ -344,9 +344,20 @@ export default function App() {
   };
 
   const startVapiCall = () => {
+    // Vapi డైరెక్ట్ అసిస్టెంట్ వెబ్ వ్యూ లింక్
     const assistantId = "2ea07536-f0d0-46e3-be3a-bdef97deda92";
-    const vapiWindowUrl = `https://vapi.ai/?assistantId=${assistantId}`;
-    window.open(vapiWindowUrl, "_blank", "width=450,height=650");
+    const directUrl = `https://vapi.ai/embed/${assistantId}`;
+    
+    const width = 450;
+    const height = 650;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+
+    window.open(
+      directUrl,
+      "VapiCallWindow",
+      `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
+    );
   };
   
   return (
