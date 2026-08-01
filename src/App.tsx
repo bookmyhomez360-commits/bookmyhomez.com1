@@ -344,20 +344,37 @@ export default function App() {
   };
 
   const startVapiCall = () => {
-    // Vapi డైరెక్ట్ అసిస్టెంట్ వెబ్ వ్యూ లింక్
-    const assistantId = "2ea07536-f0d0-46e3-be3a-bdef97deda92";
-    const directUrl = `https://vapi.ai/embed/${assistantId}`;
-    
-    const width = 450;
-    const height = 650;
-    const left = (window.innerWidth - width) / 2;
-    const top = (window.innerHeight - height) / 2;
+    const existingScript = document.getElementById('vapi-script');
+    if (existingScript) {
+      existingScript.remove();
+    }
 
-    window.open(
-      directUrl,
-      "VapiCallWindow",
-      `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
-    );
+    const script = document.createElement('script');
+    script.id = 'vapi-script';
+    script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+    script.async = true;
+    script.onload = () => {
+      if ((window as any).vapiSDK) {
+        try {
+          (window as any).vapiSDK.run({
+            apiKey: "32ef4e94-38fd-432a-9607-95da4cf1ald1",
+            assistant: "2ea07536-f0d0-46e3-be3a-bdef97deda92",
+            config: {
+              position: "bottom-right",
+              offset: "20px",
+              width: "50px",
+              height: "50px",
+              idle: { color: "rgb(29, 78, 216)" },
+              active: { color: "rgb(255, 0, 0)" }
+            }
+          });
+        } catch (e) {
+          console.error("Vapi run error:", e);
+        }
+      }
+    };
+    document.body.appendChild(script);
+    alert("Vapi AI Assistant is ready! Click the floating mic button at the bottom-right.");
   };
   
   return (
