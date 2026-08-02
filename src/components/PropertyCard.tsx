@@ -42,7 +42,12 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation();
     const shareText = `Check out "${property.title}" in ${property.locality}, ${property.city} for ₹${formatCurrency(property.price)} on BookMyHomez!`;
-    const shareUrl = window.location.href;
+    
+    // ---- CHANGES HERE: Fixed share URL to point to specific property using ID ----
+    const propertyId = (property as any).id || (property as any)._id || '';
+    const shareUrl = propertyId 
+      ? `${window.location.origin}/?propertyId=${propertyId}` 
+      : window.location.href;
 
     if (navigator.share) {
       navigator
