@@ -71,7 +71,13 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
 
   const handleShare = () => {
     const shareText = `Check out "${property.title}" in ${property.locality}, ${property.city} for ₹${formatCurrency(property.price)} on BookMyHomez!`;
-    const shareUrl = window.location.href;
+    
+    // ---- CHANGES HERE: Fixed share URL to point to specific property using ID ----
+    // property.id badhulu mee database lo unna key (e.g., property._id) unte adi vadandi
+    const propertyId = (property as any).id || (property as any)._id || '';
+    const shareUrl = propertyId 
+      ? `${window.location.origin}/?propertyId=${propertyId}` 
+      : window.location.href;
 
     if (navigator.share) {
       navigator
