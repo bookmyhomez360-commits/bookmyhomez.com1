@@ -84,24 +84,26 @@ export default function App() {
   // Properties State
   const [properties, setProperties] = useState<Property[]>(INITIAL_PROPERTIES);
 
-  // URL లో propertyId unte automatic ga modal open cheyadaniki
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const propIdParam = params.get('propertyId');
-    if (propIdParam && properties.length > 0) {
-      const found = properties.find((p) => String(p.id) === propIdParam);
-      if (found) {
-        setSelectedProperty(found);
-      }
-    }
-  }, [properties]);
-
   // Modals State
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [showWizardModal, setShowWizardModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+
+  // URL లో propertyId unte instant ga modal open cheyadaniki (Fallback to INITIAL_PROPERTIES for instant load)[cite: 4]
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const propIdParam = params.get('propertyId');
+    if (propIdParam) {
+      // First check in current properties, if not found check in INITIAL_PROPERTIES for instant access[cite: 4]
+      const found = properties.find((p) => String(p.id) === propIdParam) || 
+                    INITIAL_PROPERTIES.find((p) => String(p.id) === propIdParam);
+      if (found) {
+        setSelectedProperty(found);
+      }
+    }
+  }, [properties]);
 
   // Registered Users State
   const [registeredUsers, setRegisteredUsers] = useState<(User & { password?: string })[]>(() => {
