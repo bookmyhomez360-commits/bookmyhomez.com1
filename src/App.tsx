@@ -84,6 +84,18 @@ export default function App() {
   // Properties State
   const [properties, setProperties] = useState<Property[]>(INITIAL_PROPERTIES);
 
+  // URL లో propertyId unte automatic ga modal open cheyadaniki
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const propIdParam = params.get('propertyId');
+    if (propIdParam && properties.length > 0) {
+      const found = properties.find((p) => String(p.id) === propIdParam);
+      if (found) {
+        setSelectedProperty(found);
+      }
+    }
+  }, [properties]);
+
   // Modals State
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [showWizardModal, setShowWizardModal] = useState(false);
