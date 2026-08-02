@@ -91,18 +91,25 @@ export default function App() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // URL లో propertyId unte instant ga modal open cheyadaniki (Fallback to INITIAL_PROPERTIES for instant load)[cite: 4]
+  // URL lo propertyId maarinatekkuda daaniki thagga property ni instant ga open cheyadaniki[cite: 5]
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const propIdParam = params.get('propertyId');
-    if (propIdParam) {
-      // First check in current properties, if not found check in INITIAL_PROPERTIES for instant access[cite: 4]
-      const found = properties.find((p) => String(p.id) === propIdParam) || 
-                    INITIAL_PROPERTIES.find((p) => String(p.id) === propIdParam);
-      if (found) {
-        setSelectedProperty(found);
+    const checkUrlProperty = () => {
+      const params = new URLSearchParams(window.location.search);
+      const propIdParam = params.get('propertyId');
+      if (propIdParam) {
+        const found = properties.find((p) => String(p.id) === propIdParam) || 
+                      INITIAL_PROPERTIES.find((p) => String(p.id) === propIdParam);
+        if (found) {
+          setSelectedProperty(found);
+        }
       }
-    }
+    };
+
+    checkUrlProperty();
+    
+    // Listen to URL changes (back/forward or external link clicks)
+    window.addEventListener('popstate', checkUrlProperty);
+    return () => window.removeEventListener('popstate', checkUrlProperty);
   }, [properties]);
 
   // Registered Users State
@@ -925,7 +932,13 @@ export default function App() {
         <PropertyDetailsModal
           property={selectedProperty}
           currentUser={currentUser}
-          onClose={() => setSelectedProperty(null)}
+          onClose={() => {
+            setSelectedProperty(null);
+            // URL clean up to prevent reopening on state updates
+            const url = new URL(window.location.href);
+            url.searchParams.delete('propertyId');
+            window.history.replaceState({}, '', url.toString());
+          }}
           onToggleStatus={toggleStatus}
           formatCurrency={formatCurrency}
         />
