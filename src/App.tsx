@@ -343,43 +343,6 @@ export default function App() {
     setSearchQuery('');
   };
 
-  const startVapiCall = () => {
-    // Vapi అధికారిక వెబ్ SDK ని లోడ్ చేయడం
-    const existingScript = document.getElementById('vapi-sdk-script');
-    if (existingScript) {
-      existingScript.remove();
-    }
-
-    const script = document.createElement('script');
-    script.id = 'vapi-sdk-script';
-    script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
-    script.async = true;
-    
-    script.onload = () => {
-      if ((window as any).vapiSDK) {
-        try {
-          // నేరుగా కాల్ స్టార్ట్ చేయడం
-          (window as any).vapiSDK.run({
-            apiKey: "32ef4e94-38fd-432a-9607-95da4cf1ald1",
-            assistant: "2ea07536-f0d0-46e3-be3a-bdef97deda92",
-            config: {
-              position: "bottom-right",
-              offset: "20px",
-              width: "50px",
-              height: "50px",
-              idle: { color: "rgb(29, 78, 216)" },
-              active: { color: "rgb(255, 0, 0)" }
-            }
-          });
-        } catch (err) {
-          console.error("Vapi SDK Error:", err);
-        }
-      }
-    };
-    
-    document.body.appendChild(script);
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-[#090D16] text-slate-100 font-sans selection:bg-indigo-600 selection:text-white relative">
       
@@ -992,27 +955,6 @@ export default function App() {
           navigateToCategory={navigateToCategory}
           filterByLocation={filterByLocation}
         />
-
-        {/* Vapi Talk Button */}
-        <button 
-          onClick={startVapiCall}
-          style={{
-            position: 'fixed',
-            bottom: '20px',
-            left: '20px',
-            zIndex: 9999,
-            backgroundColor: '#1d4ed8',
-            color: '#ffffff',
-            padding: '12px 24px',
-            borderRadius: '50px',
-            border: 'none',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-          }}
-        >
-          🎙️ Talk to AI
-        </button>
 
       </div>
     </div>
