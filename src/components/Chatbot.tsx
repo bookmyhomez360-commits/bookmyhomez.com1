@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MessageSquare, X, Send } from 'lucide-react';
+import { INITIAL_PROPERTIES } from '../data/initialProperties';
 
 interface Message {
   sender: 'user' | 'bot';
@@ -9,25 +10,21 @@ interface Message {
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [step, setStep] = useState<'main' | 'buy_rent' | 'location' | 'bhk' | 'budget' | 'visit_property' | 'visit_date' | 'contact'>('main');
+  const [step, setStep] = useState<'main' | 'buy_rent' | 'location' | 'bhk' | 'budget' | 'customer_details' | 'visit_property' | 'visit_date' | 'visit_contact'>('main');
   const [category, setCategory] = useState<'Buy' | 'Rent'>('Buy');
   const [location, setLocation] = useState('');
   const [bhk, setBhk] = useState('');
+  const [budget, setBudget] = useState('');
+  const [userName, setUserName] = useState('');
   const [visitProp, setVisitProp] = useState('');
   const [visitDate, setVisitDate] = useState('');
 
   const [messages, setMessages] = useState<Message[]>([
     { 
       sender: 'bot', 
-      text: '👋 Namaste! Welcome to BookMyHomez — Your Happy Home Partner. Ela help cheyali? Kinda options lo okati select cheyandi:\n\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site' 
+      text: 'Hello! Welcome to BookMyHomez — Your Happy Home Partner. How can I help you today? Please choose an option below:\n\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site' 
     }
   ]);
-
-  const propertiesDatabase = [
-    { id: "1785042100498", title: "Luxury Villa in Indiranagar", type: "Villa", category: "Buy", location: "Bengaluru", bhk: "4 BHK", price: "₹4.5 Cr", link: "https://www.bookmyhomez.com/?propertyId=1785042100498" },
-    { id: "1785044344797", title: "Modern Apartment", type: "Apartment", category: "Rent", location: "Hyderabad", bhk: "3 BHK", price: "₹45,000/mo", link: "https://www.bookmyhomez.com/?propertyId=1785044344797" },
-    { id: "1785141027798", title: "Independent House", type: "Independent House", category: "Buy", location: "Chennai", bhk: "3 BHK", price: "₹1.8 Cr", link: "https://www.bookmyhomez.com/?propertyId=1785141027798" }
-  ];
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -45,53 +42,64 @@ export function Chatbot() {
         if (lower.includes('1') || lower.includes('buy')) {
           setCategory('Buy');
           setStep('location');
-          botReply = "Great! Meeru ekkada property chusthunnaro (Location/City) teliyajeyandi?";
+          botReply = "Great! Which location or city are you looking for?";
         } else if (lower.includes('2') || lower.includes('rent')) {
           setCategory('Rent');
           setStep('location');
-          botReply = "Sure! Meeru rent kosam ekkadikina area/city lo chusthunnaro type cheyandi?";
+          botReply = "Sure! Which location or area are you looking to rent in?";
         } else if (lower.includes('3') || lower.includes('visit')) {
           setStep('visit_property');
-          botReply = "Meer ఏ property ki / project ki visit cheyalanukuntunnaro daani name or location chepandi?";
+          botReply = "Which property or project name would you like to visit?";
         } else if (lower.includes('4') || lower.includes('site')) {
-          botReply = "🌐 Mee kosam direct website link:\n👉 [BookMyHomez Website](https://www.bookmyhomez.com)\n\nIkkada meeru full gallery, maps, mariyu virtual tours chudachu! Inka emina specific help kavala?";
+          botReply = "Here is the direct link to our official website:\n👉 [BookMyHomez Website](https://www.bookmyhomez.com)\n\nYou can explore full galleries, maps, and virtual tours there! Do you need help finding anything specific?";
           setStep('main');
         } else {
-          botReply = "Dayachesi sariyna option select cheyandi:\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site";
+          botReply = "Please select a valid option:\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site";
         }
       } else if (step === 'location') {
         setLocation(userText);
         setStep('bhk');
-        botReply = "Super! Mee preferred Property Type enti? (e.g., 2BHK, 3BHK, Villa, Plot)";
+        botReply = "What is your preferred property configuration? (e.g., 1 BHK, 2 BHK, 3 BHK, Villa, Plot)";
       } else if (step === 'bhk') {
         setBhk(userText);
         setStep('budget');
-        botReply = "Mee budget range ent anedi chepandi? (e.g., 50 Lakhs - 1 Cr)";
+        botReply = "What is your estimated budget range? (e.g., 50 Lakhs - 1 Cr)";
       } else if (step === 'budget') {
+        setBudget(userText);
+        setStep('customer_details');
+        botReply = "Please share your **Full Name and Phone Number** so we can share the matching properties with you.";
+      } else if (step === 'customer_details') {
+        setUserName(userText);
         setStep('main');
-        // Filter properties
-        const matches = propertiesDatabase.filter(p => p.category.toLowerCase() === category.toLowerCase());
-        
+
+        // Filter actual website properties from INITIAL_PROPERTIES
+        const matches = INITIAL_PROPERTIES.filter(p => {
+          const matchesCategory = p.listingType?.toLowerCase() === category.toLowerCase() || category.toLowerCase() === 'buy';
+          const matchesLoc = !location || p.location?.toLowerCase().includes(location.toLowerCase()) || p.title?.toLowerCase().includes(location.toLowerCase());
+          return matchesCategory && matchesLoc;
+        }).slice(0, 3); // Top 3 matches
+
         if (matches.length > 0) {
-          botReply = `🎉 Mee requirements ki taggattu konni properties ikkada unnai:\n\n`;
+          botReply = `Thank you ${userText}! Here are matching properties from our website:\n\n`;
           matches.forEach(p => {
-            botReply += `🏠 **${p.title}**\n📍 Location: ${p.location}\n🛏️ Config: ${p.bhk} (${p.type})\n💰 Price: ${p.price}\n🔗 [View Property Direct](${p.link})\n\n`;
+            const propertyLink = `https://www.bookmyhomez.com/?propertyId=${p.id}`;
+            botReply += `🏠 **${p.title}**\n📍 Location: ${p.location}\n🛏️ Type: ${p.bhk || 'N/A'}\n💰 Price: ₹${p.price || 'Contact for Price'}\n🔗 [View Property Direct](${propertyLink})\n\n`;
           });
         } else {
-          botReply = "Currently, no exact matches are available, but our team will curate options for you soon. Ma team memu ventane connect avthamu!";
+          botReply = `Thank you ${userText}! Currently, no exact matches are available, but our team will curate options for you and reach out shortly.`;
         }
-        botReply += "\n\nInka emina help kavala? Options:\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site";
+        botReply += "\nHow else can I help you? Choose an option:\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site";
       } else if (step === 'visit_property') {
         setVisitProp(userText);
         setStep('visit_date');
-        botReply = "Meru visit cheyalanukuntunna preferred Date & Time (e.g., Tomorrow @ 4 PM) enter cheyandi.";
+        botReply = "What is your preferred date and time for the visit? (e.g., Tomorrow at 4 PM)";
       } else if (step === 'visit_date') {
         setVisitDate(userText);
-        setStep('contact');
-        botReply = "Thank you! Mee Full Name mariyu Phone Number ivvandi, ma team mimmalni contact chesi visit confirm chestharu.";
-      } else if (step === 'contact') {
+        setStep('visit_contact');
+        botReply = "Please provide your **Full Name and Phone Number** to finalize the visit schedule.";
+      } else if (step === 'visit_contact') {
         setStep('main');
-        botReply = `✅ Done! Mee Property Visit successfully request aindi (${visitProp} on ${visitDate}). Ma team short lo mi phone ki call chestharu!\n\nMeru malli emina chudalanukunte options choose cheyandi:\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site`;
+        botReply = `✅ Visit Confirmed! We have scheduled your visit for **${visitProp}** on **${visitDate}**. Our team will call you shortly to confirm.\n\nNeed anything else? Select an option:\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site`;
       }
 
       setMessages(prev => [...prev, { sender: 'bot', text: botReply }]);
@@ -156,7 +164,7 @@ export function Chatbot() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Type your option or details..."
+              placeholder="Type your response here..."
               className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
             />
             <button
