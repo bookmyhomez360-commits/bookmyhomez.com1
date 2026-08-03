@@ -17,28 +17,37 @@ async function startServer() {
     res.json({ status: "ok", app: "BookMyHomez", timestamp: new Date().toISOString() });
   });
 
-  // Chatbot API Route with Smart Filtering based on user requirements
+  // Chatbot API Route with exact flow control
   app.post("/api/chat", (req, res) => {
     try {
-      const userMessage = (req.body.message || "").toLowerCase();
+      const userMessage = (req.body.message || "").toLowerCase().trim();
       
-      let reply = "Please select an option or let me know what you are looking for (e.g., Buy, Rent, Short Stay, or Visit a Site):";
+      let reply = "";
       let matchedProperties: Property[] = [];
 
-      if (userMessage.includes("buy") || userMessage.includes("purchase")) {
+      // యూజర్ 'hi' లేదా హలో అని చెప్తే కేవలం ఆప్షన్లు మాత్రమే చూపించాలి (ప్రాపర్టీస్ రావు)
+      if (userMessage === "hi" || userMessage === "hello" || userMessage === "hey" || userMessage === "start") {
+        reply = "Hello! Welcome to Bookmyhomez. Please choose what you are looking for:";
+        matchedProperties = [];
+      } 
+      else if (userMessage.includes("buy") || userMessage.includes("purchase")) {
         reply = "Here are some excellent properties available for Buy:";
         matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'buy');
-      } else if (userMessage.includes("rent") || userMessage.includes("lease")) {
+      } 
+      else if (userMessage.includes("rent") || userMessage.includes("lease")) {
         reply = "Here are the available properties for Rent:";
         matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'rent');
-      } else if (userMessage.includes("short stay") || userMessage.includes("stay")) {
+      } 
+      else if (userMessage.includes("short stay") || userMessage.includes("stay")) {
         reply = "Here are our Short Stay options:";
         matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'short stay' || p.category.toLowerCase() === 'short-stay');
-      } else if (userMessage.includes("visit") || userMessage.includes("site")) {
+      } 
+      else if (userMessage.includes("visit") || userMessage.includes("site")) {
         reply = "Great! Please share your preferred date, time, and city/location so we can schedule your site visit.";
         matchedProperties = [];
-      } else {
-        // యూజర్ సిటీ లేదా బడ్జెట్ లేదా BHK ఇస్తే వాటి ఆధారంగా ఫిల్టర్ చేయడం
+      } 
+      else {
+        // వేరే సిటీ లేదా రిక్వైర్మెంట్ టైప్ చేస్తే వాటికి తగినట్లు ఫిల్టర్ చేయడం
         matchedProperties = propertiesStore.filter(p => 
           p.city.toLowerCase().includes(userMessage) || 
           p.bhk.toLowerCase().includes(userMessage) ||
@@ -48,8 +57,8 @@ async function startServer() {
         if (matchedProperties.length > 0) {
           reply = `Here are the properties matching your requirement ("${userMessage}"):`;
         } else {
-          reply = "I couldn't find an exact match for that. Here are some of our featured properties:";
-          matchedProperties = propertiesStore.slice(0, 3);
+          reply = "I couldn't find an exact match. Please select from Buy, Rent, Short Stay, or Visit a Site.";
+          matchedProperties = [];
         }
       }
 
