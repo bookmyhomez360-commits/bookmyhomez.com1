@@ -59,6 +59,39 @@ export default function App() {
 
   const [isUrlLoading, setIsUrlLoading] = useState(false);
 
+  // Chatbase & Make.com Webhook Integration
+  useEffect(() => {
+    // 1. Chatbase Script Load చేసుట
+    const script = document.createElement('script');
+    script.src = 'https://www.chatbase.co/embed.min.js';
+    // మీ Chatbase Bot ID ని ఇక్కడ సెట్ చేయండి (ఉదాహరణకు: id="YOUR_CHATBASE_BOT_ID")
+    script.setAttribute('domain', 'www.chatbase.co');
+    document.body.appendChild(script);
+
+    // 2. Chat/Lead డేటాను Make.com వెబ్‌హుక్‌కు పంపే ఈవెంట్ లిజనర్
+    const handleChatbaseMessage = (event: MessageEvent) => {
+      // Chatbase నుండి వచ్చే ఈవెంట్స్ లేదా లీడ్స్ డేటాను ఇక్కడ హ్యాండ్ చేయవచ్చు
+      if (event.data && event.data.type === 'CHATBASE_LEAD_SUBMITTED') {
+        fetch('https://hook.eu1.make.com/88j6fdn4rxco2o05vj2z3dyewuyhj8a2', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(event.data),
+        }).catch((err) => console.error('Webhook error:', err));
+      }
+    };
+
+    window.addEventListener('message', handleChatbaseMessage);
+
+    return () => {
+      window.removeEventListener('message', handleChatbaseMessage);
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
+
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('bmh_current_user');
     if (saved) {
