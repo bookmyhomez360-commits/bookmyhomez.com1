@@ -10,21 +10,58 @@ interface Message {
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [step, setStep] = useState<'main' | 'buy_rent' | 'location' | 'bhk' | 'budget' | 'customer_details' | 'visit_property' | 'visit_date' | 'visit_contact'>('main');
+  const [step, setStep] = useState<'main' | 'collect_details' | 'visit_property' | 'visit_date' | 'visit_contact'>('main');
+  
   const [category, setCategory] = useState<'Buy' | 'Rent'>('Buy');
   const [location, setLocation] = useState('');
   const [bhk, setBhk] = useState('');
   const [budget, setBudget] = useState('');
-  const [userName, setUserName] = useState('');
+  
   const [visitProp, setVisitProp] = useState('');
   const [visitDate, setVisitDate] = useState('');
 
   const [messages, setMessages] = useState<Message[]>([
     { 
       sender: 'bot', 
-      text: 'Hello! Welcome to BookMyHomez — Your Happy Home Partner. How can I help you today? Please choose an option below:\n\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site' 
+      text: 'Hello! Welcome to BookMyHomez — Your Happy Home Partner. How can I help you today? Please choose an option or tell me what you are looking for (e.g., "I want to rent a 3BHK in Hyderabad under 50000").\n\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site' 
     }
   ]);
+
+  const parseUserIntent = (text: string) => {
+    const lower = text.toLowerCase();
+    
+    // Detect Category
+    if (lower.includes('rent') || lower.includes('lease')) {
+      setCategory('Rent');
+    } else if (lower.includes('buy') || lower.includes('purchase') || lower.includes('sale')) {
+      setCategory('Buy');
+    }
+
+    // Detect BHK
+    const bhkMatch = text.match(/(\d+)\s*(bhk|bed)/i);
+    if (bhkMatch) {
+      setBhk(bhkMatch[1] + ' BHK');
+    }
+
+    // Detect Numbers / Budget
+    const numbers = text.match(/\d+/g);
+    if (numbers && numbers.length > 0) {
+      // Find a number that looks like a budget (> 1000)
+      const possibleBudget = numbers.find(n => parseInt(n) > 1000);
+      if (possibleBudget) {
+        setBudget(possibleBudget);
+      }
+    }
+
+    // Detect Common Locations
+    const knownLocations = ['hyderabad', 'bengaluru', 'bangalore', 'mumbai', 'pune', 'chennai', 'hsr', 'jubilee hills', 'indiranagar', 'koramangala'];
+    for (const loc of knownLocations) {
+      if (lower.includes(loc)) {
+        setLocation(loc);
+        break;
+      }
+    }
+  };
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -39,56 +76,48 @@ export function Chatbot() {
 
       if (step === 'main') {
         const lower = userText.toLowerCase();
-        if (lower.includes('1') || lower.includes('buy')) {
-          setCategory('Buy');
-          setStep('location');
-          botReply = "Great! Which location or city are you looking for?";
-        } else if (lower.includes('2') || lower.includes('rent')) {
-          setCategory('Rent');
-          setStep('location');
-          botReply = "Sure! Which location or area are you looking to rent in?";
-        } else if (lower.includes('3') || lower.includes('visit')) {
+        
+        if (lower.includes('4') || lower.includes('site') || lower.includes('website')) {
+          botReply = "Here is the direct link to our official website:\n👉 [BookMyHomez Website](https://www.bookmyhomez.com)\n\nYou can explore full galleries, maps, and virtual tours there!";
+          setMessages(prev => [...prev, ...[{ sender: 'bot' as const, text: botReply }]]);
+          return;
+        }
+
+        if (lower.includes('3') || lower.includes('visit')) {
           setStep('visit_property');
           botReply = "Which property or project name would you like to visit?";
-        } else if (lower.includes('4') || lower.includes('site')) {
-          botReply = "Here is the direct link to our official website:\n👉 [BookMyHomez Website](https://www.bookmyhomez.com)\n\nYou can explore full galleries, maps, and virtual tours there! Do you need help finding anything specific?";
-          setStep('main');
-        } else {
-          botReply = "Please select a valid option:\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site";
+          setMessages(prev => [...prev, ...[{ sender: 'bot' as const, text: botReply }]]);
+          return;
         }
-      } else if (step === 'location') {
-        setLocation(userText);
-        setStep('bhk');
-        botReply = "What is your preferred property configuration? (e.g., 1 BHK, 2 BHK, 3 BHK, Villa, Plot)";
-      } else if (step === 'bhk') {
-        setBhk(userText);
-        setStep('budget');
-        botReply = "What is your estimated budget range? (e.g., 50 Lakhs - 1 Cr)";
-      } else if (step === 'budget') {
-        setBudget(userText);
-        setStep('customer_details');
-        botReply = "Please share your **Full Name and Phone Number** so we can share the matching properties with you.";
-      } else if (step === 'customer_details') {
-        setUserName(userText);
+
+        // Smart agent parsing from natural sentence
+        parseUserIntent(userText);
+        setStep('collect_details');
+        botReply = "Got it! Please share your **Full Name and Phone Number** so we can show you the matching properties right away.";
+
+      } else if (step === 'collect_details') {
+        const userName = userText;
         setStep('main');
 
-        // Filter actual website properties from INITIAL_PROPERTIES
+        // Filter matching website properties dynamically
         const matches = INITIAL_PROPERTIES.filter(p => {
-          const matchesCategory = p.listingType?.toLowerCase() === category.toLowerCase() || category.toLowerCase() === 'buy';
+          const matchesCat = p.listingType?.toLowerCase() === category.toLowerCase();
           const matchesLoc = !location || p.location?.toLowerCase().includes(location.toLowerCase()) || p.title?.toLowerCase().includes(location.toLowerCase());
-          return matchesCategory && matchesLoc;
-        }).slice(0, 3); // Top 3 matches
+          const matchesBhk = !bhk || p.bhk?.toLowerCase().includes(bhk.toLowerCase()) || p.title?.toLowerCase().includes(bhk.toLowerCase());
+          return matchesCat || matchesLoc || matchesBhk;
+        }).slice(0, 3);
 
         if (matches.length > 0) {
-          botReply = `Thank you ${userText}! Here are matching properties from our website:\n\n`;
+          botReply = `Thank you ${userName}! Based on your requirements, here are matching properties from our website:\n\n`;
           matches.forEach(p => {
             const propertyLink = `https://www.bookmyhomez.com/?propertyId=${p.id}`;
             botReply += `🏠 **${p.title}**\n📍 Location: ${p.location}\n🛏️ Type: ${p.bhk || 'N/A'}\n💰 Price: ₹${p.price || 'Contact for Price'}\n🔗 [View Property Direct](${propertyLink})\n\n`;
           });
         } else {
-          botReply = `Thank you ${userText}! Currently, no exact matches are available, but our team will curate options for you and reach out shortly.`;
+          botReply = `Thank you ${userName}! Currently, no exact matches are available for your filters, but our team will curate options for you and reach out shortly.`;
         }
-        botReply += "\nHow else can I help you? Choose an option:\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site";
+        botReply += "\nHow else can I help you? Choose Buy, Rent, or Property Visit.";
+
       } else if (step === 'visit_property') {
         setVisitProp(userText);
         setStep('visit_date');
@@ -99,7 +128,7 @@ export function Chatbot() {
         botReply = "Please provide your **Full Name and Phone Number** to finalize the visit schedule.";
       } else if (step === 'visit_contact') {
         setStep('main');
-        botReply = `✅ Visit Confirmed! We have scheduled your visit for **${visitProp}** on **${visitDate}**. Our team will call you shortly to confirm.\n\nNeed anything else? Select an option:\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site`;
+        botReply = `✅ Visit Confirmed! We have scheduled your visit for **${visitProp}** on **${visitDate}**. Our team will call you shortly.\n\nNeed anything else?`;
       }
 
       setMessages(prev => [...prev, { sender: 'bot', text: botReply }]);
@@ -164,7 +193,7 @@ export function Chatbot() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Type your response here..."
+              placeholder="Type your requirements or message..."
               className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
             />
             <button
