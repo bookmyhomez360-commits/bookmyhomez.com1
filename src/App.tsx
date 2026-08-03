@@ -104,7 +104,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, [isVillaPaused, showcaseVillas.length]);
 
-  // Property Link URL Handler (Fixed & Enhanced for Alphanumeric / Firebase IDs)
+  // Property Link URL Handler (Direct Match with INITIAL_PROPERTIES fallback)
   useEffect(() => {
     const checkUrlProperty = () => {
       const params = new URLSearchParams(window.location.search);
@@ -112,22 +112,18 @@ export default function App() {
       
       if (propIdParam) {
         setIsUrlLoading(true);
-        const timer = setTimeout(() => {
-          const allProps = [...properties, ...INITIAL_PROPERTIES];
-          
-          const found = allProps.find((p: any) => 
-            String(p.id) === propIdParam || 
-            String(p.propertyId) === propIdParam || 
-            String(p._id) === propIdParam
-          );
+        // Direct search across INITIAL_PROPERTIES and current properties state instantly
+        const allProps = [...INITIAL_PROPERTIES, ...properties];
+        const found = allProps.find((p: any) => 
+          String(p.id) === propIdParam || 
+          String(p.propertyId) === propIdParam || 
+          String(p._id) === propIdParam
+        );
 
-          if (found) {
-            setSelectedProperty(found);
-          }
-          setIsUrlLoading(false);
-        }, 600);
-
-        return () => clearTimeout(timer);
+        if (found) {
+          setSelectedProperty(found);
+        }
+        setIsUrlLoading(false);
       } else {
         setSelectedProperty(null);
         setIsUrlLoading(false);
