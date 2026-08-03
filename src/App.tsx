@@ -43,11 +43,17 @@ import {
   PlusCircle,
   ArrowLeft,
   Clock,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
+  Maximize2
 } from 'lucide-react';
 
 export default function App() {
   const [showSplashScreen, setShowSplashScreen] = useState(true);
   const [activeVillaIndex, setActiveVillaIndex] = useState(0);
+  const [isVillaPaused, setIsVillaPaused] = useState(false);
   const [currentTab, setCurrentTab] = useState<'explore' | 'listings' | 'favorites' | 'my_properties'>('explore');
   const [activeFilterCategory, setActiveFilterCategory] = useState<CategoryType>('All');
   const [selectedRentType, setSelectedRentType] = useState<'All' | 'Monthly' | 'Daily'>('All');
@@ -95,7 +101,21 @@ export default function App() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // URL లో propertyId unte automatic ga modal open cheyadaniki (Fixed & synced properly with loading instruction support)
+  // Featured showcase villas for Left side
+  const showcaseVillas = useMemo(() => {
+    return properties.filter(p => p.category === 'Buy' || p.category === 'Short Stay').slice(0, 5);
+  }, [properties]);
+
+  // Auto-rotate showcase villas if not paused
+  useEffect(() => {
+    if (isVillaPaused || showcaseVillas.length === 0) return;
+    const interval = setInterval(() => {
+      setActiveVillaIndex((prev) => (prev + 1) % showcaseVillas.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isVillaPaused, showcaseVillas.length]);
+
+  // URL లో propertyId unte automatic ga modal open cheyadaniki
   useEffect(() => {
     const checkUrlProperty = () => {
       const params = new URLSearchParams(window.location.search);
@@ -137,7 +157,6 @@ export default function App() {
     return REGISTERED_USERS;
   });
 
-  // Sync users to localStorage
   useEffect(() => {
     localStorage.setItem('bmh_registered_users', JSON.stringify(registeredUsers));
   }, [registeredUsers]);
@@ -317,7 +336,6 @@ export default function App() {
     }
   };
 
-  // Filtered Properties Computation
   const filteredProperties = useMemo(() => {
     let result = properties.filter((item) => {
       const matchCat =
@@ -391,7 +409,7 @@ export default function App() {
           <SplashScreen onDismiss={() => setShowSplashScreen(false)} />
         )}
 
-        {/* URL Loading Instruction Banner / Overlay */}
+        {/* URL Loading Instruction Banner */}
         {isUrlLoading && (
           <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-3 text-center text-amber-300 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 sticky top-0 z-50 backdrop-blur-md">
             <Clock className="w-4 h-4 animate-spin text-amber-400" />
@@ -416,7 +434,6 @@ export default function App() {
         {/* Main Content Area */}
         <main className="flex-1">
 
-          {/* EXPLORE / HOME TAB */}
           {currentTab === 'explore' && (
             <div>
               {/* Hero Section */}
@@ -627,10 +644,8 @@ export default function App() {
             </div>
           )}
 
-          {/* LISTINGS CATEGORY VIEW */}
           {currentTab === 'listings' && (
             <section className="max-w-7xl mx-auto px-4 py-8">
-              {/* Category Header Banner */}
               <div className="bg-gradient-to-r from-slate-900 via-slate-900/90 to-indigo-950/30 p-6 sm:p-8 rounded-3xl border border-slate-800 mb-8">
                 <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
                   <button
@@ -692,7 +707,6 @@ export default function App() {
                   ))}
                 </div>
 
-                {/* Rent Sub-Filters / Options */}
                 {activeFilterCategory === 'Rent' && (
                   <div className="flex items-center gap-2 my-3 overflow-x-auto pb-1">
                     <button
@@ -796,7 +810,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Grid or Empty */}
               {filteredProperties.length === 0 ? (
                 <div className="text-center py-20 bg-slate-900/40 rounded-3xl border border-slate-800">
                   <SearchX className="w-12 h-12 text-slate-700 mx-auto mb-4" />
@@ -832,7 +845,6 @@ export default function App() {
             </section>
           )}
 
-          {/* FAVORITES TAB */}
           {currentTab === 'favorites' && (
             <section className="max-w-7xl mx-auto px-4 py-10">
               <div className="flex items-center justify-between mb-8">
@@ -884,7 +896,6 @@ export default function App() {
             </section>
           )}
 
-          {/* MY PROPERTIES TAB */}
           {currentTab === 'my_properties' && (
             <section className="max-w-7xl mx-auto px-4 py-10">
               <div className="flex items-center justify-between mb-8">
@@ -942,34 +953,87 @@ export default function App() {
 
         </main>
 
-        {/* Floating AI Chat Widget - Left Side Only (Make.com URL included) */}
-        <div className="fixed bottom-6 left-6 z-40 pointer-events-auto">
-          <div className="bg-slate-900/90 backdrop-blur-md px-4 py-3 rounded-2xl border border-slate-700/80 shadow-2xl flex items-center justify-between w-[300px]">
-            <span className="text-xs font-semibold text-slate-200">
-              Hi! What can I help you with?
-            </span>
-            <button
-              onClick={() => {
-                fetch("https://hook.eu1.make.com/88j6fdn4rxco2o05vj2z3dyewuyhj8a2", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    event: "chat_ended_or_lead_submitted",
-                    timestamp: new Date().toISOString(),
-                    user: currentUser ? currentUser.email : "guest",
-                  }),
-                }).catch(() => {});
+        {/* Villa Showcase Widget - Now Placed on Left Side */}
+        {showcaseVillas.length > 0 && (
+          <div className="fixed bottom-6 left-6 z-40 pointer-events-auto max-w-sm hidden sm:block">
+            <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-3 shadow-2xl flex items-center gap-3">
+              <img
+                src={showcaseVillas[activeVillaIndex]?.images[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9'}
+                alt="Villa"
+                className="w-16 h-16 rounded-xl object-cover shrink-0 border border-slate-700"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                  <span className="text-[10px] font-black uppercase text-amber-400 tracking-wider">
+                    Villa Showcase
+                  </span>
+                </div>
+                <h4 className="text-xs font-bold text-white truncate mt-0.5">
+                  {showcaseVillas[activeVillaIndex]?.title}
+                </h4>
+                <p className="text-[11px] text-slate-400 truncate">
+                  {showcaseVillas[activeVillaIndex]?.locality}, {showcaseVillas[activeVillaIndex]?.city}
+                </p>
+              </div>
 
-                alert('BookMyHomez AI Assistant is ready to help you find your dream property!');
-              }}
-              className="w-9 h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-600/30 transition cursor-pointer shrink-0"
-              title="Open AI Chat"
-            >
-              💬
-            </button>
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  onClick={() => setIsVillaPaused(!isVillaPaused)}
+                  className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition cursor-pointer"
+                  title={isVillaPaused ? 'Resume' : 'Pause'}
+                >
+                  {isVillaPaused ? <Play className="w-3 h-3" /> : <Pause className="w-3 h-3" />}
+                </button>
+                <button
+                  onClick={() => setActiveVillaIndex((prev) => (prev - 1 + showcaseVillas.length) % showcaseVillas.length)}
+                  className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition cursor-pointer"
+                  title="Previous"
+                >
+                  <ChevronLeft className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => setActiveVillaIndex((prev) => (prev + 1) % showcaseVillas.length)}
+                  className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition cursor-pointer"
+                  title="Next"
+                >
+                  <ChevronRight className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => setSelectedProperty(showcaseVillas[activeVillaIndex])}
+                  className="w-7 h-7 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center transition cursor-pointer shadow-md shadow-indigo-600/30"
+                  title="View Details"
+                >
+                  <Maximize2 className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
           </div>
+        )}
+
+        {/* Chat Widget - Now Placed on Right Side as a Small Icon with Make.com URL */}
+        <div className="fixed bottom-6 right-6 z-40 pointer-events-auto">
+          <button
+            onClick={() => {
+              fetch("https://hook.eu1.make.com/88j6fdn4rxco2o05vj2z3dyewuyhj8a2", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  event: "chat_clicked",
+                  timestamp: new Date().toISOString(),
+                  user: currentUser ? currentUser.email : "guest",
+                }),
+              }).catch(() => {});
+
+              alert('BookMyHomez AI Assistant is ready to help you find your dream property!');
+            }}
+            className="w-12 h-12 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-xl shadow-indigo-600/40 transition cursor-pointer text-xl"
+            title="Open AI Chat Assistant"
+          >
+            💬
+          </button>
         </div>
 
         {/* Modals */}
@@ -978,7 +1042,6 @@ export default function App() {
           currentUser={currentUser}
           onClose={() => {
             setSelectedProperty(null);
-            // URL clean up on modal close
             const url = new URL(window.location.href);
             url.searchParams.delete('propertyId');
             window.history.pushState({}, '', url);
