@@ -48,7 +48,7 @@ export const Chatbot: React.FC = () => {
     const lower = text.toLowerCase();
     let currentData = { ...userData };
 
-    // 1. Detect Intent if not already set
+    // 1. Detect Intent if not set
     if (!currentData.intent) {
       if (lower.includes('rent')) currentData.intent = 'rent';
       else if (lower.includes('buy') || lower.includes('konali') || lower.includes('purchase')) currentData.intent = 'buy';
@@ -56,37 +56,46 @@ export const Chatbot: React.FC = () => {
       else if (lower.includes('site') || lower.includes('website')) currentData.intent = 'site';
     }
 
-    // 2. Smart Extraction: Extract Location, BHK/Property Type, and Budget from any message dynamically
-    // Extract BHK
-    const bhkMatch = lower.match(/(\d\s*bhk|1bhk|2bhk|3bhk|4bhk|villa|plot|independent house)/i);
+    // 2. Extract Phone Number (Any 6 to 12 digit number or sequence)
+    const phoneMatch = text.match(/\d{6,}/);
+    if (phoneMatch) {
+      currentData.phone = phoneMatch[0];
+      // If user typed name and phone together like "ammu, 123456789"
+      const parts = text.split(',').map(p => p.trim());
+      if (parts.length > 1) {
+        currentData.name = parts[0];
+      }
+    } else if (currentData.phone && !currentData.name) {
+      currentData.name = text;
+    }
+
+    // 3. Extract BHK
+    const bhkMatch = lower.match(/(\d\s*bhk|1bhk|2bhk|3bhk|4bhk|villa|plot)/i);
     if (bhkMatch) {
       currentData.propertyType = bhkMatch[0].toUpperCase();
     }
 
-    // Extract Budget (Numbers with Rs, k, lakhs, or standard digits)
+    // 4. Extract Budget
     const budgetMatch = lower.match(/(rs\.?|inr)?\s*(\d+[\d,]*\s*(k|lakhs?|rs)?)/i);
-    if (budgetMatch && (lower.includes('lakh') || lower.includes('rs') || lower.includes('k') || /\d{4,}/.test(lower))) {
+    if (budgetMatch && (lower.includes('lakh') || lower.includes('rs') || lower.includes('k') || /\d{4,}/.test(lower)) && !phoneMatch) {
       currentData.budget = budgetMatch[0];
     }
 
-    // Extract Location (If text contains common patterns like commas or words after in/at)
-    // If user provided a comma-separated text like "hsr layout, 3bhk, 50000"
-    if (text.includes(',')) {
+    // 5. Extract Location
+    if (text.includes(',') && !phoneMatch) {
       const parts = text.split(',').map(p => p.trim());
-      // Usually the first part is location if it's not a bhk/budget
       if (parts[0] && !parts[0].toLowerCase().includes('bhk') && !parts[0].toLowerCase().includes('buy')) {
         currentData.location = parts[0];
       }
-    } else if (!currentData.location && !lower.includes('buy') && !lower.includes('rent') && !lower.includes('hi') && !lower.includes('hello')) {
-      // If it's a standalone input and we need a location
-      if (!bhkMatch && !budgetMatch && text.length > 2) {
-        currentData.location = text;
-      }
+    } else if (!currentData.location && !currentData.intent && text.length > 2) {
+      currentData.location = text;
+    } else if (currentData.intent && !currentData.location && !bhkMatch && !budgetMatch && !phoneMatch && text.length > 2) {
+      currentData.location = text;
     }
 
     setUserData(currentData);
 
-    // 3. AI Agent Decision Making (Check what's missing and ask naturally)
+    // 6. AI Agent Decision Flow
     let reply = "";
 
     if (currentData.intent === 'site') {
@@ -99,7 +108,7 @@ export const Chatbot: React.FC = () => {
       } else if (!currentData.phone) {
         reply = "Please share your Full Name and Phone Number to confirm the appointment.";
       } else {
-        reply = "🎉 Appointment Confirmed! Our team will reach out to you shortly.";
+        reply = `🎉 Appointment Confirmed for ${currentData.name || 'Client'} (${currentData.phone})! Our team will reach out to you shortly.`;
         setUserData({});
       }
     } else {
@@ -115,7 +124,7 @@ export const Chatbot: React.FC = () => {
       } else if (!currentData.phone) {
         reply = `Almost done! Please share your **Name and Phone Number** so our team can send matching properties directly to you.`;
       } else {
-        reply = `✅ Thank you! We have all your details:\n- Intent: ${currentData.intent.toUpperCase()}\n- Location: ${currentData.location}\n- Type: ${currentData.propertyType}\n- Budget: ${currentData.budget}\n\nOur team is curating the best matching properties and will call you at **${currentData.phone}** shortly!`;
+        reply = `✅ Thank you ${currentData.name || ''}! We have all your details:\n- Intent: ${currentData.intent.toUpperCase()}\n- Location: ${currentData.location}\n- Type: ${currentData.propertyType}\n- Budget: ${currentData.budget}\n\nOur team is curating matching properties and will call you at **${currentData.phone}** shortly!`;
         setUserData({}); // Reset after completion
       }
     }
