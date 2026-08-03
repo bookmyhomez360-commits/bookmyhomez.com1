@@ -382,7 +382,7 @@ export default function App() {
         {isUrlLoading && (
           <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-3 text-center text-amber-300 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 sticky top-0 z-50 backdrop-blur-md">
             <Clock className="w-4 h-4 animate-spin text-amber-400" />
-            <span>Property link load avvataniki konchem time paduthundi. Dhayachesi 2 nimishalu (2 mins) wait cheyandi, property details ikkada load avthayi.</span>
+            <span>Property details is loding please wait a minute.</span>
           </div>
         )}
 
