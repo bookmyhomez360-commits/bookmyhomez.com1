@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, ChevronLeft, ChevronRight, Sparkles, Maximize2, Minimize2, Play, Pause, MapPin, X } from 'lucide-react';
+import { Home, ChevronLeft, ChevronRight, Sparkles, Maximize2, Minimize2, Play, Pause, MapPin, X, Eye } from 'lucide-react';
 
 export interface VillaInfo {
   name: string;
@@ -105,33 +105,29 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
 
   const activeIndex = propActiveIndex !== undefined ? propActiveIndex : internalActiveIndex;
 
-  const changeIndex = (idx: number) => {
+  const setActiveIndex = (idx: number) => {
     if (onVillaChange) {
       onVillaChange(idx);
     }
     setInternalActiveIndex(idx);
   };
 
-  // ఆటోమేటిక్ స్లైడింగ్ కోసం పర్ఫెక్ట్ టైమర్
   useEffect(() => {
     if (!isPlaying) return;
 
     const timer = setInterval(() => {
-      const nextIdx = (activeIndex + 1) % REAL_VILLA_LIST.length;
-      changeIndex(nextIdx);
-    }, 5000);
+      setActiveIndex((activeIndex + 1) % REAL_VILLA_LIST.length);
+    }, 6000);
 
     return () => clearInterval(timer);
   }, [isPlaying, activeIndex]);
 
   const handlePrev = () => {
-    const prevIdx = (activeIndex - 1 + REAL_VILLA_LIST.length) % REAL_VILLA_LIST.length;
-    changeIndex(prevIdx);
+    setActiveIndex((activeIndex - 1 + REAL_VILLA_LIST.length) % REAL_VILLA_LIST.length);
   };
 
   const handleNext = () => {
-    const nextIdx = (activeIndex + 1) % REAL_VILLA_LIST.length;
-    changeIndex(nextIdx);
+    setActiveIndex((activeIndex + 1) % REAL_VILLA_LIST.length);
   };
 
   const currentVilla = REAL_VILLA_LIST[activeIndex];
@@ -171,11 +167,11 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
         })}
       </div>
 
-      {/* Floating Interactive Real House Showcase Bar (Left Side) */}
+      {/* Floating Interactive Real House Showcase Bar */}
       {isCollapsed ? (
         <button
           onClick={() => setIsCollapsed(false)}
-          className="fixed bottom-4 left-4 z-50 flex items-center gap-2 bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-indigo-500/40 px-3.5 py-2 rounded-full shadow-xl transition-all hover:scale-105 cursor-pointer text-xs font-bold"
+          className="fixed bottom-4 right-4 z-50 flex items-center gap-2 bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-indigo-500/40 px-3.5 py-2 rounded-full shadow-xl transition-all hover:scale-105 cursor-pointer text-xs font-bold"
           style={{ pointerEvents: 'auto' }}
           title="Expand Villa Showcase Bar"
         >
@@ -185,7 +181,7 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
         </button>
       ) : (
         <div
-          className="fixed bottom-4 left-4 z-50 flex items-center gap-2.5 bg-slate-900/95 backdrop-blur-xl border border-indigo-500/40 hover:border-indigo-500/80 p-2 sm:p-2.5 rounded-2xl shadow-2xl transition duration-300 max-w-[calc(100vw-2rem)]"
+          className="fixed bottom-4 right-4 z-50 flex items-center gap-2.5 bg-slate-900/95 backdrop-blur-xl border border-indigo-500/40 hover:border-indigo-500/80 p-2 sm:p-2.5 rounded-2xl shadow-2xl transition duration-300 max-w-[calc(100vw-2rem)]"
           style={{ pointerEvents: 'auto' }}
         >
           <div className="w-9 h-9 rounded-lg overflow-hidden border border-amber-400/50 shadow-sm flex-shrink-0 relative">
