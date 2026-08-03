@@ -59,25 +59,31 @@ export default function App() {
 
   const [isUrlLoading, setIsUrlLoading] = useState(false);
 
-  // Chatbase & Make.com Webhook Integration
+  // Chatbase & Make.com Webhook Integration (Full Details & Transcript)
   useEffect(() => {
-    // 1. Chatbase Script Load చేసుట
     const script = document.createElement('script');
     script.src = 'https://www.chatbase.co/embed.min.js';
-    // మీ Chatbase Bot ID ని ఇక్కడ సెట్ చేయండి (ఉదాహరణకు: id="YOUR_CHATBASE_BOT_ID")
     script.setAttribute('domain', 'www.chatbase.co');
     document.body.appendChild(script);
 
-    // 2. Chat/Lead డేటాను Make.com వెబ్‌హుక్‌కు పంపే ఈవెంట్ లిజనర్
     const handleChatbaseMessage = (event: MessageEvent) => {
-      // Chatbase నుండి వచ్చే ఈవెంట్స్ లేదా లీడ్స్ డేటాను ఇక్కడ హ్యాండ్ చేయవచ్చు
-      if (event.data && event.data.type === 'CHATBASE_LEAD_SUBMITTED') {
+      if (event.data) {
+        const payloadData = {
+          type: event.data.type || 'CHAT_MESSAGE',
+          name: event.data.name || event.data.userName || event.data.lead?.name || 'Guest User',
+          phone: event.data.phone || event.data.phoneNumber || event.data.lead?.phone || 'Not Provided',
+          email: event.data.email || event.data.lead?.email || 'Not Provided',
+          message: event.data.message || event.data.transcript || event.data.text || JSON.stringify(event.data),
+          timestamp: new Date().toISOString(),
+          raw: event.data
+        };
+
         fetch('https://hook.eu1.make.com/88j6fdn4rxco2o05vj2z3dyewuyhj8a2', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(event.data),
+          body: JSON.stringify(payloadData),
         }).catch((err) => console.error('Webhook error:', err));
       }
     };
@@ -128,6 +134,7 @@ export default function App() {
     return properties.filter(p => p.category === 'Buy' || p.category === 'Short Stay').slice(0, 5);
   }, [properties]);
 
+  // Automatic Villa Showcase Slide Logic (Restored)
   useEffect(() => {
     if (isVillaPaused || showcaseVillas.length === 0) return;
     const interval = setInterval(() => {
