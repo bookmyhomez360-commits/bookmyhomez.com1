@@ -59,55 +59,6 @@ export default function App() {
 
   const [isUrlLoading, setIsUrlLoading] = useState(false);
 
-  // Chatbase & Make.com Webhook Integration (Enhanced for direct Chatbase event structures)
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://www.chatbase.co/embed.min.js';
-    script.setAttribute('domain', 'www.chatbase.co');
-    document.body.appendChild(script);
-
-    const handleChatbaseMessage = (event: MessageEvent) => {
-      try {
-        const data = event.data;
-        if (!data) return;
-
-        // Chatbase డేటాను పూర్తిగా క్యాప్చర్ చేయడానికి కింది లాజిక్ ఉపయోగపడుతుంది
-        const isChatbaseEvent = typeof data === 'object' && (data.type || data.event || data.messages || data.lead || data.name);
-        
-        if (isChatbaseEvent || (typeof data === 'string' && data.includes('chatbase'))) {
-          const payloadData = {
-            type: data.type || data.event || 'CHATBASE_LEAD',
-            name: data.name || data.userName || data.lead?.name || data.customerName || 'Guest User',
-            phone: data.phone || data.phoneNumber || data.lead?.phone || data.customerPhone || 'Not Provided',
-            email: data.email || data.lead?.email || data.customerEmail || 'Not Provided',
-            message: data.message || data.transcript || data.text || (Array.isArray(data.messages) ? JSON.stringify(data.messages) : JSON.stringify(data)),
-            timestamp: new Date().toISOString(),
-            raw: data
-          };
-
-          fetch('https://hook.eu1.make.com/88j6fdn4rxco2o05vj2z3dyewuyhj8a2', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payloadData),
-          }).catch((err) => console.error('Webhook error:', err));
-        }
-      } catch (e) {
-        console.error('Error parsing chatbase message', e);
-      }
-    };
-
-    window.addEventListener('message', handleChatbaseMessage);
-
-    return () => {
-      window.removeEventListener('message', handleChatbaseMessage);
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    };
-  }, []);
-
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('bmh_current_user');
     if (saved) {
@@ -153,6 +104,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, [isVillaPaused, showcaseVillas.length]);
 
+  // Property Link URL Handler (Opens specific property automatically based on propertyId)
   useEffect(() => {
     const checkUrlProperty = () => {
       const params = new URLSearchParams(window.location.search);
@@ -166,7 +118,7 @@ export default function App() {
             setSelectedProperty(found);
           }
           setIsUrlLoading(false);
-        }, 1500);
+        }, 800);
 
         return () => clearTimeout(timer);
       } else {
@@ -426,7 +378,7 @@ export default function App() {
         {isUrlLoading && (
           <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-3 text-center text-amber-300 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 sticky top-0 z-50 backdrop-blur-md">
             <Clock className="w-4 h-4 animate-spin text-amber-400" />
-            <span>Property link load avvataniki konchem time paduthundi. Dhayachesi 2 nimishalu (2 mins) wait cheyandi, property details ikkada load avthayi.</span>
+            <span>Property details load avtunnayi, தயவுசெய்து క్షణం వేచి ఉండండి...</span>
           </div>
         )}
 
