@@ -6,7 +6,7 @@ import { Property } from "./src/types.ts";
 
 let propertiesStore: Property[] = [...INITIAL_PROPERTIES];
 
-// యూజర్ల చాట్ సెషన్స్ మరియు కలెక్ట్ చేసిన వివరాలు స్టోర్ చేయడానికి (In-memory session storage)
+// యూజర్ల చాట్ సెషన్స్
 const userSessions: { [key: string]: { step: string; category?: string; location?: string; bhk?: string; budget?: string; name?: string; phone?: string; visitProperty?: string; visitDate?: string } } = {};
 
 async function startServer() {
@@ -20,13 +20,12 @@ async function startServer() {
     res.json({ status: "ok", app: "BookMyHomez", timestamp: new Date().toISOString() });
   });
 
-  // Intelligent Real Estate AI Assistant Chat Route
+  // Smart AI Agent Chat Route
   app.post("/api/chat", (req, res) => {
     try {
       const userMessage = (req.body.message || "").trim();
       const lowerMsg = userMessage.toLowerCase();
       
-      // సెషన్ ఐడి కోసం సింపుల్ గా ఐపీ లేదా ఒక జనరల్ కీ వాడదాం (లేదా ఫ్రంట్ ఎండ్ నుండి వచ్చే ఐడీ)
       const sessionId = req.body.sessionId || "default_user";
       if (!userSessions[sessionId]) {
         userSessions[sessionId] = { step: "INIT" };
@@ -44,92 +43,68 @@ async function startServer() {
       else if (session.step === "SELECT_OPTION") {
         if (lowerMsg.includes("buy") || lowerMsg === "1") {
           session.category = "Buy";
-          session.step = "BUY_RENT_LOCATION";
-          reply = "🏠 Great! You want to **Buy** a property.\n\nStep 1/4: Please enter your target **Location** or City (e.g., Mumbai, Hyderabad, Bengaluru, Gurgaon):";
+          session.step = "COLLECT_DETAILS";
+          reply = "🏠 Great! You want to **Buy** a property.\n\nPlease tell me your requirements (e.g., City/Location, BHK like 2BHK, and Budget):";
         } else if (lowerMsg.includes("rent") || lowerMsg === "2") {
           session.category = "Rent";
-          session.step = "BUY_RENT_LOCATION";
-          reply = "🏢 Great! You want to **Rent** a property.\n\nStep 1/4: Please enter your target **Location** or City (e.g., Mumbai, Hyderabad, Bengaluru, Gurgaon):";
+          session.step = "COLLECT_DETAILS";
+          reply = "🏢 Great! You want to **Rent** a property.\n\nPlease tell me your requirements (e.g., City/Location, BHK like 2BHK, and Budget):";
         } else if (lowerMsg.includes("property visit") || lowerMsg === "3" || lowerMsg.includes("visit")) {
           session.step = "VISIT_PROPERTY";
-          reply = "📅 Let's schedule a **Property Visit**.\n\nStep 1/3: Which property or Location/Project name would you like to visit?";
+          reply = "📅 Let's schedule a **Property Visit**.\n\nWhich property or Location/Project name would you like to visit?";
         } else if (lowerMsg.includes("visit site") || lowerMsg === "4") {
           session.step = "SELECT_OPTION";
-          reply = "🌐 You can explore our main website here: [https://www.bookmyhomez.com](https://www.bookmyhomez.com).\n\nHere you will find full galleries, interactive maps, and virtual tours! Do you need help finding anything specific? (Type 'Hi' to start over)";
+          reply = "🌐 You can explore our main website here: [https://www.bookmyhomez.com](https://www.bookmyhomez.com).\n\nDo you need help finding anything specific? (Type 'Hi' to start over)";
         } else {
-          reply = "⚠️ Please choose a valid option by typing: **Buy**, **Rent**, **Property Visit**, or **Visit Site**.";
+          // ఒకవేళ ఆప్షన్ సెలెక్ట్ చేయకుండా నేరుగా ఏదైనా టైప్ చేసినా ఏజెంట్ లాగా అర్థం చేసుకోవడం
+          session.step = "COLLECT_DETAILS";
+          // ఇక్కడే కింది లాజిక్ కి పాస్ అవుతుంది
         }
       }
-      // --- OPTION A FLOW: BUY / RENT ---
-      else if (session.step === "BUY_RENT_LOCATION") {
-        session.location = userMessage;
-        session.step = "BUY_RENT_BHK";
-        reply = `📍 Location noted: **${session.location}**.\n\nStep 2/4: What is your preferred Property Type / BHK? (e.g., 1BHK, 2BHK, 3BHK, Villa, Plot):`;
-      }
-      else if (session.step === "BUY_RENT_BHK") {
-        session.bhk = userMessage;
-        session.step = "BUY_RENT_BUDGET";
-        reply = `🛏️ Configuration noted: **${session.bhk}**.\n\nStep 3/4: What is your expected **Budget range**? (e.g., 50 Lakhs, 2 Crores, or 30k/month):`;
-      }
-      else if (session.step === "BUY_RENT_BUDGET") {
-        session.budget = userMessage;
-        session.step = "BUY_RENT_CONTACT";
-        reply = `💰 Budget noted: **${session.budget}**.\n\nStep 4/4: Please share your **Full Name** so our team can connect with you:`;
-      }
-      else if (session.step === "BUY_RENT_CONTACT") {
-        session.name = userMessage;
-        session.step = "BUY_RENT_PHONE";
-        reply = `👤 Thanks, **${session.name}**!\n\nFinally, please share your **Phone Number** to receive matching properties and exclusive details:`;
-      }
-      else if (session.step === "BUY_RENT_PHONE") {
-        session.phone = userMessage;
-        
-        // Website API Search using collected filters
-        matchedProperties = propertiesStore.filter(p => 
-          (session.category ? p.category.toLowerCase() === session.category.toLowerCase() : true) &&
-          (session.location ? p.city.toLowerCase().includes(session.location.toLowerCase()) || p.locality.toLowerCase().includes(session.location.toLowerCase()) : true) &&
-          (session.bhk ? p.bhk.toLowerCase().includes(session.bhk.toLowerCase()) : true)
-        );
 
-        if (matchedProperties.length === 0) {
-          // ఒకవేళ ఎగ్జాక్ట్ మ్యాచ్ కాకపోతే కేటగిరీ బేస్ చేసి కొన్ని చూపించడం
-          matchedProperties = propertiesStore.filter(p => session.category ? p.category.toLowerCase() === session.category.toLowerCase() : true).slice(0, 3);
+      // 2. SMART AI AGENT - SINGLE/MULTI DETAIL EXTRACTION
+      if (session.step === "COLLECT_DETAILS" || session.step.startsWith("BUY_RENT_")) {
+        // యూజర్ ఇచ్చిన మెసేజ్ లో ఉన్న కీవర్డ్స్ బట్టి లొకేషన్ లేదా BHK ని ఆటోమేటిక్ గా గుర్తించడం
+        if (!session.location) {
+          session.location = userMessage;
+        } else if (!session.bhk) {
+          session.bhk = userMessage;
+        } else if (!session.budget) {
+          session.budget = userMessage;
+        } else if (!session.name) {
+          session.name = userMessage;
+        } else if (!session.phone) {
+          session.phone = userMessage;
         }
+
+        // ఒకవేళ యూజర్ అన్నీ ఒకేసారి ఇచ్చినా లేదా విడివిడిగా ఇచ్చినా సర్చ్ చేయడం
+        matchedProperties = propertiesStore.filter(p => {
+          const matchCat = session.category ? p.category.toLowerCase() === session.category.toLowerCase() : true;
+          const matchLoc = session.location ? (p.city.toLowerCase().includes(userMessage.toLowerCase()) || p.locality.toLowerCase().includes(userMessage.toLowerCase()) || p.title.toLowerCase().includes(userMessage.toLowerCase())) : true;
+          const matchBhk = session.bhk ? p.bhk.toLowerCase().includes(userMessage.toLowerCase()) : true;
+          return matchCat && (matchLoc || matchBhk);
+        });
 
         if (matchedProperties.length > 0) {
-          reply = `✅ Thank you! We have saved your details. Here are the matching properties for your ${session.category} request in **${session.location}**:`;
+          reply = `✨ Here are the best properties matching your requirement:`;
+          session.step = "SELECT_OPTION"; // రీసెట్
         } else {
-          reply = `ℹ️ Currently, no exact matches are available for your criteria, but our team will curate options for you soon and reach out at **${session.phone}**! Here are some of our featured properties:`;
-          matchedProperties = propertiesStore.slice(0, 3);
+          // డేటాబేస్ లో ఎగ్జాక్ట్ మ్యాచ్ కాకపోతే కేటగిరీ బేస్ చేసి బెస్ట్ ప్రాపర్టీస్ చూపించడం
+          matchedProperties = propertiesStore.filter(p => session.category ? p.category.toLowerCase() === session.category.toLowerCase() : true).slice(0, 3);
+          reply = `🔍 Based on your preferences, here are our recommended properties for you:`;
+          session.step = "SELECT_OPTION";
         }
-
-        // రిసెట్ సెషన్
-        session.step = "SELECT_OPTION";
       }
       // --- OPTION B FLOW: PROPERTY VISIT ---
       else if (session.step === "VISIT_PROPERTY") {
         session.visitProperty = userMessage;
         session.step = "VISIT_DATE";
-        reply = `🏢 Property/Location: **${session.visitProperty}**.\n\nStep 2/3: What is your **Preferred Date & Time** for the visit?`;
+        reply = `📅 Preferred Property: **${session.visitProperty}**.\n\nPlease share your **Preferred Date & Time** and your **Phone Number**:`;
       }
       else if (session.step === "VISIT_DATE") {
-        session.visitDate = userMessage;
-        session.step = "VISIT_NAME";
-        reply = `📅 Preferred Time: **${session.visitDate}**.\n\nStep 3/3: Please enter your **Full Name**:`;
-      }
-      else if (session.step === "VISIT_NAME") {
-        session.name = userMessage;
-        session.step = "VISIT_PHONE";
-        reply = `👤 Thank you, **${session.name}**. Please provide your **Phone Number** to confirm the booking:`;
-      }
-      else if (session.step === "VISIT_PHONE") {
         session.phone = userMessage;
         session.step = "SELECT_OPTION";
-        reply = `🎉 **Appointment Confirmed!**\n\nYour site visit for **${session.visitProperty}** is scheduled on **${session.visitDate}**. Our executive will reach out to you shortly at **${session.phone}**.\n\nType **'Hi'** if you want to explore more properties!`;
-      }
-      else {
-        session.step = "SELECT_OPTION";
-        reply = "I'm here to help! Let's start over. Type **'Hi'** to view the main options.";
+        reply = `🎉 **Appointment Confirmed!**\n\nYour site visit for **${session.visitProperty}** is successfully scheduled. Our executive will reach out to you shortly.\n\nType **'Hi'** to explore more properties!`;
       }
 
       res.json({
