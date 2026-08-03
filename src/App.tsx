@@ -42,7 +42,7 @@ import {
   Heart,
   PlusCircle,
   ArrowLeft,
-  Clock, // Added Clock icon for loading instruction
+  Clock,
 } from 'lucide-react';
 
 export default function App() {
@@ -56,10 +56,8 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'newest' | 'price_low' | 'price_high'>('newest');
 
-  // Loading instruction state for direct URL property links
   const [isUrlLoading, setIsUrlLoading] = useState(false);
 
-  // User State
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('bmh_current_user');
     if (saved) {
@@ -72,7 +70,6 @@ export default function App() {
     return null;
   });
 
-  // Saved Properties State
   const [savedProperties, setSavedProperties] = useState<number[]>(() => {
     const saved = localStorage.getItem('bmh_saved_properties');
     if (saved) {
@@ -85,24 +82,20 @@ export default function App() {
     return [1, 3];
   });
 
-  // Properties State
   const [properties, setProperties] = useState<Property[]>(INITIAL_PROPERTIES);
 
-  // Modals State
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [showWizardModal, setShowWizardModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // URL లో propertyId unte automatic ga modal open cheyadaniki (Fixed & synced properly with loading instruction support)
   useEffect(() => {
     const checkUrlProperty = () => {
       const params = new URLSearchParams(window.location.search);
       const propIdParam = params.get('propertyId');
       if (propIdParam) {
         setIsUrlLoading(true);
-        // 2 minutes (120000ms) or property data load ayye varaku instruction chupinchadam kosam simulation/check
         const timer = setTimeout(() => {
           const found = properties.find((p) => String(p.id) === propIdParam) || 
                         INITIAL_PROPERTIES.find((p) => String(p.id) === propIdParam);
@@ -110,7 +103,7 @@ export default function App() {
             setSelectedProperty(found);
           }
           setIsUrlLoading(false);
-        }, 1500); // User experience kosam short delay, real requirement ki taggatu adjust cheyochu
+        }, 1500);
 
         return () => clearTimeout(timer);
       } else {
@@ -124,7 +117,6 @@ export default function App() {
     return () => window.removeEventListener('popstate', checkUrlProperty);
   }, [properties]);
 
-  // Registered Users State
   const [registeredUsers, setRegisteredUsers] = useState<(User & { password?: string })[]>(() => {
     const saved = localStorage.getItem('bmh_registered_users');
     if (saved) {
@@ -138,7 +130,6 @@ export default function App() {
     return REGISTERED_USERS;
   });
 
-  // Sync users to localStorage
   useEffect(() => {
     localStorage.setItem('bmh_registered_users', JSON.stringify(registeredUsers));
   }, [registeredUsers]);
@@ -156,7 +147,6 @@ export default function App() {
     localStorage.setItem('bmh_saved_properties', JSON.stringify(savedProperties));
   }, [savedProperties]);
 
-  // Real-time Firestore sync & initial seeding
   useEffect(() => {
     seedInitialPropertiesIfEmpty();
     seedInitialUsersIfEmpty();
@@ -318,7 +308,6 @@ export default function App() {
     }
   };
 
-  // Filtered Properties Computation
   const filteredProperties = useMemo(() => {
     let result = properties.filter((item) => {
       const matchCat =
@@ -379,7 +368,6 @@ export default function App() {
   return (
     <div className="flex flex-col min-h-screen bg-[#090D16] text-slate-100 font-sans selection:bg-indigo-600 selection:text-white relative">
       
-      {/* 3D Villa Canvas Background */}
       <ThreeBackground
         activeVillaIndex={activeVillaIndex}
         onVillaChange={setActiveVillaIndex}
@@ -387,12 +375,10 @@ export default function App() {
 
       <div className="flex flex-col flex-1 min-h-screen relative z-10">
         
-        {/* Splash Screen */}
         {showSplashScreen && (
           <SplashScreen onDismiss={() => setShowSplashScreen(false)} />
         )}
 
-        {/* URL Loading Instruction Banner / Overlay */}
         {isUrlLoading && (
           <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-3 text-center text-amber-300 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 sticky top-0 z-50 backdrop-blur-md">
             <Clock className="w-4 h-4 animate-spin text-amber-400" />
@@ -400,7 +386,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Header */}
         <Header
           currentTab={currentTab}
           activeFilterCategory={activeFilterCategory}
@@ -414,13 +399,10 @@ export default function App() {
           logout={() => setCurrentUser(null)}
         />
 
-        {/* Main Content Area */}
         <main className="flex-1">
 
-          {/* EXPLORE / HOME TAB */}
           {currentTab === 'explore' && (
             <div>
-              {/* Hero Section */}
               <section className="relative min-h-[540px] lg:min-h-[620px] flex items-center justify-center px-4 py-16 overflow-hidden">
                 <div className="absolute inset-0 z-0 pointer-events-none">
                   <div className="absolute inset-0 bg-gradient-to-t from-[#090D16] via-transparent to-transparent"></div>
@@ -450,7 +432,6 @@ export default function App() {
                     );
                   })()}
 
-                  {/* Search Control Glass Panel */}
                   <div className="bg-slate-900/80 backdrop-blur-xl p-3 sm:p-5 rounded-3xl shadow-2xl border border-slate-700/60 max-w-3xl mx-auto text-left">
                     <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800/80 overflow-x-auto no-scrollbar">
                       {(
@@ -539,7 +520,6 @@ export default function App() {
                 </div>
               </section>
 
-              {/* Categories Navigation Grid */}
               <section className="max-w-7xl mx-auto px-4 py-12">
                 <div className="flex items-center justify-between mb-6">
                   <div>
@@ -633,10 +613,8 @@ export default function App() {
             </div>
           )}
 
-          {/* LISTINGS CATEGORY VIEW */}
           {currentTab === 'listings' && (
             <section className="max-w-7xl mx-auto px-4 py-8">
-              {/* Category Header Banner */}
               <div className="bg-gradient-to-r from-slate-900 via-slate-900/90 to-indigo-950/30 p-6 sm:p-8 rounded-3xl border border-slate-800 mb-8">
                 <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
                   <button
@@ -698,7 +676,6 @@ export default function App() {
                   ))}
                 </div>
 
-                {/* Rent Sub-Filters / Options */}
                 {activeFilterCategory === 'Rent' && (
                   <div className="flex items-center gap-2 my-3 overflow-x-auto pb-1">
                     <button
@@ -735,7 +712,6 @@ export default function App() {
                 )}
               </div>
 
-              {/* Filter Bar */}
               <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 mb-8 grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1 ml-1">
@@ -802,7 +778,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Grid or Empty */}
               {filteredProperties.length === 0 ? (
                 <div className="text-center py-20 bg-slate-900/40 rounded-3xl border border-slate-800">
                   <SearchX className="w-12 h-12 text-slate-700 mx-auto mb-4" />
@@ -838,7 +813,6 @@ export default function App() {
             </section>
           )}
 
-          {/* FAVORITES TAB */}
           {currentTab === 'favorites' && (
             <section className="max-w-7xl mx-auto px-4 py-10">
               <div className="flex items-center justify-between mb-8">
@@ -890,7 +864,6 @@ export default function App() {
             </section>
           )}
 
-          {/* MY PROPERTIES TAB */}
           {currentTab === 'my_properties' && (
             <section className="max-w-7xl mx-auto px-4 py-10">
               <div className="flex items-center justify-between mb-8">
@@ -948,13 +921,11 @@ export default function App() {
 
         </main>
 
-        {/* Modals */}
         <PropertyDetailsModal
           property={selectedProperty}
           currentUser={currentUser}
           onClose={() => {
             setSelectedProperty(null);
-            // URL clean up on modal close
             const url = new URL(window.location.href);
             url.searchParams.delete('propertyId');
             window.history.pushState({}, '', url);
@@ -974,7 +945,6 @@ export default function App() {
         />
 
         <AuthModal
-          isOpen={showAuthManager} // Keeping AuthModal props aligned
           isOpen={showAuthModal}
           googleAccounts={GOOGLE_ACCOUNTS}
           registeredUsers={registeredUsers}
@@ -998,7 +968,6 @@ export default function App() {
           }}
         />
 
-        {/* Footer */}
         <Footer
           navigateToCategory={navigateToCategory}
           filterByLocation={filterByLocation}
