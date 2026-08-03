@@ -1,104 +1,150 @@
-import React, { useState } from 'react';
-import './Chatbot.css';
+#bmh-chat-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999999;
+  font-family: Arial, sans-serif;
+}
 
-export default function Chatbot() {
-  const [chatOpen, setChatOpen] = useState(false);
-  const [messages, setMessages] = useState<Array<{ text: string; sender: 'user' | 'bot'; isHtml?: boolean }>>([
-    { text: "Hello! Welcome to Bookmyhomez. How can I help you find your dream property today?", sender: 'bot' }
-  ]);
-  const [input, setInput] = useState('');
+#bmh-chat-toggle {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
 
-  const toggleChat = () => setChatOpen(!chatOpen);
+#bmh-chat-window {
+  width: 350px;
+  height: 500px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 999999;
+}
 
-  const sendMessage = async (textToSend?: string) => {
-    const messageText = textToSend || input;
-    if (!messageText.trim()) return;
+.bmh-chat-header {
+  background: #007bff;
+  color: white;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
 
-    // యూజర్ మెసేజ్ యాడ్ చేయడం
-    const newMessages = [...messages, { text: messageText, sender: 'user' as const }];
-    setMessages(newMessages);
-    if (!textToSend) setInput('');
+.bmh-chat-header button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
 
-    try {
-      // ఒకవేళ Railway బ్యాకెండ్ లైవ్ URL ఉంటే ఇక్కడ ఇవ్వండి లేదా '/api/chat' వాడండి
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: messageText })
-      });
-      const data = await response.json();
+#bmh-chat-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #f9f9f9;
+}
 
-      let botResponses = [];
-      if (data.reply) {
-        botResponses.push({ text: data.reply, sender: 'bot' as const });
-      }
-      
-      // ప్రాపర్టీ కార్డ్స్ ఉంటే వాటిని HTML రూపంలో యాడ్ చేయడం
-      if (data.properties && data.properties.length > 0) {
-        data.properties.forEach((prop: any) => {
-          const cardHtml = `
-            <div class="bmh-property-card">
-              <img src="${prop.image}" alt="${prop.title}" />
-              <strong>${prop.title}</strong><br/>
-              <span>${prop.configuration} | ₹${prop.price}</span><br/>
-            </div>
-          `;
-          botResponses.push({ text: cardHtml, sender: 'bot' as const, isHtml: true });
-        });
-      }
+.bmh-message {
+  padding: 8px 12px;
+  border-radius: 8px;
+  max-width: 80%;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
 
-      setMessages(prev => [...prev, ...botResponses]);
-    } catch (err) {
-      setMessages(prev => [...prev, { text: "Sorry, something went wrong.", sender: 'bot' }]);
-    }
-  };
+.bmh-bot {
+  background: #e2e8f0;
+  color: #333;
+  align-self: flex-start;
+}
 
-  return (
-    <div id="bmh-chat-container">
-      <button id="bmh-chat-toggle" onClick={toggleChat}>💬 Chat with us</button>
+.bmh-user {
+  background: #007bff;
+  color: white;
+  align-self: flex-end;
+}
 
-      {chatOpen && (
-        <div id="bmh-chat-window">
-          <div className="bmh-chat-header">
-            <span>Bookmyhomez Assistant</span>
-            <button onClick={toggleChat}>X</button>
-          </div>
-          
-          <div id="bmh-chat-messages">
-            {messages.map((msg, index) => (
-              <div key={index} className={`bmh-message bmh-${msg.sender}`}>
-                {msg.isHtml ? (
-                  <div dangerouslySetInnerHTML={{ __html: msg.text }} />
-                ) : (
-                  msg.text
-                )}
-              </div>
-            ))}
-          </div>
+#bmh-quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 8px;
+  background: #fff;
+  border-top: 1px solid #eee;
+}
 
-          <div id="bmh-quick-replies">
-            <button onClick={() => sendMessage('Buy')}>Buy</button>
-            <button onClick={() => sendMessage('Rent')}>Rent</button>
-            <button onClick={() => sendMessage('Short Stay')}>Short Stay</button>
-            <button onClick={() => sendMessage('Visit a Site')}>Visit a Site</button>
-          </div>
+#bmh-quick-replies button {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 6px 10px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 12px;
+}
 
-          <div className="bmh-chat-input-area">
-            <input 
-              type="text" 
-              value={input} 
-              onChange={(e) => setInput(e.target.value)} 
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  sendMessage();
-                }
-              }}
-              placeholder="Type your requirement..." 
-            />
-            <button onClick={() => sendMessage()}>Send</button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+#bmh-quick-replies button:hover {
+  background: #007bff;
+  color: white;
+}
+
+.bmh-chat-input-area {
+  display: flex;
+  border-top: 1px solid #ddd;
+  padding: 10px;
+  background: #fff;
+  align-items: center;
+}
+
+.bmh-chat-input-area input {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 4px;
+  outline: none;
+  font-size: 14px;
+  background: #fff;
+  color: #000;
+  pointer-events: auto !important;
+}
+
+.bmh-chat-input-area button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  margin-left: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.bmh-property-card {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px;
+  background: white;
+  width: 90%;
+}
+
+.bmh-property-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
 }
