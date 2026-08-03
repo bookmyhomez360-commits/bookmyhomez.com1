@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MessageSquare, X, Send } from 'lucide-react';
+import { GoogleGenAI } from '@google/genai';
 import { INITIAL_PROPERTIES } from '../data/initialProperties';
 
 interface Message {
@@ -10,60 +11,14 @@ interface Message {
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [step, setStep] = useState<'main' | 'collect_details' | 'visit_property' | 'visit_date' | 'visit_contact'>('main');
-  
-  const [category, setCategory] = useState<'Buy' | 'Rent'>('Buy');
-  const [location, setLocation] = useState('');
-  const [bhk, setBhk] = useState('');
-  const [budget, setBudget] = useState('');
-  
-  const [visitProp, setVisitProp] = useState('');
-  const [visitDate, setVisitDate] = useState('');
-
   const [messages, setMessages] = useState<Message[]>([
     { 
       sender: 'bot', 
-      text: 'Hello! Welcome to BookMyHomez — Your Happy Home Partner. How can I help you today? Please choose an option or tell me what you are looking for (e.g., "I want to rent a 3BHK in Hyderabad under 50000").\n\n1️⃣ Buy\n2️⃣ Rent\n3️⃣ Property Visit\n4️⃣ Visit Site' 
+      text: 'Hello! I am your BookMyHomez Assistant. How can I help you find your dream home, rent, or schedule a visit today?' 
     }
   ]);
 
-  const parseUserIntent = (text: string) => {
-    const lower = text.toLowerCase();
-    
-    // Detect Category
-    if (lower.includes('rent') || lower.includes('lease')) {
-      setCategory('Rent');
-    } else if (lower.includes('buy') || lower.includes('purchase') || lower.includes('sale')) {
-      setCategory('Buy');
-    }
-
-    // Detect BHK
-    const bhkMatch = text.match(/(\d+)\s*(bhk|bed)/i);
-    if (bhkMatch) {
-      setBhk(bhkMatch[1] + ' BHK');
-    }
-
-    // Detect Numbers / Budget
-    const numbers = text.match(/\d+/g);
-    if (numbers && numbers.length > 0) {
-      // Find a number that looks like a budget (> 1000)
-      const possibleBudget = numbers.find(n => parseInt(n) > 1000);
-      if (possibleBudget) {
-        setBudget(possibleBudget);
-      }
-    }
-
-    // Detect Common Locations
-    const knownLocations = ['hyderabad', 'bengaluru', 'bangalore', 'mumbai', 'pune', 'chennai', 'hsr', 'jubilee hills', 'indiranagar', 'koramangala'];
-    for (const loc of knownLocations) {
-      if (lower.includes(loc)) {
-        setLocation(loc);
-        break;
-      }
-    }
-  };
-
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userText = input.trim();
@@ -71,68 +26,59 @@ export function Chatbot() {
     setMessages(newMessages);
     setInput('');
 
-    setTimeout(() => {
-      let botReply = "";
+    try {
+      // Initialize Gemini AI client (using environment API key or safe fallback)
+      const ai = new GoogleGenAI({ apiKey: process.env.VITE_GEMINI_API_KEY || '' });
 
-      if (step === 'main') {
-        const lower = userText.toLowerCase();
-        
-        if (lower.includes('4') || lower.includes('site') || lower.includes('website')) {
-          botReply = "Here is the direct link to our official website:\n👉 [BookMyHomez Website](https://www.bookmyhomez.com)\n\nYou can explore full galleries, maps, and virtual tours there!";
-          setMessages(prev => [...prev, ...[{ sender: 'bot' as const, text: botReply }]]);
-          return;
-        }
+      // Prepare property database context for AI
+      const propertyContext = JSON.stringify(INITIAL_PROPERTIES.map(p => ({
+        id: p.id,
+        title: p.title,
+        location: p.location,
+        price: p.price,
+        type: p.bhk || p.type,
+        listingType: p.listingType
+      })));
 
-        if (lower.includes('3') || lower.includes('visit')) {
-          setStep('visit_property');
-          botReply = "Which property or project name would you like to visit?";
-          setMessages(prev => [...prev, ...[{ sender: 'bot' as const, text: botReply }]]);
-          return;
-        }
+      const prompt = `
+        You are an intelligent, friendly Real Estate AI Assistant for BookMyHomez (https://www.bookmyhomez.com).
+        Your goal is to help users find suitable properties, schedule property visits, or guide them.
+        Here is our current available properties list in JSON format:
+        ${propertyContext}
 
-        // Smart agent parsing from natural sentence
-        parseUserIntent(userText);
-        setStep('collect_details');
-        botReply = "Got it! Please share your **Full Name and Phone Number** so we can show you the matching properties right away.";
+        Rules:
+        1. Speak strictly in English. Keep it professional, polite, and helpful using emojis and bullet points.
+        2. If the user asks for properties (Buy/Rent) with a location, BHK, or budget, search the provided database list and recommend matching properties. Include the direct link format for each match using: https://www.bookmyhomez.com/?propertyId=[id]
+        3. If the user wants to schedule a property visit, ask for their preferred date, time, full name, and phone number.
+        4. If no exact match is found, politely state that our team will curate options for them soon.
 
-      } else if (step === 'collect_details') {
-        const userName = userText;
-        setStep('main');
+        Conversation History / User Message:
+        "${userText}"
+      `;
 
-        // Filter matching website properties dynamically
-        const matches = INITIAL_PROPERTIES.filter(p => {
-          const matchesCat = p.listingType?.toLowerCase() === category.toLowerCase();
-          const matchesLoc = !location || p.location?.toLowerCase().includes(location.toLowerCase()) || p.title?.toLowerCase().includes(location.toLowerCase());
-          const matchesBhk = !bhk || p.bhk?.toLowerCase().includes(bhk.toLowerCase()) || p.title?.toLowerCase().includes(bhk.toLowerCase());
-          return matchesCat || matchesLoc || matchesBhk;
-        }).slice(0, 3);
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+      });
 
-        if (matches.length > 0) {
-          botReply = `Thank you ${userName}! Based on your requirements, here are matching properties from our website:\n\n`;
-          matches.forEach(p => {
-            const propertyLink = `https://www.bookmyhomez.com/?propertyId=${p.id}`;
-            botReply += `🏠 **${p.title}**\n📍 Location: ${p.location}\n🛏️ Type: ${p.bhk || 'N/A'}\n💰 Price: ₹${p.price || 'Contact for Price'}\n🔗 [View Property Direct](${propertyLink})\n\n`;
-          });
-        } else {
-          botReply = `Thank you ${userName}! Currently, no exact matches are available for your filters, but our team will curate options for you and reach out shortly.`;
-        }
-        botReply += "\nHow else can I help you? Choose Buy, Rent, or Property Visit.";
+      const botReply = response.text || "I am here to help you find properties on BookMyHomez!";
+      setMessages(prev => [...prev, { sender: 'bot', text: botReply }]);
 
-      } else if (step === 'visit_property') {
-        setVisitProp(userText);
-        setStep('visit_date');
-        botReply = "What is your preferred date and time for the visit? (e.g., Tomorrow at 4 PM)";
-      } else if (step === 'visit_date') {
-        setVisitDate(userText);
-        setStep('visit_contact');
-        botReply = "Please provide your **Full Name and Phone Number** to finalize the visit schedule.";
-      } else if (step === 'visit_contact') {
-        setStep('main');
-        botReply = `✅ Visit Confirmed! We have scheduled your visit for **${visitProp}** on **${visitDate}**. Our team will call you shortly.\n\nNeed anything else?`;
+    } catch (error) {
+      // Fallback response if API key is missing or encounters network issue
+      let fallbackReply = "I can help you Buy, Rent, or Book a Property Visit on BookMyHomez! Please let me know your preferred location and requirements.";
+      
+      const lower = userText.toLowerCase();
+      if (lower.includes('hyderabad') || lower.includes('bengaluru') || lower.includes('mumbai') || lower.includes('rent') || lower.includes('buy')) {
+        const matches = INITIAL_PROPERTIES.slice(0, 2);
+        fallbackReply = "Here are some matching properties from our website:\n\n";
+        matches.forEach(p => {
+          fallbackReply += `🏠 **${p.title}**\n📍 Location: ${p.location}\n💰 Price: ₹${p.price}\n🔗 https://www.bookmyhomez.com/?propertyId=${p.id}\n\n`;
+        });
       }
 
-      setMessages(prev => [...prev, { sender: 'bot', text: botReply }]);
-    }, 600);
+      setMessages(prev => [...prev, { sender: 'bot', text: fallbackReply }]);
+    }
   };
 
   return (
@@ -165,13 +111,11 @@ export function Chatbot() {
                     <div>
                       {msg.text.split('\n').map((line, i) => {
                         if (line.includes('http')) {
-                          const parts = line.split('](');
-                          const url = parts[1]?.replace(')', '');
-                          const label = parts[0]?.replace('[', '');
+                          const cleanUrl = line.replace('https://', '').trim();
                           return (
                             <div key={i} className="mt-1">
-                              <a href={url} target="_blank" rel="noopener noreferrer" className="text-indigo-400 underline font-semibold hover:text-indigo-300">
-                                {label || url} 🔗
+                              <a href={line.trim()} target="_blank" rel="noopener noreferrer" className="text-indigo-400 underline font-semibold hover:text-indigo-300">
+                                View Property Direct 🔗
                               </a>
                             </div>
                           );
@@ -193,7 +137,7 @@ export function Chatbot() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Type your requirements or message..."
+              placeholder="Ask anything about properties..."
               className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
             />
             <button
