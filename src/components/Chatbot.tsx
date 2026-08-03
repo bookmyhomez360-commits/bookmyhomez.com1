@@ -21,7 +21,7 @@ export default function Chatbot() {
 
     try {
       // ఇక్కడ మీ Railway బ్యాకెండ్ లైవ్ URL ని ఇవ్వండి (చివర్లో /api/chat ఉండాలి)
-      const BACKEND_URL = 'https://YOUR_RAILWAY_BACKEND_URL.up.railway.app/api/chat';
+      const BACKEND_URL = 'https://www.bookmyhomez.com/api/chat';
 
       const response = await fetch(BACKEND_URL, {
         method: 'POST',
