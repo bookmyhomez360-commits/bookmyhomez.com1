@@ -974,6 +974,7 @@ export default function App() {
         />
 
         <AuthModal
+          isOpen={showAuthManager} // Keeping AuthModal props aligned
           isOpen={showAuthModal}
           googleAccounts={GOOGLE_ACCOUNTS}
           registeredUsers={registeredUsers}
