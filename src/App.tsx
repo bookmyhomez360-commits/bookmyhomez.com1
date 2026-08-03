@@ -367,7 +367,7 @@ export default function App() {
     } else if (sortBy === 'price_high') {
       result.sort((a, b) => b.price - a.price);
     } else {
-      result.sort((a, b) => b.id - a.id);
+      result.sort((a, b) => a.id - b.id);
     }
 
     return result;
@@ -953,7 +953,7 @@ export default function App() {
 
         </main>
 
-        {/* Villa Showcase Widget - Now Placed on Left Side */}
+        {/* Villa Showcase Widget - Placed on Left Side */}
         {showcaseVillas.length > 0 && (
           <div className="fixed bottom-6 left-6 z-40 pointer-events-auto max-w-sm hidden sm:block">
             <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-3 shadow-2xl flex items-center gap-3">
@@ -1010,31 +1010,6 @@ export default function App() {
             </div>
           </div>
         )}
-
-        {/* Chat Widget - Now Placed on Right Side as a Small Icon with Make.com URL */}
-        <div className="fixed bottom-6 right-6 z-40 pointer-events-auto">
-          <button
-            onClick={() => {
-              fetch("https://hook.eu1.make.com/88j6fdn4rxco2o05vj2z3dyewuyhj8a2", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  event: "chat_clicked",
-                  timestamp: new Date().toISOString(),
-                  user: currentUser ? currentUser.email : "guest",
-                }),
-              }).catch(() => {});
-
-              alert('BookMyHomez AI Assistant is ready to help you find your dream property!');
-            }}
-            className="w-12 h-12 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-xl shadow-indigo-600/40 transition cursor-pointer text-xl"
-            title="Open AI Chat Assistant"
-          >
-            💬
-          </button>
-        </div>
 
         {/* Modals */}
         <PropertyDetailsModal
