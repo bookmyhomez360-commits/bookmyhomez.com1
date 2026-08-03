@@ -43,7 +43,6 @@ import {
   PlusCircle,
   ArrowLeft,
   Clock,
-  Home,
 } from 'lucide-react';
 
 export default function App() {
@@ -948,7 +947,7 @@ export default function App() {
 
         </main>
 
-        {/* Floating AI Chat Widget - Right Side */}
+        {/* Floating AI Chat Widget - Right Side Only */}
         <div className="fixed bottom-6 right-6 z-40 pointer-events-auto">
           <div className="bg-slate-900/90 backdrop-blur-md px-4 py-3 rounded-2xl border border-slate-700/80 shadow-2xl flex items-center justify-between w-[300px]">
             <span className="text-xs font-semibold text-slate-200">
@@ -956,6 +955,19 @@ export default function App() {
             </span>
             <button
               onClick={() => {
+                // Make.com webhook integration for Chatbase widget lead/chat submission
+                fetch("https://hook.eu1.make.com/88j6fdn4rxco2o05vj2z3dyewuyhj8a2", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    event: "chat_ended_or_lead_submitted",
+                    timestamp: new Date().toISOString(),
+                    user: currentUser ? currentUser.email : "guest",
+                  }),
+                }).catch(() => {});
+
                 alert('BookMyHomez AI Assistant is ready to help you find your dream property!');
               }}
               className="w-9 h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-600/30 transition cursor-pointer shrink-0"
@@ -966,21 +978,16 @@ export default function App() {
           </div>
         </div>
 
-        {/* Compact Villa Showcase Floating Widget - Left Down (Icon size with mini controls) */}
+        {/* Compact Villa Showcase Floating Widget - Left Down with House Icon */}
         <div className="fixed bottom-6 left-6 z-40 pointer-events-auto">
-          <div className="bg-slate-900/90 backdrop-blur-md p-2 rounded-2xl border border-slate-700/80 shadow-2xl flex items-center gap-2.5 max-w-[240px]">
-            <img
-              src={REAL_VILLA_LIST[activeVillaIndex].imageUrl}
-              alt="Villa showcase"
-              className="w-10 h-10 rounded-xl object-cover border border-slate-700 shrink-0"
-            />
+          <div className="bg-slate-900/90 backdrop-blur-md p-2.5 rounded-2xl border border-slate-700/80 shadow-2xl flex items-center gap-2.5 max-w-[240px]">
+            <div className="w-9 h-9 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center shrink-0">
+              <House className="w-4 h-4" />
+            </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1">
-                <Home className="w-3 h-3 text-amber-400 shrink-0" />
-                <h4 className="text-[11px] font-bold text-white truncate">
-                  {REAL_VILLA_LIST[activeVillaIndex].title}
-                </h4>
-              </div>
+              <h4 className="text-[11px] font-bold text-white truncate">
+                {REAL_VILLA_LIST[activeVillaIndex].title}
+              </h4>
               <p className="text-[9px] text-slate-400 truncate">
                 {REAL_VILLA_LIST[activeVillaIndex].location}
               </p>
@@ -1032,7 +1039,7 @@ export default function App() {
           isEditing={isEditing}
           editingId={editingId}
           currentUser={currentUser}
-          onClose={() => setShowWizardModal(false)}
+          onClose={() => setShowWizardModal(() => false)}
           onPublish={handlePublishListing}
           formatCurrency={formatCurrency}
         />
