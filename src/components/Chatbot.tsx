@@ -18,12 +18,11 @@ export const Chatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
-      text: "👋 Hello! Welcome to BookMyHomez. How can I help you today?\n\n- Buy\n- Rent\n- Property Visit\n- Visit Site",
+      text: "👋 Hello! Welcome to BookMyHomez. How can I help you today? (Buy / Rent / Property Visit / Visit Site)",
       sender: 'bot'
     }
   ]);
   const [input, setInput] = useState('');
-  const [step, setStep] = useState<'MENU' | 'COLLECTING' | 'VISIT_PROPERTY' | 'VISIT_DATETIME' | 'VISIT_CONTACT'>('MENU');
   const [userData, setUserData] = useState<UserData>({});
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -41,61 +40,84 @@ export const Chatbot: React.FC = () => {
     setInput('');
 
     setTimeout(() => {
-      processSmartResponse(userMessage);
+      processAIAgentResponse(userMessage);
     }, 500);
   };
 
-  const processSmartResponse = (text: string) => {
+  const processAIAgentResponse = (text: string) => {
     const lower = text.toLowerCase();
+    let currentData = { ...userData };
+
+    // 1. Detect Intent if not already set
+    if (!currentData.intent) {
+      if (lower.includes('rent')) currentData.intent = 'rent';
+      else if (lower.includes('buy') || lower.includes('konali') || lower.includes('purchase')) currentData.intent = 'buy';
+      else if (lower.includes('visit') || lower.includes('chudali')) currentData.intent = 'visit';
+      else if (lower.includes('site') || lower.includes('website')) currentData.intent = 'site';
+    }
+
+    // 2. Smart Extraction: Extract Location, BHK/Property Type, and Budget from any message dynamically
+    // Extract BHK
+    const bhkMatch = lower.match(/(\d\s*bhk|1bhk|2bhk|3bhk|4bhk|villa|plot|independent house)/i);
+    if (bhkMatch) {
+      currentData.propertyType = bhkMatch[0].toUpperCase();
+    }
+
+    // Extract Budget (Numbers with Rs, k, lakhs, or standard digits)
+    const budgetMatch = lower.match(/(rs\.?|inr)?\s*(\d+[\d,]*\s*(k|lakhs?|rs)?)/i);
+    if (budgetMatch && (lower.includes('lakh') || lower.includes('rs') || lower.includes('k') || /\d{4,}/.test(lower))) {
+      currentData.budget = budgetMatch[0];
+    }
+
+    // Extract Location (If text contains common patterns like commas or words after in/at)
+    // If user provided a comma-separated text like "hsr layout, 3bhk, 50000"
+    if (text.includes(',')) {
+      const parts = text.split(',').map(p => p.trim());
+      // Usually the first part is location if it's not a bhk/budget
+      if (parts[0] && !parts[0].toLowerCase().includes('bhk') && !parts[0].toLowerCase().includes('buy')) {
+        currentData.location = parts[0];
+      }
+    } else if (!currentData.location && !lower.includes('buy') && !lower.includes('rent') && !lower.includes('hi') && !lower.includes('hello')) {
+      // If it's a standalone input and we need a location
+      if (!bhkMatch && !budgetMatch && text.length > 2) {
+        currentData.location = text;
+      }
+    }
+
+    setUserData(currentData);
+
+    // 3. AI Agent Decision Making (Check what's missing and ask naturally)
     let reply = "";
 
-    if (step === 'MENU') {
-      if (lower.includes('buy') || lower.includes('rent') || lower.includes('konali') || lower.includes('bhk') || lower.includes('villa') || lower.includes('plot')) {
-        const intent = lower.includes('rent') ? 'rent' : 'buy';
-        setUserData({ ...userData, intent });
-        setStep('COLLECTING');
-        reply = `Great! Let's find your ${intent.toUpperCase()} property.\n\nStep 1: Please enter your target Location (e.g., Area, City).`;
-      } 
-      else if (lower.includes('property visit') || lower.includes('visit') || lower.includes('chudali')) {
-        setStep('VISIT_PROPERTY');
+    if (currentData.intent === 'site') {
+      reply = "You can explore our full gallery, interactive maps, and virtual tours directly on our main website: https://bookmyhomez.com";
+    } else if (currentData.intent === 'visit') {
+      if (!currentData.location) {
         reply = "Awesome! Which property or project name would you like to visit?";
-      } 
-      else if (lower.includes('site') || lower.includes('website')) {
-        reply = "You can explore our full gallery, interactive maps, and virtual tours directly on our main website: https://bookmyhomez.com";
-      } 
-      else {
-        reply = "Please select from our main options:\n- Buy\n- Rent\n- Property Visit\n- Visit Site";
+      } else if (!currentData.budget) {
+        reply = `Got it for ${currentData.location}. What is your preferred Date & Time for the visit?`;
+      } else if (!currentData.phone) {
+        reply = "Please share your Full Name and Phone Number to confirm the appointment.";
+      } else {
+        reply = "🎉 Appointment Confirmed! Our team will reach out to you shortly.";
+        setUserData({});
       }
-    } 
-    else if (step === 'COLLECTING') {
-      if (!userData.location) {
-        setUserData({ ...userData, location: text });
-        reply = `Step 2: What is your preferred Property Type? (e.g., 1BHK, 2BHK, 3BHK, Villa, Plot).`;
-      } else if (!userData.propertyType) {
-        setUserData({ ...userData, propertyType: text });
-        reply = `Step 3: What is your Budget range?`;
-      } else if (!userData.budget) {
-        setUserData({ ...userData, budget: text });
-        reply = `Step 4: Please provide your Name and Phone Number so our team can share matching properties.`;
-      } else if (!userData.phone) {
-        setUserData({ ...userData, phone: text });
-        setStep('MENU');
-        reply = `✅ Thank you! We have received your requirements.\n\nOur team will curate the best options and call you shortly at ${text}!`;
+    } else {
+      // Buy / Rent Flow
+      if (!currentData.intent) {
+        reply = "Welcome to BookMyHomez! Are you looking to **Buy** or **Rent** a property?";
+      } else if (!currentData.location) {
+        reply = `Great! Let's find your ${currentData.intent.toUpperCase()} property. Which **Location** or area are you looking into?`;
+      } else if (!currentData.propertyType) {
+        reply = `Noted location: **${currentData.location}**. What is your preferred **Property Type** (e.g., 1BHK, 2BHK, 3BHK, Villa)?`;
+      } else if (!currentData.budget) {
+        reply = `Got it (**${currentData.propertyType}** in **${currentData.location}**). What is your **Budget** range?`;
+      } else if (!currentData.phone) {
+        reply = `Almost done! Please share your **Name and Phone Number** so our team can send matching properties directly to you.`;
+      } else {
+        reply = `✅ Thank you! We have all your details:\n- Intent: ${currentData.intent.toUpperCase()}\n- Location: ${currentData.location}\n- Type: ${currentData.propertyType}\n- Budget: ${currentData.budget}\n\nOur team is curating the best matching properties and will call you at **${currentData.phone}** shortly!`;
+        setUserData({}); // Reset after completion
       }
-    }
-    else if (step === 'VISIT_PROPERTY') {
-      setUserData({ ...userData, location: text });
-      setStep('VISIT_DATETIME');
-      reply = `Great choice! What is your preferred Date & Time for the visit?`;
-    }
-    else if (step === 'VISIT_DATETIME') {
-      setUserData({ ...userData, budget: text });
-      setStep('VISIT_CONTACT');
-      reply = `Please share your Full Name and Phone Number to confirm the appointment.`;
-    }
-    else if (step === 'VISIT_CONTACT') {
-      setStep('MENU');
-      reply = `🎉 Appointment Confirmed!\n\nOur team will reach out to you shortly. Thank you for choosing BookMyHomez!`;
     }
 
     setMessages(prev => [...prev, { text: reply, sender: 'bot' }]);
@@ -113,13 +135,11 @@ export const Chatbot: React.FC = () => {
       {isOpen && (
         <div style={{ position: 'absolute', bottom: '80px', right: '0', width: '350px', height: '500px', background: '#ffffff', borderRadius: '12px', boxShadow: '0 5px 25px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column', overflow: 'hidden', border: '1px solid #ccc', zIndex: 99999 }}>
           
-          {/* Header */}
           <div style={{ background: '#075E54', color: 'white', padding: '15px', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>BookMyHomez Assistant</span>
             <button onClick={toggleChat} style={{ background: 'none', border: 'none', color: 'white', fontSize: '18px', cursor: 'pointer' }}>✕</button>
           </div>
 
-          {/* Chat Messages */}
           <div style={{ flex: 1, padding: '15px', overflowY: 'auto', background: '#efeae2', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {messages.map((msg, index) => (
               <div key={index} style={{ maxWidth: '85%', padding: '10px 14px', borderRadius: '8px', fontSize: '14px', lineHeight: '1.4', background: msg.sender === 'bot' ? '#ffffff' : '#dcf8c6', alignSelf: msg.sender === 'bot' ? 'flex-start' : 'flex-end', color: '#333', boxShadow: '0 1px 2px rgba(0,0,0,0.1)', whiteSpace: 'pre-line' }}>
@@ -129,7 +149,6 @@ export const Chatbot: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Area */}
           <div style={{ display: 'flex', padding: '10px', background: '#ffffff', borderTop: '1px solid #ddd', alignItems: 'center' }}>
             <input
               type="text"
