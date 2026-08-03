@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, ChevronLeft, ChevronRight, Sparkles, Maximize2, Minimize2, Play, Pause, MapPin, X, Eye } from 'lucide-react';
+import { Home, ChevronLeft, ChevronRight, Sparkles, Maximize2, Minimize2, Play, Pause, MapPin, X } from 'lucide-react';
 
 export interface VillaInfo {
   name: string;
@@ -105,29 +105,33 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
 
   const activeIndex = propActiveIndex !== undefined ? propActiveIndex : internalActiveIndex;
 
-  const setActiveIndex = (idx: number) => {
+  const changeIndex = (idx: number) => {
     if (onVillaChange) {
       onVillaChange(idx);
     }
     setInternalActiveIndex(idx);
   };
 
+  // ఆటోమేటిక్ స్లైడింగ్ కోసం పర్ఫెక్ట్ టైమర్
   useEffect(() => {
     if (!isPlaying) return;
 
     const timer = setInterval(() => {
-      setActiveIndex((activeIndex + 1) % REAL_VILLA_LIST.length);
-    }, 6000);
+      const nextIdx = (activeIndex + 1) % REAL_VILLA_LIST.length;
+      changeIndex(nextIdx);
+    }, 5000);
 
     return () => clearInterval(timer);
   }, [isPlaying, activeIndex]);
 
   const handlePrev = () => {
-    setActiveIndex((activeIndex - 1 + REAL_VILLA_LIST.length) % REAL_VILLA_LIST.length);
+    const prevIdx = (activeIndex - 1 + REAL_VILLA_LIST.length) % REAL_VILLA_LIST.length;
+    changeIndex(prevIdx);
   };
 
   const handleNext = () => {
-    setActiveIndex((activeIndex + 1) % REAL_VILLA_LIST.length);
+    const nextIdx = (activeIndex + 1) % REAL_VILLA_LIST.length;
+    changeIndex(nextIdx);
   };
 
   const currentVilla = REAL_VILLA_LIST[activeIndex];
@@ -167,7 +171,7 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
         })}
       </div>
 
-      {/* Floating Interactive Real House Showcase Bar */}
+      {/* Floating Interactive Real House Showcase Bar (Left Side) */}
       {isCollapsed ? (
         <button
           onClick={() => setIsCollapsed(false)}
