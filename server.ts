@@ -6,6 +6,9 @@ import { Property } from "./src/types.ts";
 
 let propertiesStore: Property[] = [...INITIAL_PROPERTIES];
 
+// యూజర్ల చాట్ సెషన్స్ మరియు కలెక్ట్ చేసిన వివరాలు స్టోర్ చేయడానికి (In-memory session storage)
+const userSessions: { [key: string]: { step: string; category?: string; location?: string; bhk?: string; budget?: string; name?: string; phone?: string; visitProperty?: string; visitDate?: string } } = {};
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -17,49 +20,116 @@ async function startServer() {
     res.json({ status: "ok", app: "BookMyHomez", timestamp: new Date().toISOString() });
   });
 
-  // Chatbot API Route with exact flow control
+  // Intelligent Real Estate AI Assistant Chat Route
   app.post("/api/chat", (req, res) => {
     try {
-      const userMessage = (req.body.message || "").toLowerCase().trim();
+      const userMessage = (req.body.message || "").trim();
+      const lowerMsg = userMessage.toLowerCase();
       
+      // సెషన్ ఐడి కోసం సింపుల్ గా ఐపీ లేదా ఒక జనరల్ కీ వాడదాం (లేదా ఫ్రంట్ ఎండ్ నుండి వచ్చే ఐడీ)
+      const sessionId = req.body.sessionId || "default_user";
+      if (!userSessions[sessionId]) {
+        userSessions[sessionId] = { step: "INIT" };
+      }
+      const session = userSessions[sessionId];
+
       let reply = "";
       let matchedProperties: Property[] = [];
 
-      // యూజర్ 'hi' లేదా హలో అని చెప్తే కేవలం ఆప్షన్లు మాత్రమే చూపించాలి (ప్రాపర్టీస్ రావు)
-      if (userMessage === "hi" || userMessage === "hello" || userMessage === "hey" || userMessage === "start") {
-        reply = "Hello! Welcome to Bookmyhomez. Please choose what you are looking for:";
-        matchedProperties = [];
+      // 1. GREETING & INITIAL OPTIONS
+      if (lowerMsg === "hi" || lowerMsg === "hello" || lowerMsg === "hey" || lowerMsg === "start" || session.step === "INIT") {
+        session.step = "SELECT_OPTION";
+        reply = "👋 Hello! Welcome to **BookMyHomez**. I'm your intelligent Real Estate AI Assistant. How can I help you today? Please choose one of the options below:\n\n1️⃣ **Buy**\n2️⃣ **Rent**\n3️⃣ **Property Visit**\n4️⃣ **Visit Site**";
       } 
-      else if (userMessage.includes("buy") || userMessage.includes("purchase")) {
-        reply = "Here are some excellent properties available for Buy:";
-        matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'buy');
-      } 
-      else if (userMessage.includes("rent") || userMessage.includes("lease")) {
-        reply = "Here are the available properties for Rent:";
-        matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'rent');
-      } 
-      else if (userMessage.includes("short stay") || userMessage.includes("stay")) {
-        reply = "Here are our Short Stay options:";
-        matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'short stay' || p.category.toLowerCase() === 'short-stay');
-      } 
-      else if (userMessage.includes("visit") || userMessage.includes("site")) {
-        reply = "Great! Please share your preferred date, time, and city/location so we can schedule your site visit.";
-        matchedProperties = [];
-      } 
-      else {
-        // వేరే సిటీ లేదా రిక్వైర్మెంట్ టైప్ చేస్తే వాటికి తగినట్లు ఫిల్టర్ చేయడం
+      else if (session.step === "SELECT_OPTION") {
+        if (lowerMsg.includes("buy") || lowerMsg === "1") {
+          session.category = "Buy";
+          session.step = "BUY_RENT_LOCATION";
+          reply = "🏠 Great! You want to **Buy** a property.\n\nStep 1/4: Please enter your target **Location** or City (e.g., Mumbai, Hyderabad, Bengaluru, Gurgaon):";
+        } else if (lowerMsg.includes("rent") || lowerMsg === "2") {
+          session.category = "Rent";
+          session.step = "BUY_RENT_LOCATION";
+          reply = "🏢 Great! You want to **Rent** a property.\n\nStep 1/4: Please enter your target **Location** or City (e.g., Mumbai, Hyderabad, Bengaluru, Gurgaon):";
+        } else if (lowerMsg.includes("property visit") || lowerMsg === "3" || lowerMsg.includes("visit")) {
+          session.step = "VISIT_PROPERTY";
+          reply = "📅 Let's schedule a **Property Visit**.\n\nStep 1/3: Which property or Location/Project name would you like to visit?";
+        } else if (lowerMsg.includes("visit site") || lowerMsg === "4") {
+          session.step = "SELECT_OPTION";
+          reply = "🌐 You can explore our main website here: [https://www.bookmyhomez.com](https://www.bookmyhomez.com).\n\nHere you will find full galleries, interactive maps, and virtual tours! Do you need help finding anything specific? (Type 'Hi' to start over)";
+        } else {
+          reply = "⚠️ Please choose a valid option by typing: **Buy**, **Rent**, **Property Visit**, or **Visit Site**.";
+        }
+      }
+      // --- OPTION A FLOW: BUY / RENT ---
+      else if (session.step === "BUY_RENT_LOCATION") {
+        session.location = userMessage;
+        session.step = "BUY_RENT_BHK";
+        reply = `📍 Location noted: **${session.location}**.\n\nStep 2/4: What is your preferred Property Type / BHK? (e.g., 1BHK, 2BHK, 3BHK, Villa, Plot):`;
+      }
+      else if (session.step === "BUY_RENT_BHK") {
+        session.bhk = userMessage;
+        session.step = "BUY_RENT_BUDGET";
+        reply = `🛏️ Configuration noted: **${session.bhk}**.\n\nStep 3/4: What is your expected **Budget range**? (e.g., 50 Lakhs, 2 Crores, or 30k/month):`;
+      }
+      else if (session.step === "BUY_RENT_BUDGET") {
+        session.budget = userMessage;
+        session.step = "BUY_RENT_CONTACT";
+        reply = `💰 Budget noted: **${session.budget}**.\n\nStep 4/4: Please share your **Full Name** so our team can connect with you:`;
+      }
+      else if (session.step === "BUY_RENT_CONTACT") {
+        session.name = userMessage;
+        session.step = "BUY_RENT_PHONE";
+        reply = `👤 Thanks, **${session.name}**!\n\nFinally, please share your **Phone Number** to receive matching properties and exclusive details:`;
+      }
+      else if (session.step === "BUY_RENT_PHONE") {
+        session.phone = userMessage;
+        
+        // Website API Search using collected filters
         matchedProperties = propertiesStore.filter(p => 
-          p.city.toLowerCase().includes(userMessage) || 
-          p.bhk.toLowerCase().includes(userMessage) ||
-          p.locality.toLowerCase().includes(userMessage)
+          (session.category ? p.category.toLowerCase() === session.category.toLowerCase() : true) &&
+          (session.location ? p.city.toLowerCase().includes(session.location.toLowerCase()) || p.locality.toLowerCase().includes(session.location.toLowerCase()) : true) &&
+          (session.bhk ? p.bhk.toLowerCase().includes(session.bhk.toLowerCase()) : true)
         );
 
-        if (matchedProperties.length > 0) {
-          reply = `Here are the properties matching your requirement ("${userMessage}"):`;
-        } else {
-          reply = "I couldn't find an exact match. Please select from Buy, Rent, Short Stay, or Visit a Site.";
-          matchedProperties = [];
+        if (matchedProperties.length === 0) {
+          // ఒకవేళ ఎగ్జాక్ట్ మ్యాచ్ కాకపోతే కేటగిరీ బేస్ చేసి కొన్ని చూపించడం
+          matchedProperties = propertiesStore.filter(p => session.category ? p.category.toLowerCase() === session.category.toLowerCase() : true).slice(0, 3);
         }
+
+        if (matchedProperties.length > 0) {
+          reply = `✅ Thank you! We have saved your details. Here are the matching properties for your ${session.category} request in **${session.location}**:`;
+        } else {
+          reply = `ℹ️ Currently, no exact matches are available for your criteria, but our team will curate options for you soon and reach out at **${session.phone}**! Here are some of our featured properties:`;
+          matchedProperties = propertiesStore.slice(0, 3);
+        }
+
+        // రిసెట్ సెషన్
+        session.step = "SELECT_OPTION";
+      }
+      // --- OPTION B FLOW: PROPERTY VISIT ---
+      else if (session.step === "VISIT_PROPERTY") {
+        session.visitProperty = userMessage;
+        session.step = "VISIT_DATE";
+        reply = `🏢 Property/Location: **${session.visitProperty}**.\n\nStep 2/3: What is your **Preferred Date & Time** for the visit?`;
+      }
+      else if (session.step === "VISIT_DATE") {
+        session.visitDate = userMessage;
+        session.step = "VISIT_NAME";
+        reply = `📅 Preferred Time: **${session.visitDate}**.\n\nStep 3/3: Please enter your **Full Name**:`;
+      }
+      else if (session.step === "VISIT_NAME") {
+        session.name = userMessage;
+        session.step = "VISIT_PHONE";
+        reply = `👤 Thank you, **${session.name}**. Please provide your **Phone Number** to confirm the booking:`;
+      }
+      else if (session.step === "VISIT_PHONE") {
+        session.phone = userMessage;
+        session.step = "SELECT_OPTION";
+        reply = `🎉 **Appointment Confirmed!**\n\nYour site visit for **${session.visitProperty}** is scheduled on **${session.visitDate}**. Our executive will reach out to you shortly at **${session.phone}**.\n\nType **'Hi'** if you want to explore more properties!`;
+      }
+      else {
+        session.step = "SELECT_OPTION";
+        reply = "I'm here to help! Let's start over. Type **'Hi'** to view the main options.";
       }
 
       res.json({
@@ -68,8 +138,9 @@ async function startServer() {
         properties: matchedProperties.slice(0, 4).map(p => ({
           title: p.title,
           image: p.images[0],
-          configuration: `${p.bhk} | ${p.city}`,
-          price: p.price
+          configuration: `${p.bhk} | ${p.city} - ₹${p.price}`,
+          price: p.price,
+          link: `https://www.bookmyhomez.com`
         }))
       });
     } catch (err: any) {
