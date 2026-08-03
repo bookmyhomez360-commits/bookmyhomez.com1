@@ -104,21 +104,28 @@ export default function App() {
     return () => clearInterval(interval);
   }, [isVillaPaused, showcaseVillas.length]);
 
-  // Property Link URL Handler (Opens specific property automatically based on propertyId - supports alphanumeric and numeric IDs)
+  // Property Link URL Handler (Fixed & Enhanced for Alphanumeric / Firebase IDs)
   useEffect(() => {
     const checkUrlProperty = () => {
       const params = new URLSearchParams(window.location.search);
       const propIdParam = params.get('propertyId');
+      
       if (propIdParam) {
         setIsUrlLoading(true);
         const timer = setTimeout(() => {
-          const found = properties.find((p) => String(p.id) === propIdParam || String((p as any).propertyId) === propIdParam) || 
-                        INITIAL_PROPERTIES.find((p) => String(p.id) === propIdParam || String((p as any).propertyId) === propIdParam);
+          const allProps = [...properties, ...INITIAL_PROPERTIES];
+          
+          const found = allProps.find((p: any) => 
+            String(p.id) === propIdParam || 
+            String(p.propertyId) === propIdParam || 
+            String(p._id) === propIdParam
+          );
+
           if (found) {
             setSelectedProperty(found);
           }
           setIsUrlLoading(false);
-        }, 800);
+        }, 600);
 
         return () => clearTimeout(timer);
       } else {
