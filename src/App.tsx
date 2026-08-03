@@ -59,37 +59,42 @@ export default function App() {
 
   const [isUrlLoading, setIsUrlLoading] = useState(false);
 
-  // Chatbase & Make.com Webhook Integration (Updated for full details & transcript)
+  // Chatbase & Make.com Webhook Integration (Enhanced for direct Chatbase event structures)
   useEffect(() => {
-    // 1. Chatbase Script Load చేసుట
     const script = document.createElement('script');
     script.src = 'https://www.chatbase.co/embed.min.js';
     script.setAttribute('domain', 'www.chatbase.co');
-    // మీ Chatbase Bot ID ఇక్కడ ఉంటే సెట్ చేయండి లేదా script లో కాన్ఫిగర్ చేయండి
     document.body.appendChild(script);
 
-    // 2. Chat/Lead డేటాను Make.com వెబ్‌హుక్‌కు పంపే ఈవెంట్ లిజనర్
     const handleChatbaseMessage = (event: MessageEvent) => {
-      if (event.data) {
-        // Chatbase నుండి లీడ్ సబ్మిట్ అయినా లేదా చాట్ మెసేజ్/ట్రాన్‌స్క్రిప్ట్ వచ్చినా క్యాప్చర్ చేస్తుంది
-        const payloadData = {
-          type: event.data.type || 'CHAT_MESSAGE',
-          name: event.data.name || event.data.userName || event.data.lead?.name || 'Guest User',
-          phone: event.data.phone || event.data.phoneNumber || event.data.lead?.phone || 'Not Provided',
-          email: event.data.email || event.data.lead?.email || 'Not Provided',
-          message: event.data.message || event.data.transcript || event.data.text || JSON.stringify(event.data),
-          timestamp: new Date().toISOString(),
-          raw: event.data
-        };
+      try {
+        const data = event.data;
+        if (!data) return;
 
-        // Make.com Webhook URL
-        fetch('https://hook.eu1.make.com/88j6fdn4rxco2o05vj2z3dyewuyhj8a2', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payloadData),
-        }).catch((err) => console.error('Webhook error:', err));
+        // Chatbase డేటాను పూర్తిగా క్యాప్చర్ చేయడానికి కింది లాజిక్ ఉపయోగపడుతుంది
+        const isChatbaseEvent = typeof data === 'object' && (data.type || data.event || data.messages || data.lead || data.name);
+        
+        if (isChatbaseEvent || (typeof data === 'string' && data.includes('chatbase'))) {
+          const payloadData = {
+            type: data.type || data.event || 'CHATBASE_LEAD',
+            name: data.name || data.userName || data.lead?.name || data.customerName || 'Guest User',
+            phone: data.phone || data.phoneNumber || data.lead?.phone || data.customerPhone || 'Not Provided',
+            email: data.email || data.lead?.email || data.customerEmail || 'Not Provided',
+            message: data.message || data.transcript || data.text || (Array.isArray(data.messages) ? JSON.stringify(data.messages) : JSON.stringify(data)),
+            timestamp: new Date().toISOString(),
+            raw: data
+          };
+
+          fetch('https://hook.eu1.make.com/88j6fdn4rxco2o05vj2z3dyewuyhj8a2', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payloadData),
+          }).catch((err) => console.error('Webhook error:', err));
+        }
+      } catch (e) {
+        console.error('Error parsing chatbase message', e);
       }
     };
 
@@ -139,6 +144,7 @@ export default function App() {
     return properties.filter(p => p.category === 'Buy' || p.category === 'Short Stay').slice(0, 5);
   }, [properties]);
 
+  // Automatic Villa Showcase Slide Logic
   useEffect(() => {
     if (isVillaPaused || showcaseVillas.length === 0) return;
     const interval = setInterval(() => {
