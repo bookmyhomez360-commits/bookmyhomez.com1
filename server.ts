@@ -17,31 +17,46 @@ async function startServer() {
     res.json({ status: "ok", app: "BookMyHomez", timestamp: new Date().toISOString() });
   });
 
-  // Chatbot API Route
+  // Chatbot API Route with Smart Filtering based on user requirements
   app.post("/api/chat", (req, res) => {
     try {
       const userMessage = (req.body.message || "").toLowerCase();
       
-      let reply = "I can help you find properties to buy, rent, or for short stays. What are you looking for?";
+      let reply = "Please select an option or let me know what you are looking for (e.g., Buy, Rent, Short Stay, or Visit a Site):";
       let matchedProperties: Property[] = [];
 
       if (userMessage.includes("buy") || userMessage.includes("purchase")) {
-        reply = "Here are some great properties available for purchase:";
-        matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'buy').slice(0, 2);
+        reply = "Here are some excellent properties available for Buy:";
+        matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'buy');
       } else if (userMessage.includes("rent") || userMessage.includes("lease")) {
-        reply = "Here are some available rental properties:";
-        matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'rent').slice(0, 2);
-      } else if (userMessage.includes("short stay") || userMessage.includes("hotel")) {
-        reply = "Here are our short stay options:";
-        matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'short stay').slice(0, 2);
+        reply = "Here are the available properties for Rent:";
+        matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'rent');
+      } else if (userMessage.includes("short stay") || userMessage.includes("stay")) {
+        reply = "Here are our Short Stay options:";
+        matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'short stay' || p.category.toLowerCase() === 'short-stay');
+      } else if (userMessage.includes("visit") || userMessage.includes("site")) {
+        reply = "Great! Please share your preferred date, time, and city/location so we can schedule your site visit.";
+        matchedProperties = [];
       } else {
-        matchedProperties = propertiesStore.slice(0, 2);
+        // యూజర్ సిటీ లేదా బడ్జెట్ లేదా BHK ఇస్తే వాటి ఆధారంగా ఫిల్టర్ చేయడం
+        matchedProperties = propertiesStore.filter(p => 
+          p.city.toLowerCase().includes(userMessage) || 
+          p.bhk.toLowerCase().includes(userMessage) ||
+          p.locality.toLowerCase().includes(userMessage)
+        );
+
+        if (matchedProperties.length > 0) {
+          reply = `Here are the properties matching your requirement ("${userMessage}"):`;
+        } else {
+          reply = "I couldn't find an exact match for that. Here are some of our featured properties:";
+          matchedProperties = propertiesStore.slice(0, 3);
+        }
       }
 
       res.json({
         success: true,
         reply: reply,
-        properties: matchedProperties.map(p => ({
+        properties: matchedProperties.slice(0, 4).map(p => ({
           title: p.title,
           image: p.images[0],
           configuration: `${p.bhk} | ${p.city}`,
