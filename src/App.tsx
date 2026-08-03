@@ -112,8 +112,8 @@ export default function App() {
       if (propIdParam) {
         setIsUrlLoading(true);
         const timer = setTimeout(() => {
-          const found = properties.find((p) => String(p.id) === propIdParam) || 
-                        INITIAL_PROPERTIES.find((p) => String(p.id) === propIdParam);
+          const found = properties.find((p) => String(p.id) === propIdParam || String(p.propertyId) === propIdParam) || 
+              INITIAL_PROPERTIES.find((p) => String(p.id) === propIdParam || String(p.propertyId) === propIdParam);
           if (found) {
             setSelectedProperty(found);
           }
