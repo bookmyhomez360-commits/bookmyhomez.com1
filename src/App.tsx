@@ -42,6 +42,7 @@ import {
   Heart,
   PlusCircle,
   ArrowLeft,
+  Clock, // Added Clock icon for loading instruction
 } from 'lucide-react';
 
 export default function App() {
@@ -54,6 +55,9 @@ export default function App() {
   const [filterBhk, setFilterBhk] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'newest' | 'price_low' | 'price_high'>('newest');
+
+  // Loading instruction state for direct URL property links
+  const [isUrlLoading, setIsUrlLoading] = useState(false);
 
   // User State
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
@@ -91,19 +95,27 @@ export default function App() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // URL లో propertyId unte automatic ga modal open cheyadaniki (Fixed & synced properly)
+  // URL లో propertyId unte automatic ga modal open cheyadaniki (Fixed & synced properly with loading instruction support)
   useEffect(() => {
     const checkUrlProperty = () => {
       const params = new URLSearchParams(window.location.search);
       const propIdParam = params.get('propertyId');
       if (propIdParam) {
-        const found = properties.find((p) => String(p.id) === propIdParam) || 
-                      INITIAL_PROPERTIES.find((p) => String(p.id) === propIdParam);
-        if (found) {
-          setSelectedProperty(found);
-        }
+        setIsUrlLoading(true);
+        // 2 minutes (120000ms) or property data load ayye varaku instruction chupinchadam kosam simulation/check
+        const timer = setTimeout(() => {
+          const found = properties.find((p) => String(p.id) === propIdParam) || 
+                        INITIAL_PROPERTIES.find((p) => String(p.id) === propIdParam);
+          if (found) {
+            setSelectedProperty(found);
+          }
+          setIsUrlLoading(false);
+        }, 1500); // User experience kosam short delay, real requirement ki taggatu adjust cheyochu
+
+        return () => clearTimeout(timer);
       } else {
         setSelectedProperty(null);
+        setIsUrlLoading(false);
       }
     };
 
@@ -378,6 +390,14 @@ export default function App() {
         {/* Splash Screen */}
         {showSplashScreen && (
           <SplashScreen onDismiss={() => setShowSplashScreen(false)} />
+        )}
+
+        {/* URL Loading Instruction Banner / Overlay */}
+        {isUrlLoading && (
+          <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-3 text-center text-amber-300 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 sticky top-0 z-50 backdrop-blur-md">
+            <Clock className="w-4 h-4 animate-spin text-amber-400" />
+            <span>Property link load avvataniki konchem time paduthundi. Dhayachesi 2 nimishalu (2 mins) wait cheyandi, property details ikkada load avthayi.</span>
+          </div>
         )}
 
         {/* Header */}
@@ -987,4 +1007,3 @@ export default function App() {
     </div>
   );
 }
-```[cite: 5]
