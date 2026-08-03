@@ -96,7 +96,6 @@ export default function App() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // Showcase villas placed on Left side (Removed the small left one, kept this large one on left)
   const showcaseVillas = useMemo(() => {
     return properties.filter(p => p.category === 'Buy' || p.category === 'Short Stay').slice(0, 5);
   }, [properties]);
@@ -224,11 +223,6 @@ export default function App() {
 
     try {
       await updatePropertyInFirestore(item.id, { status: updatedStatus });
-      await fetch(`/api/properties/${item.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: updatedStatus }),
-      });
     } catch {
       // ignore
     }
@@ -242,7 +236,6 @@ export default function App() {
       }
       try {
         await deletePropertyFromFirestore(id);
-        await fetch(`/api/properties/${id}`, { method: 'DELETE' });
       } catch {
         // ignore
       }
@@ -309,19 +302,6 @@ export default function App() {
 
     try {
       await savePropertyToFirestore(payload);
-      if (editingFlag && editId) {
-        await fetch(`/api/properties/${editId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        await fetch('/api/properties', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      }
     } catch {
       // ignore
     }
@@ -387,7 +367,6 @@ export default function App() {
   return (
     <div className="flex flex-col min-h-screen bg-[#090D16] text-slate-100 font-sans selection:bg-indigo-600 selection:text-white relative">
       
-      {/* 3D Villa Canvas Background */}
       <ThreeBackground
         activeVillaIndex={activeVillaIndex}
         onVillaChange={setActiveVillaIndex}
@@ -395,12 +374,10 @@ export default function App() {
 
       <div className="flex flex-col flex-1 min-h-screen relative z-10">
         
-        {/* Splash Screen */}
         {showSplashScreen && (
           <SplashScreen onDismiss={() => setShowSplashScreen(false)} />
         )}
 
-        {/* URL Loading Instruction Banner */}
         {isUrlLoading && (
           <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-3 text-center text-amber-300 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 sticky top-0 z-50 backdrop-blur-md">
             <Clock className="w-4 h-4 animate-spin text-amber-400" />
@@ -408,7 +385,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Header */}
         <Header
           currentTab={currentTab}
           activeFilterCategory={activeFilterCategory}
@@ -422,12 +398,10 @@ export default function App() {
           logout={() => setCurrentUser(null)}
         />
 
-        {/* Main Content Area */}
         <main className="flex-1">
 
           {currentTab === 'explore' && (
             <div>
-              {/* Hero Section */}
               <section className="relative min-h-[540px] lg:min-h-[620px] flex items-center justify-center px-4 py-16 overflow-hidden">
                 <div className="absolute inset-0 z-0 pointer-events-none">
                   <div className="absolute inset-0 bg-gradient-to-t from-[#090D16] via-transparent to-transparent"></div>
@@ -452,7 +426,6 @@ export default function App() {
                     </p>
                   </div>
 
-                  {/* Search Control Glass Panel */}
                   <div className="bg-slate-900/80 backdrop-blur-xl p-3 sm:p-5 rounded-3xl shadow-2xl border border-slate-700/60 max-w-3xl mx-auto text-left">
                     <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800/80 overflow-x-auto no-scrollbar">
                       {(
@@ -541,7 +514,6 @@ export default function App() {
                 </div>
               </section>
 
-              {/* Categories Navigation Grid */}
               <section className="max-w-7xl mx-auto px-4 py-12">
                 <div className="flex items-center justify-between mb-6">
                   <div>
@@ -734,7 +706,6 @@ export default function App() {
                 )}
               </div>
 
-              {/* Filter Bar */}
               <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 mb-8 grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1 ml-1">
@@ -944,7 +915,6 @@ export default function App() {
 
         </main>
 
-        {/* Villa Showcase Widget - Placed on Left Side (The large one moved from right) */}
         {showcaseVillas.length > 0 && (
           <div className="fixed bottom-6 left-6 z-40 pointer-events-auto max-w-sm hidden sm:block">
             <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-3 shadow-2xl flex items-center gap-3">
@@ -1002,7 +972,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Modals */}
         <PropertyDetailsModal
           property={selectedProperty}
           currentUser={currentUser}
@@ -1050,7 +1019,6 @@ export default function App() {
           }}
         />
 
-        {/* Footer */}
         <Footer
           navigateToCategory={navigateToCategory}
           filterByLocation={filterByLocation}
