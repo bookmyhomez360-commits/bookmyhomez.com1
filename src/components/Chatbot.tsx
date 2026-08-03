@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import './Chatbot.css'; // మనం స్టైల్స్ కోసం ఒక CSS ఫైల్ రాస్తాం
+import './Chatbot.css';
 
 export default function Chatbot() {
   const [chatOpen, setChatOpen] = useState(false);
-  const [messages, setMessages] = useState<Array<{ text: string; sender: 'user' | 'bot'; isHtml?: boolean; properties?: any[] }>>([
+  const [messages, setMessages] = useState<Array<{ text: string; sender: 'user' | 'bot'; isHtml?: boolean }>>([
     { text: "Hello! Welcome to Bookmyhomez. How can I help you find your dream property today?", sender: 'bot' }
   ]);
   const [input, setInput] = useState('');
@@ -20,7 +20,8 @@ export default function Chatbot() {
     if (!textToSend) setInput('');
 
     try {
-      const response = await fetch('https://your-backend-url.up.railway.app/api/chat', {
+      // ఒకవేళ Railway బ్యాకెండ్ లైవ్ URL ఉంటే ఇక్కడ ఇవ్వండి లేదా '/api/chat' వాడండి
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: messageText })
@@ -32,7 +33,7 @@ export default function Chatbot() {
         botResponses.push({ text: data.reply, sender: 'bot' as const });
       }
       
-      // ప్రాపర్టీ కార్డ్స్ ఉంటే వాటిని యాడ్ చేయడం
+      // ప్రాపర్టీ కార్డ్స్ ఉంటే వాటిని HTML రూపంలో యాడ్ చేయడం
       if (data.properties && data.properties.length > 0) {
         data.properties.forEach((prop: any) => {
           const cardHtml = `
@@ -87,7 +88,11 @@ export default function Chatbot() {
               type="text" 
               value={input} 
               onChange={(e) => setInput(e.target.value)} 
-              onKeyPress={(e) => e.key === 'Enter' && sendMessage()} 
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  sendMessage();
+                }
+              }}
               placeholder="Type your requirement..." 
             />
             <button onClick={() => sendMessage()}>Send</button>
