@@ -42,12 +42,7 @@ import {
   Heart,
   PlusCircle,
   ArrowLeft,
-  Clock,
-  ChevronLeft,
-  ChevronRight,
-  Pause,
-  Play,
-  Maximize2
+  Clock
 } from 'lucide-react';
 
 export default function App() {
@@ -914,63 +909,6 @@ export default function App() {
           )}
 
         </main>
-
-        {showcaseVillas.length > 0 && (
-          <div className="fixed bottom-6 left-6 z-40 pointer-events-auto max-w-sm hidden sm:block">
-            <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-3 shadow-2xl flex items-center gap-3">
-              <img
-                src={showcaseVillas[activeVillaIndex]?.images[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9'}
-                alt="Villa"
-                className="w-16 h-16 rounded-xl object-cover shrink-0 border border-slate-700"
-              />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-                  <span className="text-[10px] font-black uppercase text-amber-400 tracking-wider">
-                    Villa Showcase
-                  </span>
-                </div>
-                <h4 className="text-xs font-bold text-white truncate mt-0.5">
-                  {showcaseVillas[activeVillaIndex]?.title}
-                </h4>
-                <p className="text-[11px] text-slate-400 truncate">
-                  {showcaseVillas[activeVillaIndex]?.locality}, {showcaseVillas[activeVillaIndex]?.city}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-1 shrink-0">
-                <button
-                  onClick={() => setIsVillaPaused(!isVillaPaused)}
-                  className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition cursor-pointer"
-                  title={isVillaPaused ? 'Resume' : 'Pause'}
-                >
-                  {isVillaPaused ? <Play className="w-3 h-3" /> : <Pause className="w-3 h-3" />}
-                </button>
-                <button
-                  onClick={() => setActiveVillaIndex((prev) => (prev - 1 + showcaseVillas.length) % showcaseVillas.length)}
-                  className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition cursor-pointer"
-                  title="Previous"
-                >
-                  <ChevronLeft className="w-3 h-3" />
-                </button>
-                <button
-                  onClick={() => setActiveVillaIndex((prev) => (prev + 1) % showcaseVillas.length)}
-                  className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition cursor-pointer"
-                  title="Next"
-                >
-                  <ChevronRight className="w-3 h-3" />
-                </button>
-                <button
-                  onClick={() => setSelectedProperty(showcaseVillas[activeVillaIndex])}
-                  className="w-7 h-7 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center transition cursor-pointer shadow-md shadow-indigo-600/30"
-                  title="View Details"
-                >
-                  <Maximize2 className="w-3 h-3" />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         <PropertyDetailsModal
           property={selectedProperty}
