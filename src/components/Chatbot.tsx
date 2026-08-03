@@ -14,14 +14,16 @@ export default function Chatbot() {
     const messageText = textToSend || input;
     if (!messageText.trim()) return;
 
-    // యూజర్ మెసేజ్ యాడ్ చేయడం
+    // యూజర్ మెసేజ్ స్క్రీన్‌పై యాడ్ చేయడం
     const newMessages = [...messages, { text: messageText, sender: 'user' as const }];
     setMessages(newMessages);
     if (!textToSend) setInput('');
 
     try {
-      // ఒకవేళ Railway బ్యాకెండ్ లైవ్ URL ఉంటే ఇక్కడ ఇవ్వండి లేదా '/api/chat' వాడండి
-      const response = await fetch('/api/chat', {
+      // ఇక్కడ మీ Railway బ్యాకెండ్ లైవ్ URL ని ఇవ్వండి (చివర్లో /api/chat ఉండాలి)
+      const BACKEND_URL = 'https://YOUR_RAILWAY_BACKEND_URL.up.railway.app/api/chat';
+
+      const response = await fetch(BACKEND_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: messageText })
@@ -49,7 +51,7 @@ export default function Chatbot() {
 
       setMessages(prev => [...prev, ...botResponses]);
     } catch (err) {
-      setMessages(prev => [...prev, { text: "Sorry, something went wrong.", sender: 'bot' }]);
+      setMessages(prev => [...prev, { text: "Sorry, something went wrong. Please check connection.", sender: 'bot' }]);
     }
   };
 
