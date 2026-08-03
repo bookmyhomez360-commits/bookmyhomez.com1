@@ -42,6 +42,8 @@ import {
   Heart,
   PlusCircle,
   ArrowLeft,
+  Clock,
+  Home,
 } from 'lucide-react';
 
 export default function App() {
@@ -54,6 +56,9 @@ export default function App() {
   const [filterBhk, setFilterBhk] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'newest' | 'price_low' | 'price_high'>('newest');
+
+  // Loading instruction state for direct URL property links
+  const [isUrlLoading, setIsUrlLoading] = useState(false);
 
   // User State
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
@@ -91,23 +96,30 @@ export default function App() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // URL lo propertyId maarinatekkuda daaniki thagga property ni instant ga open cheyadaniki[cite: 5]
+  // URL లో propertyId unte automatic ga modal open cheyadaniki (Fixed & synced properly with loading instruction support)
   useEffect(() => {
     const checkUrlProperty = () => {
       const params = new URLSearchParams(window.location.search);
       const propIdParam = params.get('propertyId');
       if (propIdParam) {
-        const found = properties.find((p) => String(p.id) === propIdParam) || 
-                      INITIAL_PROPERTIES.find((p) => String(p.id) === propIdParam);
-        if (found) {
-          setSelectedProperty(found);
-        }
+        setIsUrlLoading(true);
+        const timer = setTimeout(() => {
+          const found = properties.find((p) => String(p.id) === propIdParam) || 
+                        INITIAL_PROPERTIES.find((p) => String(p.id) === propIdParam);
+          if (found) {
+            setSelectedProperty(found);
+          }
+          setIsUrlLoading(false);
+        }, 1500);
+
+        return () => clearTimeout(timer);
+      } else {
+        setSelectedProperty(null);
+        setIsUrlLoading(false);
       }
     };
 
     checkUrlProperty();
-    
-    // Listen to URL changes (back/forward or external link clicks)
     window.addEventListener('popstate', checkUrlProperty);
     return () => window.removeEventListener('popstate', checkUrlProperty);
   }, [properties]);
@@ -378,6 +390,14 @@ export default function App() {
         {/* Splash Screen */}
         {showSplashScreen && (
           <SplashScreen onDismiss={() => setShowSplashScreen(false)} />
+        )}
+
+        {/* URL Loading Instruction Banner / Overlay */}
+        {isUrlLoading && (
+          <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-3 text-center text-amber-300 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 sticky top-0 z-50 backdrop-blur-md">
+            <Clock className="w-4 h-4 animate-spin text-amber-400" />
+            <span>Property link load avvataniki konchem time paduthundi. Dhayachesi 2 nimishalu (2 mins) wait cheyandi, property details ikkada load avthayi.</span>
+          </div>
         )}
 
         {/* Header */}
@@ -928,16 +948,80 @@ export default function App() {
 
         </main>
 
+        {/* Floating AI Chat Widget - Right Side */}
+        <div className="fixed bottom-6 right-6 z-40 pointer-events-auto">
+          <div className="bg-slate-900/90 backdrop-blur-md px-4 py-3 rounded-2xl border border-slate-700/80 shadow-2xl flex items-center justify-between w-[300px]">
+            <span className="text-xs font-semibold text-slate-200">
+              Hi! What can I help you with?
+            </span>
+            <button
+              onClick={() => {
+                alert('BookMyHomez AI Assistant is ready to help you find your dream property!');
+              }}
+              className="w-9 h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-600/30 transition cursor-pointer shrink-0"
+              title="Open AI Chat"
+            >
+              💬
+            </button>
+          </div>
+        </div>
+
+        {/* Compact Villa Showcase Floating Widget - Left Down (Icon size with mini controls) */}
+        <div className="fixed bottom-6 left-6 z-40 pointer-events-auto">
+          <div className="bg-slate-900/90 backdrop-blur-md p-2 rounded-2xl border border-slate-700/80 shadow-2xl flex items-center gap-2.5 max-w-[240px]">
+            <img
+              src={REAL_VILLA_LIST[activeVillaIndex].imageUrl}
+              alt="Villa showcase"
+              className="w-10 h-10 rounded-xl object-cover border border-slate-700 shrink-0"
+            />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1">
+                <Home className="w-3 h-3 text-amber-400 shrink-0" />
+                <h4 className="text-[11px] font-bold text-white truncate">
+                  {REAL_VILLA_LIST[activeVillaIndex].title}
+                </h4>
+              </div>
+              <p className="text-[9px] text-slate-400 truncate">
+                {REAL_VILLA_LIST[activeVillaIndex].location}
+              </p>
+            </div>
+            <div className="flex items-center gap-0.5 shrink-0">
+              <button
+                onClick={() =>
+                  setActiveVillaIndex((prev) =>
+                    prev === 0 ? REAL_VILLA_LIST.length - 1 : prev - 1
+                  )
+                }
+                className="w-5 h-5 rounded-md bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center transition text-[10px] cursor-pointer"
+                title="Previous Villa"
+              >
+                ‹
+              </button>
+              <button
+                onClick={() =>
+                  setActiveVillaIndex((prev) =>
+                    prev === REAL_VILLA_LIST.length - 1 ? 0 : prev + 1
+                  )
+                }
+                className="w-5 h-5 rounded-md bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center transition text-[10px] cursor-pointer"
+                title="Next Villa"
+              >
+                ›
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Modals */}
         <PropertyDetailsModal
           property={selectedProperty}
           currentUser={currentUser}
           onClose={() => {
             setSelectedProperty(null);
-            // URL clean up to prevent reopening on state updates
+            // URL clean up on modal close
             const url = new URL(window.location.href);
             url.searchParams.delete('propertyId');
-            window.history.replaceState({}, '', url.toString());
+            window.history.pushState({}, '', url);
           }}
           onToggleStatus={toggleStatus}
           formatCurrency={formatCurrency}
