@@ -20,7 +20,7 @@ export default function Chatbot() {
     if (!textToSend) setInput('');
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('https://your-backend-url.up.railway.app/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: messageText })
