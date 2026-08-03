@@ -7,7 +7,6 @@ import { PropertyDetailsModal } from './components/PropertyDetailsModal';
 import  WizardModal  from './components/WizardModal';
 import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
-import { Chatbot } from './components/Chatbot';
 import {
   Property,
   User,
@@ -973,9 +972,6 @@ export default function App() {
           navigateToCategory={navigateToCategory}
           filterByLocation={filterByLocation}
         />
-
-        {/* Custom BookMyHomez Chatbot Widget */}
-        <Chatbot />
 
       </div>
     </div>
