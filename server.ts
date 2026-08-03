@@ -17,6 +17,42 @@ async function startServer() {
     res.json({ status: "ok", app: "BookMyHomez", timestamp: new Date().toISOString() });
   });
 
+  // Chatbot API Route
+  app.post("/api/chat", (req, res) => {
+    try {
+      const userMessage = (req.body.message || "").toLowerCase();
+      
+      let reply = "I can help you find properties to buy, rent, or for short stays. What are you looking for?";
+      let matchedProperties: Property[] = [];
+
+      if (userMessage.includes("buy") || userMessage.includes("purchase")) {
+        reply = "Here are some great properties available for purchase:";
+        matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'buy').slice(0, 2);
+      } else if (userMessage.includes("rent") || userMessage.includes("lease")) {
+        reply = "Here are some available rental properties:";
+        matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'rent').slice(0, 2);
+      } else if (userMessage.includes("short stay") || userMessage.includes("hotel")) {
+        reply = "Here are our short stay options:";
+        matchedProperties = propertiesStore.filter(p => p.category.toLowerCase() === 'short stay').slice(0, 2);
+      } else {
+        matchedProperties = propertiesStore.slice(0, 2);
+      }
+
+      res.json({
+        success: true,
+        reply: reply,
+        properties: matchedProperties.map(p => ({
+          title: p.title,
+          image: p.images[0],
+          configuration: `${p.bhk} | ${p.city}`,
+          price: p.price
+        }))
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, reply: "Sorry, something went wrong on the server." });
+    }
+  });
+
   // GET /api/properties
   app.get("/api/properties", (_req, res) => {
     res.json({ success: true, count: propertiesStore.length, properties: propertiesStore });
