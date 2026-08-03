@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { ThreeBackground, REAL_VILLA_LIST } from './components/ThreeBackground';
+import { ThreeBackground } from './components/ThreeBackground';
 import { SplashScreen } from './components/SplashScreen';
 import { Header } from './components/Header';
 import { PropertyCard } from './components/PropertyCard';
@@ -426,28 +426,23 @@ export default function App() {
                 </div>
 
                 <div className="relative z-10 max-w-4xl mx-auto text-center">
-                  {(() => {
-                    const currentVilla = REAL_VILLA_LIST[activeVillaIndex] || REAL_VILLA_LIST[0];
-                    return (
-                      <div key={activeVillaIndex} className="animate-hero-text-stagger">
-                        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-6 shadow-lg">
-                          <ShieldCheck className="w-4 h-4 text-amber-400" />
-                          {currentVilla.badgeText}
-                        </span>
+                  <div className="animate-hero-text-stagger">
+                    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-6 shadow-lg">
+                      <ShieldCheck className="w-4 h-4 text-amber-400" />
+                      Verified Luxury Estates
+                    </span>
 
-                        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight sm:leading-none mb-6">
-                          {currentVilla.heroHeadline}{' '}
-                          <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-amber-300 bg-clip-text text-transparent">
-                            {currentVilla.heroHighlight}
-                          </span>
-                        </h1>
+                    <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight sm:leading-none mb-6">
+                      Discover Your Dream Space with{' '}
+                      <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-amber-300 bg-clip-text text-transparent">
+                        BookMyHomez
+                      </span>
+                    </h1>
 
-                        <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-medium mb-10 leading-relaxed">
-                          {currentVilla.heroSubtext}
-                        </p>
-                      </div>
-                    );
-                  })()}
+                    <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-medium mb-10 leading-relaxed">
+                      Explore handpicked verified properties, luxury villas, apartments, and lands across top Indian cities.
+                    </p>
+                  </div>
 
                   {/* Search Control Glass Panel */}
                   <div className="bg-slate-900/80 backdrop-blur-xl p-3 sm:p-5 rounded-3xl shadow-2xl border border-slate-700/60 max-w-3xl mx-auto text-left">
@@ -947,15 +942,14 @@ export default function App() {
 
         </main>
 
-        {/* Floating AI Chat Widget - Right Side Only */}
-        <div className="fixed bottom-6 right-6 z-40 pointer-events-auto">
+        {/* Floating AI Chat Widget - Left Side Only (Make.com URL included) */}
+        <div className="fixed bottom-6 left-6 z-40 pointer-events-auto">
           <div className="bg-slate-900/90 backdrop-blur-md px-4 py-3 rounded-2xl border border-slate-700/80 shadow-2xl flex items-center justify-between w-[300px]">
             <span className="text-xs font-semibold text-slate-200">
               Hi! What can I help you with?
             </span>
             <button
               onClick={() => {
-                // Make.com webhook integration for Chatbase widget lead/chat submission
                 fetch("https://hook.eu1.make.com/88j6fdn4rxco2o05vj2z3dyewuyhj8a2", {
                   method: "POST",
                   headers: {
@@ -975,47 +969,6 @@ export default function App() {
             >
               💬
             </button>
-          </div>
-        </div>
-
-        {/* Compact Villa Showcase Floating Widget - Left Down with House Icon */}
-        <div className="fixed bottom-6 left-6 z-40 pointer-events-auto">
-          <div className="bg-slate-900/90 backdrop-blur-md p-2.5 rounded-2xl border border-slate-700/80 shadow-2xl flex items-center gap-2.5 max-w-[240px]">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center shrink-0">
-              <House className="w-4 h-4" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-[11px] font-bold text-white truncate">
-                {REAL_VILLA_LIST[activeVillaIndex].title}
-              </h4>
-              <p className="text-[9px] text-slate-400 truncate">
-                {REAL_VILLA_LIST[activeVillaIndex].location}
-              </p>
-            </div>
-            <div className="flex items-center gap-0.5 shrink-0">
-              <button
-                onClick={() =>
-                  setActiveVillaIndex((prev) =>
-                    prev === 0 ? REAL_VILLA_LIST.length - 1 : prev - 1
-                  )
-                }
-                className="w-5 h-5 rounded-md bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center transition text-[10px] cursor-pointer"
-                title="Previous Villa"
-              >
-                ‹
-              </button>
-              <button
-                onClick={() =>
-                  setActiveVillaIndex((prev) =>
-                    prev === REAL_VILLA_LIST.length - 1 ? 0 : prev + 1
-                  )
-                }
-                className="w-5 h-5 rounded-md bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center transition text-[10px] cursor-pointer"
-                title="Next Villa"
-              >
-                ›
-              </button>
-            </div>
           </div>
         </div>
 
