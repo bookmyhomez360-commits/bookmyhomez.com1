@@ -1,0 +1,31 @@
+name: Autonomous AI SEO Agent
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Prathi Sunday auto-run avthundhi
+  workflow_dispatch: # Direct ga manual run button enable chestundhi
+
+jobs:
+  seo-agent-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Google AI SDK
+        run: npm install @google/generative-ai
+
+      - name: Run SEO Agent
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node scripts/seo-agent.js
+
+      - name: Auto Commit Updated SEO Metadata
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: '🤖 AI SEO Agent: Automatically updated SEO metadata [skip ci]'
