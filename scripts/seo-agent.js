@@ -3,20 +3,19 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Delay helper function
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Retry wrapper to gracefully handle 429 Rate Limits
-async function generateWithRetry(model, prompt, retries = 3, delay = 20000) {
+// Increased initial delay and retry timing to respect Gemini Free Tier 60s cooldown
+async function generateWithRetry(model, prompt, retries = 3, delay = 60000) {
   for (let i = 0; i < retries; i++) {
     try {
       const result = await model.generateContent(prompt);
       return result;
     } catch (error) {
       if (error.status === 429 && i < retries - 1) {
-        console.log(`Rate limit reached (429). Waiting ${delay / 1000} seconds before retrying...`);
+        console.log(`Rate limit (429) hit. Waiting ${delay / 1000} seconds before retrying...`);
         await sleep(delay);
-        delay *= 2; // Increase delay on subsequent retries
+        delay += 30000; // Add 30 more seconds if it fails again
       } else {
         throw error;
       }
@@ -34,7 +33,6 @@ async function runSEOAgent() {
     codeSnippet = fs.readFileSync('./src/App.tsx', 'utf8');
   }
 
-  // Updated working model string
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
   const prompt = `
@@ -54,10 +52,12 @@ Do not include any backticks or markdown formatting like \`\`\`json.
 `;
 
   try {
+    // Initial 5-second pause to avoid bursting API limits right on workflow boot
+    await sleep(5000);
+
     const result = await generateWithRetry(model, prompt);
     const responseText = result.response.text().replace(/```json|```/g, '').trim();
 
-    // Verify valid JSON before saving
     JSON.parse(responseText);
 
     fs.writeFileSync('./public/seo-metadata.json', responseText);
