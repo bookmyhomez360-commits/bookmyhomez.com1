@@ -13,10 +13,11 @@ async function runSEOAgent() {
     codeSnippet = fs.readFileSync('./src/App.tsx', 'utf8');
   }
 
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  // Updated model name for reliability
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
   const prompt = `
-  You are an autonomous SEO Optimization Agent for a home rental/booking platform "BookMyHomez".
+  You are an autonomous SEO Optimization Agent for a home rental platform "BookMyHomez".
   Analyze the website code and provide optimal SEO Metadata.
   
   Return ONLY a valid JSON object with these exact keys:
@@ -29,7 +30,7 @@ async function runSEOAgent() {
   }
 
   Website Code snippet:
-  ${codeSnippet.slice(0, 3000)}
+  ${codeSnippet.slice(0, 2000)}
   `;
 
   const result = await model.generateContent(prompt);
@@ -38,11 +39,14 @@ async function runSEOAgent() {
   responseText = responseText.replace(/```json|```/g, '').trim();
 
   if (!fs.existsSync('./public')) {
-    fs.mkdirSync('./public');
+    fs.mkdirSync('./public', { recursive: true });
   }
   
   fs.writeFileSync('./public/seo-metadata.json', responseText);
   console.log("✅ Dynamic SEO Metadata saved successfully in public/seo-metadata.json!");
 }
 
-runSEOAgent().catch(console.error);
+runSEOAgent().catch((err) => {
+  console.error("SEO Agent Error:", err);
+  process.exit(1);
+});
