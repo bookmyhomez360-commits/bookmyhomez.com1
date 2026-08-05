@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Property, User } from '../types';
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from './firebase';
+import { db } from '../firebase';
 import {
   X,
   MapPin,
