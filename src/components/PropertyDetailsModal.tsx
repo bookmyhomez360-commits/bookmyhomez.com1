@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Property, User } from '../types';
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 import {
   X,
   MapPin,
@@ -42,6 +44,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   // --- Reviews State ---
   const [reviews, setReviews] = useState<Review[]>(
@@ -107,6 +110,46 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
       navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
+  // --- Firebase Save Helper Function ---
+  const handleSaveToFirebase = async (propertyId: string, updatedFields: object) => {
+    try {
+      const propertyRef = doc(db, "properties", propertyId);
+      await updateDoc(propertyRef, updatedFields);
+      console.log("Successfully updated in Firebase!");
+    } catch (error) {
+      console.error("Error updating document: ", error);
+    }
+  };
+
+  // --- General Update Handler using Firebase ---
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const propertyId = (property as any).id || (property as any)._id;
+      
+      const updatedData = {
+        title: property.title,
+        price: Number(property.price),
+        status: property.status, 
+        bhk: property.bhk,
+        furnishing: property.furnishing,
+        description: property.description,
+      };
+
+      const propertyRef = doc(db, "properties", propertyId);
+      await updateDoc(propertyRef, updatedData);
+
+      onClose();
+    } catch (error) {
+      console.error("Failed to save changes:", error);
+      alert("Failed to update in database!");
+    } finally {
+      setLoading(false);
     }
   };
 
