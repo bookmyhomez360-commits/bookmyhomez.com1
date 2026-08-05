@@ -955,23 +955,21 @@ export default function App() {
         />
 
         <AuthModal
-          isOpen={showAuthModal}
-          googleAccounts={GOOGLE_ACCOUNTS}
-          registeredUsers={registeredUsers}
-          onClose={() => setShowAuthModal(false)}
-          onRegisterUser={handleRegisterUser}
-          onSelectGoogleAccount={(acc) => {
-            const userObj: User = {
-              name: acc.name,
-              email: acc.email,
-              role: 'Verified Owner',
-              avatar: acc.avatar,
-              id: 'usr_' + acc.email.replace(/[^a-zA-Z0-9]/g, '_'),
-            };
-            setCurrentUser(userObj);
-            setShowAuthModal(false);
-            openWizard();
-          }}
-    </div>
-  );
-}
+        isOpen={showAuthModal}
+        googleAccounts={GOOGLE_ACCOUNTS}
+        registeredUsers={registeredUsers}
+        onClose={() => setShowAuthModal(false)}
+        onRegisterUser={handleRegisterUser}
+        onSelectGoogleAccount={(acc) => {
+          const userObj: User = {
+            name: acc.name,
+            email: acc.email,
+            role: 'Verified Owner',
+            avatar: acc.avatar,
+            id: 'usr_' + acc.email.replace(/[^a-zA-Z0-9]/g, '_'),
+          };
+          setCurrentUser(userObj);
+          setShowAuthModal(false);
+          openWizard();
+        }}
+      />
