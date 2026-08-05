@@ -39,6 +39,7 @@ import {
   House,
   Key,
   Umbrella,
+  Grid3X3,
   SearchX,
   Heart,
   PlusCircle,
@@ -91,6 +92,7 @@ export default function App() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
+  // టోగుల్ స్టేటస్ ఫంక్షన్ (Firebase Integration)
   const handleToggleStatus = async (property: Property) => {
     const propertyId = String((property as any).id || (property as any)._id);
     const newStatus = property.status === 'Booked' ? 'Available' : 'Booked';
@@ -114,7 +116,7 @@ export default function App() {
       await updatePropertyInFirestore(propertyId, { status: newStatus });
     } catch (error) {
       console.error("Error toggling status in Firebase:", error);
-      alert("Failed to update status in database.");
+      alert("Failed to update status in database. Check console for details.");
     }
   };
 
@@ -390,7 +392,7 @@ export default function App() {
         {isUrlLoading && (
           <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-3 text-center text-amber-300 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 sticky top-0 z-50 backdrop-blur-md">
             <Clock className="w-4 h-4 animate-spin text-amber-400" />
-            <span>Property details is loading please wait a minute.</span>
+            <span>Property details is loding please wait a minute.</span>
           </div>
         )}
 
@@ -426,7 +428,7 @@ export default function App() {
                           {currentVilla.badgeText}
                         </span>
 
-                        {/* Proper H1 Tag for SEO */}
+                        {/* పేజీకి ఒకే ఒక్క ప్రైమరీ H1 హెడ్డింగ్ */}
                         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight sm:leading-none mb-6">
                           {currentVilla.heroHeadline}{' '}
                           <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-amber-300 bg-clip-text text-transparent">
@@ -529,15 +531,15 @@ export default function App() {
                 </div>
               </section>
 
-              {/* Proper H2 Tag for SEO Sections */}
               <section className="max-w-7xl mx-auto px-4 py-12">
                 <div className="flex items-center justify-between mb-6">
                   <div>
+                    {/* సెక్షన్ హెడ్డింగ్స్ అన్నింటికీ H2 ట్యాగ్స్ */}
                     <h2 className="text-xl sm:text-2xl font-black text-white">
-                      Top Travel Destinations for Vacation Home Rentals
+                      Explore Categories
                     </h2>
                     <p className="text-xs text-slate-400 mt-1">
-                      Select a category to view dedicated property listings
+                      Select a category to view dedicated property listings on a new page
                     </p>
                   </div>
                 </div>
@@ -550,9 +552,9 @@ export default function App() {
                     <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
                       <House className="w-6 h-6" />
                     </div>
-                    <h3 className="text-base font-bold text-white group-hover:text-indigo-400 transition">
+                    <h2 className="text-base font-bold text-white group-hover:text-indigo-400 transition">
                       Homes to Buy
-                    </h3>
+                    </h2>
                     <p className="text-xs text-slate-400 mt-1">
                       Luxury flats, apartments & villas
                     </p>
@@ -569,9 +571,9 @@ export default function App() {
                     <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
                       <Key className="w-6 h-6" />
                     </div>
-                    <h3 className="text-base font-bold text-white group-hover:text-emerald-400 transition">
+                    <h2 className="text-base font-bold text-white group-hover:text-emerald-400 transition">
                       Rentals & PGs
-                    </h3>
+                    </h2>
                     <p className="text-xs text-slate-400 mt-1">
                       Furnished flats & coliving spaces
                     </p>
@@ -588,9 +590,9 @@ export default function App() {
                     <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
                       <Umbrella className="w-6 h-6" />
                     </div>
-                    <h3 className="text-base font-bold text-white group-hover:text-amber-400 transition">
-                      Featured Luxury Villas & Private Pool Stays
-                    </h3>
+                    <h2 className="text-base font-bold text-white group-hover:text-amber-400 transition">
+                      Short Stays
+                    </h2>
                     <p className="text-xs text-slate-400 mt-1">
                       Serviced homes & vacation retreats
                     </p>
@@ -605,11 +607,11 @@ export default function App() {
                     className="group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-violet-500/50 hover:bg-slate-900/90 transition duration-300"
                   >
                     <div className="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                      <House className="w-6 h-6" />
+                      <Grid3X3 className="w-6 h-6" />
                     </div>
-                    <h3 className="text-base font-bold text-white group-hover:text-violet-400 transition">
+                    <h2 className="text-base font-bold text-white group-hover:text-violet-400 transition">
                       Land & Plots
-                    </h3>
+                    </h2>
                     <p className="text-xs text-slate-400 mt-1">
                       Residential & commercial land
                     </p>
@@ -641,6 +643,7 @@ export default function App() {
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
+                    {/* ఇక్కడ కూడా సెక్షన్ హెడ్డింగ్ కాబట్టి H2 గా మార్చబడింది */}
                     <h2 className="text-2xl sm:text-3xl font-black text-white">
                       {activeFilterCategory === 'All'
                         ? 'Browse All Real Estate'
@@ -955,24 +958,35 @@ export default function App() {
         />
 
         <AuthModal
-        isOpen={showAuthModal}
-        googleAccounts={GOOGLE_ACCOUNTS}
-        registeredUsers={registeredUsers}
-        onClose={() => setShowAuthModal(false)}
-        onRegisterUser={handleRegisterUser}
-        onSelectGoogleAccount={(acc) => {
-          const userObj: User = {
-            name: acc.name,
-            email: acc.email,
-            role: 'Verified Owner',
-            avatar: acc.avatar,
-            id: 'usr_' + acc.email.replace(/[^a-zA-Z0-9]/g, '_'),
-          };
-          setCurrentUser(userObj);
-          setShowAuthModal(false);
-          openWizard();
-        }}
-      />
+          isOpen={showAuthModal}
+          googleAccounts={GOOGLE_ACCOUNTS}
+          registeredUsers={registeredUsers}
+          onClose={() => setShowAuthModal(false)}
+          onRegisterUser={handleRegisterUser}
+          onSelectGoogleAccount={(acc) => {
+            const userObj: User = {
+              name: acc.name,
+              email: acc.email,
+              role: 'Verified Owner',
+              avatar: acc.avatar,
+              id: 'usr_' + acc.email.replace(/[^a-zA-Z0-9]/g, '_'),
+            };
+            setCurrentUser(userObj);
+            setShowAuthModal(false);
+            openWizard();
+          }}
+          onLoginSuccess={(user) => {
+            setCurrentUser(user);
+            setShowAuthModal(false);
+          }}
+        />
+
+        <Footer
+          navigateToCategory={navigateToCategory}
+          filterByLocation={filterByLocation}
+        />
+
+      </div>
     </div>
   );
 }
