@@ -3,12 +3,6 @@ import React from 'react';
 export default function Blog() {
   const blogPosts = [
     {
-      title: "బెంగళూరులో ఇల్లు కొనాలనుకుంటున్నారా? తెలుసుకోవాల్సిన ముఖ్యమైన విషయాలు",
-      date: "August 6, 2026",
-      readTime: "4 min read",
-      description: "బెంగళూరులోని టాప్ రెసిడెన్షియల్ ఏరియాలు, ప్రాపర్టీ ధరలు మరియు లీగల్ డాక్యుమెంట్స్ చెక్ చేసే విధానం గురించి పూర్తి వివరాలు.",
-    },
-    {
       title: "Real Estate Trends in Bangalore: What Home Buyers Need to Know",
       date: "August 4, 2026",
       readTime: "5 min read",
