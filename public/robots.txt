@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://www.bookmyhomez.com/sitemap.xml
