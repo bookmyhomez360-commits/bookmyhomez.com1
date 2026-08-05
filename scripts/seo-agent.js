@@ -1,29 +1,12 @@
 import fs from 'fs';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAI from 'openai';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-async function generateWithRetry(model, prompt, retries = 3, delay = 60000) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const result = await model.generateContent(prompt);
-      return result;
-    } catch (error) {
-      if (error.status === 429 && i < retries - 1) {
-        console.log(`Rate limit (429) hit. Waiting ${delay / 1000} seconds before retrying...`);
-        await sleep(delay);
-        delay += 30000;
-      } else {
-        throw error;
-      }
-    }
-  }
-}
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 async function runSEOAgent() {
-  console.log("🤖 AI SEO Agent for BookMyHomez started...");
+  console.log("🤖 AI SEO Agent for BookMyHomez started using OpenAI...");
 
   let codeSnippet = '';
   if (fs.existsSync('./index.html')) {
@@ -31,11 +14,6 @@ async function runSEOAgent() {
   } else if (fs.existsSync('./src/App.tsx')) {
     codeSnippet = fs.readFileSync('./src/App.tsx', 'utf8');
   }
-
-  const model = genAI.getGenerativeModel({ 
-  model: "gemini-1.5-flash",
-  apiVersion: "v1" 
-});
 
   const prompt = `
 You are an autonomous SEO Optimization Agent for a home rental platform "BookMyHomez".
@@ -54,11 +32,12 @@ Do not include any backticks or markdown formatting like \`\`\`json.
 `;
 
   try {
-    await sleep(5000);
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+    });
 
-    const result = await generateWithRetry(model, prompt);
-    const responseText = result.response.text().replace(/```json|```/g, '').trim();
-
+    const responseText = completion.choices[0].message.content.replace(/```json|```/g, '').trim();
     JSON.parse(responseText);
 
     fs.writeFileSync('./public/seo-metadata.json', responseText);
