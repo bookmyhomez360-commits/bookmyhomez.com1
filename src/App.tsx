@@ -94,34 +94,35 @@ export default function App() {
 
   // టోగుల్ స్టేటస్ ఫంక్షన్ (Firebase Integration)
   const handleToggleStatus = async (property: Property) => {
-    const propertyId = (property as any).id || (property as any)._id;
+    // ఐడీని నంబర్ లేదా స్ట్రింగ్ రూపంలో సరిగ్గా గుర్తించడానికి
+    const propertyId = String((property as any).id || (property as any)._id);
     const newStatus = property.status === 'Booked' ? 'Available' : 'Booked';
 
     try {
-      const propertyRef = doc(db, "properties", String(propertyId));
+      // ఫైర్‌బేస్‌లో డాక్యుమెంట్ రెఫరెన్స్
+      const propertyRef = doc(db, "properties", propertyId);
       await updateDoc(propertyRef, { status: newStatus });
 
-      // లోకల్ స్టేట్ కూడా అప్‌డేట్ చేయడం
+      // లోకల్ స్టేట్ అప్‌డేట్ చేయడం
       setProperties((prev) =>
         prev.map((p) =>
-          ((p as any).id === propertyId || (p as any)._id === propertyId)
+          (String((p as any).id || (p as any)._id) === propertyId)
             ? { ...p, status: newStatus }
             : p
         )
       );
 
-      if (selectedProperty && ((selectedProperty as any).id === propertyId || (selectedProperty as any)._id === propertyId)) {
+      if (selectedProperty && (String((selectedProperty as any).id || (selectedProperty as any)._id) === propertyId)) {
         setSelectedProperty({ ...selectedProperty, status: newStatus });
       }
 
-      // Firebase ఫంక్షన్ కూడా సింక్ చేయడానికి
       await updatePropertyInFirestore(propertyId, { status: newStatus });
+      console.log("Status updated successfully to:", newStatus);
     } catch (error) {
       console.error("Error toggling status in Firebase:", error);
-      alert("Failed to update status in database.");
+      alert("Failed to update status in database. Check console for details.");
     }
   };
-
   useEffect(() => {
     const checkUrlProperty = () => {
       const params = new URLSearchParams(window.location.search);
