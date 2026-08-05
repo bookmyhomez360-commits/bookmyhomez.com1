@@ -27,6 +27,8 @@ import {
   deletePropertyFromFirestore,
   saveUserToFirestore,
 } from './firebase';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from './firebaseConfig';
 import {
   ShieldCheck,
   Sliders,
@@ -89,6 +91,36 @@ export default function App() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+
+  // టోగుల్ స్టేటస్ ఫంక్షన్ (Firebase Integration)
+  const handleToggleStatus = async (property: Property) => {
+    const propertyId = (property as any).id || (property as any)._id;
+    const newStatus = property.status === 'Booked' ? 'Available' : 'Booked';
+
+    try {
+      const propertyRef = doc(db, "properties", String(propertyId));
+      await updateDoc(propertyRef, { status: newStatus });
+
+      // లోకల్ స్టేట్ కూడా అప్‌డేట్ చేయడం
+      setProperties((prev) =>
+        prev.map((p) =>
+          ((p as any).id === propertyId || (p as any)._id === propertyId)
+            ? { ...p, status: newStatus }
+            : p
+        )
+      );
+
+      if (selectedProperty && ((selectedProperty as any).id === propertyId || (selectedProperty as any)._id === propertyId)) {
+        setSelectedProperty({ ...selectedProperty, status: newStatus });
+      }
+
+      // Firebase ఫంక్షన్ కూడా సింక్ చేయడానికి
+      await updatePropertyInFirestore(propertyId, { status: newStatus });
+    } catch (error) {
+      console.error("Error toggling status in Firebase:", error);
+      alert("Failed to update status in database.");
+    }
+  };
 
   useEffect(() => {
     const checkUrlProperty = () => {
@@ -192,23 +224,6 @@ export default function App() {
     setSavedProperties((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
-  };
-
-  const toggleStatus = async (item: Property) => {
-    const updatedStatus = item.status === 'Booked' ? 'Available' : 'Booked';
-    setProperties((prev) =>
-      prev.map((p) => (p.id === item.id ? { ...p, status: updatedStatus } : p))
-    );
-    if (selectedProperty && selectedProperty.id === item.id) {
-      setSelectedProperty({ ...selectedProperty, status: updatedStatus });
-    }
-
-    try {
-      const targetId = (item as any).id || (item as any)._id;
-      await updatePropertyInFirestore(targetId, { status: updatedStatus });
-    } catch (error) {
-      console.error("Error updating status in Firebase:", error);
-    }
   };
 
   // --- FIREBASE DELETE HANDLER ---
@@ -807,7 +822,7 @@ export default function App() {
                       isSaved={isSaved(Number((item as any).id || (item as any)._id))}
                       onToggleSave={(id) => toggleSave(Number(id))}
                       onViewDetails={(prop) => setSelectedProperty(prop)}
-                      onToggleStatus={toggleStatus}
+                      onToggleStatus={handleToggleStatus}
                       onEdit={handleEditProperty}
                       onDelete={handleDeleteProperty}
                       formatCurrency={formatCurrency}
@@ -858,7 +873,7 @@ export default function App() {
                       isSaved={true}
                       onToggleSave={(id) => toggleSave(Number(id))}
                       onViewDetails={(prop) => setSelectedProperty(prop)}
-                      onToggleStatus={toggleStatus}
+                      onToggleStatus={handleToggleStatus}
                       onEdit={handleEditProperty}
                       onDelete={handleDeleteProperty}
                       formatCurrency={formatCurrency}
@@ -913,7 +928,7 @@ export default function App() {
                       isSaved={isSaved(Number((item as any).id || (item as any)._id))}
                       onToggleSave={(id) => toggleSave(Number(id))}
                       onViewDetails={(prop) => setSelectedProperty(prop)}
-                      onToggleStatus={toggleStatus}
+                      onToggleStatus={handleToggleStatus}
                       onEdit={handleEditProperty}
                       onDelete={handleDeleteProperty}
                       formatCurrency={formatCurrency}
@@ -935,7 +950,7 @@ export default function App() {
             url.searchParams.delete('propertyId');
             window.history.pushState({}, '', url);
           }}
-          onToggleStatus={toggleStatus}
+          onToggleStatus={handleToggleStatus}
           formatCurrency={formatCurrency}
         />
 
