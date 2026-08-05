@@ -204,28 +204,24 @@ export default function App() {
     }
 
     try {
-      await updatePropertyInFirestore(item.id, { status: updatedStatus });
-      await fetch(`/api/properties/${item.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: updatedStatus }),
-      });
-    } catch {
-      // ignore
+      const targetId = (item as any).id || (item as any)._id;
+      await updatePropertyInFirestore(targetId, { status: updatedStatus });
+    } catch (error) {
+      console.error("Error updating status in Firebase:", error);
     }
   };
 
-  const handleDeleteProperty = async (id: number) => {
+  // --- FIREBASE DELETE HANDLER ---
+  const handleDeleteProperty = async (id: number | string) => {
     if (confirm('Are you sure you want to delete this property?')) {
-      setProperties((prev) => prev.filter((p) => p.id !== id));
-      if (selectedProperty && selectedProperty.id === id) {
+      setProperties((prev) => prev.filter((p) => (p.id || (p as any)._id) !== id));
+      if (selectedProperty && ((selectedProperty as any).id || (selectedProperty as any)._id) === id) {
         setSelectedProperty(null);
       }
       try {
         await deletePropertyFromFirestore(id);
-        await fetch(`/api/properties/${id}`, { method: 'DELETE' });
-      } catch {
-        // ignore
+      } catch (error) {
+        console.error("Error deleting property from Firebase:", error);
       }
     }
   };
@@ -240,9 +236,27 @@ export default function App() {
     }
   };
 
+  // --- CARD QUICK EDIT HANDLER ---
+  const handleEditProperty = async (updatedProperty: Property) => {
+    const targetId = (updatedProperty as any).id || (updatedProperty as any)._id;
+    
+    setProperties((prev) =>
+      prev.map((p) => ((p.id || (p as any)._id) === targetId ? updatedProperty : p))
+    );
+    if (selectedProperty && ((selectedProperty as any).id || (selectedProperty as any)._id) === targetId) {
+      setSelectedProperty(updatedProperty);
+    }
+
+    try {
+      await updatePropertyInFirestore(targetId, updatedProperty);
+    } catch (error) {
+      console.error("Error updating property in Firebase:", error);
+    }
+  };
+
   const openEditWizard = (item: Property) => {
     setIsEditing(true);
-    setEditingId(item.id);
+    setEditingId(Number((item as any).id || (item as any)._id));
     setShowWizardModal(true);
   };
 
@@ -279,7 +293,7 @@ export default function App() {
 
     if (editingFlag && editId) {
       setProperties((prev) =>
-        prev.map((p) => (p.id === editId ? payload : p))
+        prev.map((p) => ((p.id || (p as any)._id) === editId ? payload : p))
       );
     } else {
       setProperties((prev) => [payload, ...prev]);
@@ -289,22 +303,13 @@ export default function App() {
     navigateTo('my_properties');
 
     try {
-      await savePropertyToFirestore(payload);
       if (editingFlag && editId) {
-        await fetch(`/api/properties/${editId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
+        await updatePropertyInFirestore(editId, payload);
       } else {
-        await fetch('/api/properties', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
+        await savePropertyToFirestore(payload);
       }
-    } catch {
-      // ignore
+    } catch (error) {
+      console.error("Error saving/updating property in Firebase:", error);
     }
   };
 
@@ -339,14 +344,14 @@ export default function App() {
     } else if (sortBy === 'price_high') {
       result.sort((a, b) => b.price - a.price);
     } else {
-      result.sort((a, b) => b.id - a.id);
+      result.sort((a, b) => Number((b as any).id || (b as any)._id) - Number((a as any).id || (a as any)._id));
     }
 
     return result;
   }, [properties, activeFilterCategory, selectedRentType, filterCity, filterBhk, searchQuery, sortBy]);
 
   const savedListings = useMemo(() => {
-    return properties.filter((p) => savedProperties.includes(p.id));
+    return properties.filter((p) => savedProperties.includes(Number((p as any).id || (p as any)._id)));
   }, [properties, savedProperties]);
 
   const userProperties = useMemo(() => {
@@ -796,14 +801,14 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredProperties.map((item) => (
                     <PropertyCard
-                      key={item.id}
+                      key={(item as any).id || (item as any)._id}
                       property={item}
                       currentUser={currentUser}
-                      isSaved={isSaved(item.id)}
-                      onToggleSave={toggleSave}
+                      isSaved={isSaved(Number((item as any).id || (item as any)._id))}
+                      onToggleSave={(id) => toggleSave(Number(id))}
                       onViewDetails={(prop) => setSelectedProperty(prop)}
                       onToggleStatus={toggleStatus}
-                      onEdit={openEditWizard}
+                      onEdit={handleEditProperty}
                       onDelete={handleDeleteProperty}
                       formatCurrency={formatCurrency}
                     />
@@ -847,14 +852,14 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {savedListings.map((item) => (
                     <PropertyCard
-                      key={item.id}
+                      key={(item as any).id || (item as any)._id}
                       property={item}
                       currentUser={currentUser}
                       isSaved={true}
-                      onToggleSave={toggleSave}
+                      onToggleSave={(id) => toggleSave(Number(id))}
                       onViewDetails={(prop) => setSelectedProperty(prop)}
                       onToggleStatus={toggleStatus}
-                      onEdit={openEditWizard}
+                      onEdit={handleEditProperty}
                       onDelete={handleDeleteProperty}
                       formatCurrency={formatCurrency}
                     />
@@ -902,14 +907,14 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {userProperties.map((item) => (
                     <PropertyCard
-                      key={item.id}
+                      key={(item as any).id || (item as any)._id}
                       property={item}
                       currentUser={currentUser}
-                      isSaved={isSaved(item.id)}
-                      onToggleSave={toggleSave}
+                      isSaved={isSaved(Number((item as any).id || (item as any)._id))}
+                      onToggleSave={(id) => toggleSave(Number(id))}
                       onViewDetails={(prop) => setSelectedProperty(prop)}
                       onToggleStatus={toggleStatus}
-                      onEdit={openEditWizard}
+                      onEdit={handleEditProperty}
                       onDelete={handleDeleteProperty}
                       formatCurrency={formatCurrency}
                     />
