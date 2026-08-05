@@ -39,17 +39,15 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   formatCurrency,
 }) => {
   const [copied, setCopied] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isInternalEditing, setIsInternalEditing] = useState(false); // కార్డ్ లోపల ఎడిట్ ఓపెన్ కావడానికి లోకల్ స్టేట్
 
-  // --- Form Edit States ---
+  // --- Form States ---
   const [editTitle, setEditTitle] = useState(property.title || '');
   const [editPrice, setEditPrice] = useState(property.price || 0);
   const [editLocality, setEditLocality] = useState(property.locality || '');
   const [editCity, setEditCity] = useState(property.city || '');
-  const [editArea, setEditArea] = useState(property.area || 0);
   const [editStatus, setEditStatus] = useState(property.status || 'Available');
   
-  // Rent Types state (Monthly / Daily support)
   const [editRentTypes, setEditRentTypes] = useState<string[]>(
     Array.isArray(property.rentType) 
       ? property.rentType 
@@ -60,7 +58,6 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           : ['Monthly']
   );
 
-  // Check if current user is owner or admin
   const propertyOwnerId = (property as any).ownerId;
   const isOwner = currentUser && (currentUser.id === propertyOwnerId || currentUser.role === 'Administrator');
 
@@ -89,22 +86,23 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
     }
   };
 
-  // Save changes directly without opening multi-step wizards
+  // ఇక్కడ సేవ్ క్లిక్ చేయగానే మెయిన్ మోడల్ ఓపెన్ అవ్వకుండా నేరుగా డేటా అప్‌డేట్ అవుతుంది
   const handleSaveEdit = (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    
     const updatedProperty: Property = {
       ...property,
       title: editTitle,
       price: Number(editPrice),
       locality: editLocality,
       city: editCity,
-      area: Number(editArea),
       status: editStatus,
       rentType: editRentTypes.length > 1 ? 'Both' : editRentTypes[0],
     } as any;
     
-    onEdit(updatedProperty); // Triggers parent handler to update Firebase & State
-    setIsEditing(false);
+    onEdit(updatedProperty); // Parent లో ఉన్న ఫైర్‌బేస్ అప్‌డేట్ ఫంక్షన్‌కి పంపిస్తుంది
+    setIsInternalEditing(false); // ఎడిట్ ఫామ్‌ని క్లోజ్ చేస్తుంది
   };
 
   const handleDeleteClick = () => {
@@ -163,11 +161,15 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
       {/* Card Body / Quick Edit Form */}
       <div className="p-5 flex-1 flex flex-col justify-between">
-        {isEditing ? (
+        {isInternalEditing ? (
           <form onSubmit={handleSaveEdit} className="space-y-3 text-xs">
             <div className="flex justify-between items-center mb-1 border-b border-slate-800 pb-1">
               <span className="font-bold text-indigo-400 uppercase text-[10px]">Quick Edit Property</span>
-              <button type="button" onClick={() => setIsEditing(false)} className="text-slate-400 hover:text-white">
+              <button 
+                type="button" 
+                onClick={() => setIsInternalEditing(false)} 
+                className="text-slate-400 hover:text-white cursor-link"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -185,7 +187,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
             {property.category === 'Rent' && (
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1">Rent Type (Select)</label>
+                <label className="text-[10px] text-slate-400 block mb-1">Rent Type</label>
                 <div className="flex gap-4 bg-slate-950 p-2 rounded-lg border border-slate-800">
                   <label className="flex items-center gap-2 cursor-pointer text-white">
                     <input
@@ -276,7 +278,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         )}
 
         {/* Action Buttons */}
-        {!isEditing && (
+        {!isInternalEditing && (
           <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
             <button
               onClick={() => onViewDetails(property)}
@@ -295,7 +297,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                   <RefreshCw className="w-3.5 h-3.5" />
                 </button>
                 <button
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => setIsInternalEditing(true)}
                   className="px-2.5 py-2.5 bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600 hover:text-white rounded-xl text-xs font-bold transition cursor-pointer"
                   title="Quick Edit"
                 >
