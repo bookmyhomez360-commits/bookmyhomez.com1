@@ -972,18 +972,6 @@ export default function App() {
             setShowAuthModal(false);
             openWizard();
           }}
-          onLoginSuccess={(user) => {
-            setCurrentUser(user);
-            setShowAuthModal(false);
-          }}
-        />
-
-        <Footer
-          navigateToCategory={navigateToCategory}
-          filterByLocation={filterByLocation}
-        />
-
-      </div>
     </div>
   );
 }
