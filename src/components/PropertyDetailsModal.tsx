@@ -55,13 +55,13 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
 
   if (!property) return null;
 
-  // Combine images and direct video into one media array so they slide together
+  // Combine images and direct video/videoUrl into one media array
   const images =
     property.images && property.images.length > 0
       ? property.images
       : ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80'];
 
-  // If property has a direct video (property.videoUrl or property.video), add it to media list
+  // Support both property.videoUrl and property.video
   const directVideo = property.videoUrl || (property as any).video;
   const mediaList = directVideo ? [...images, directVideo] : images;
 
@@ -132,7 +132,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
   const handleDeleteReview = (idx: number) => {
     const updatedReviews = reviews.filter((_, i) => i !== idx);
     setReviews(updatedReviews);
-    property.reviews = updatedReviews; // ప్రాపర్టీ ఆబ్జెక్ట్‌లో కూడా అప్‌డేట్ చేయడానికి
+    property.reviews = updatedReviews;
   };
 
   const currentMedia = mediaList[currentMediaIndex];
@@ -154,7 +154,6 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
             <video
               src={currentMedia}
               controls
-              autoPlay
               className="w-full h-full object-contain bg-black"
             />
           ) : currentMedia.includes('youtube.com') || currentMedia.includes('youtu.be') ? (
@@ -264,7 +263,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
             </span>
         </div>
 
-        {/* Comprehensive Property Details Grid */}
+        {/* Property Details Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs mb-6">
           <div>
             <span className="text-slate-500 block">Sub-Type:</span>
