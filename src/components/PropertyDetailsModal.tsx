@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Video,
+  Star,
 } from 'lucide-react';
 
 interface PropertyDetailsModalProps {
@@ -22,6 +23,12 @@ interface PropertyDetailsModalProps {
   onClose: () => void;
   onToggleStatus: (property: Property) => void;
   formatCurrency: (val: number) => string;
+}
+
+interface Review {
+  name: string;
+  comment: string;
+  rating: number;
 }
 
 export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
@@ -33,6 +40,14 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+
+  // --- NEW: Reviews State ---
+  const [reviews, setReviews] = useState<Review[]>([
+    { name: "Suresh Kumar", comment: "Property is very clean and located in a prime area.", rating: 5 },
+  ]);
+  const [reviewerName, setReviewerName] = useState('');
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewRating, setReviewRating] = useState(5);
 
   if (!property) return null;
 
@@ -72,8 +87,6 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
   const handleShare = () => {
     const shareText = `Check out "${property.title}" in ${property.locality}, ${property.city} for ₹${formatCurrency(property.price)} on BookMyHomez!`;
     
-    // ---- CHANGES HERE: Fixed share URL to point to specific property using ID ----
-    // property.id badhulu mee database lo unna key (e.g., property._id) unte adi vadandi
     const propertyId = (property as any).id || (property as any)._id || '';
     const shareUrl = propertyId 
       ? `${window.location.origin}/?propertyId=${propertyId}` 
@@ -94,6 +107,23 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
     }
   };
 
+  // --- NEW: Handle Review Submit ---
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewerName || !reviewComment) return;
+
+    const newReview: Review = {
+      name: reviewerName,
+      comment: reviewComment,
+      rating: reviewRating,
+    };
+
+    setReviews([...reviews, newReview]);
+    setReviewerName('');
+    setReviewComment('');
+    setReviewRating(5);
+  };
+
   const currentMedia = mediaList[currentMediaIndex];
 
   return (
@@ -107,7 +137,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           <X className="w-5 h-5" />
         </button>
 
-        {/* Media Slider Container (Handles both Photos and Direct Videos) */}
+        {/* Media Slider Container */}
         <div className="relative h-72 rounded-2xl overflow-hidden mb-4 bg-slate-950 group flex items-center justify-center">
           {isVideoItem(currentMedia) ? (
             <video
@@ -132,7 +162,6 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
             />
           )}
 
-          {/* Media Navigation Arrows */}
           {mediaList.length > 1 && (
             <>
               <button
@@ -148,7 +177,6 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
                 <ChevronRight className="w-5 h-5" />
               </button>
 
-              {/* Media Counter Badge */}
               <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md text-slate-300 text-[11px] font-bold px-2.5 py-1 rounded-md border border-slate-700 z-10">
                 {currentMediaIndex + 1} / {mediaList.length}
               </div>
@@ -184,7 +212,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           </button>
         </div>
 
-        {/* Thumbnails Row (Includes photos and video thumbnail preview) */}
+        {/* Thumbnails Row */}
         {mediaList.length > 1 && (
           <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
             {mediaList.map((mediaUrl, idx) => (
@@ -334,6 +362,69 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
             </div>
           </div>
         )}
+
+        {/* --- NEW: Client Reviews & Add Review Section --- */}
+        <div className="mb-6 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+            Client Reviews & Feedback
+          </h4>
+
+          {/* Display Existing Reviews */}
+          <div className="space-y-3 mb-4 max-h-44 overflow-y-auto pr-1">
+            {reviews.map((rev, index) => (
+              <div key={index} className="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-bold text-white">{rev.name}</span>
+                  <div className="flex items-center gap-1 text-amber-400">
+                    <Star className="w-3 h-3 fill-amber-400" />
+                    <span>{rev.rating} / 5</span>
+                  </div>
+                </div>
+                <p className="text-slate-300">{rev.comment}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Add Review Form */}
+          <form onSubmit={handleReviewSubmit} className="bg-slate-900/60 p-3 rounded-xl border border-slate-800 space-y-3 text-xs">
+            <span className="font-bold text-slate-300 block">Leave a Review</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <input
+                type="text"
+                placeholder="Your Name"
+                value={reviewerName}
+                onChange={(e) => setReviewerName(e.target.value)}
+                required
+                className="bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-500"
+              />
+              <select
+                value={reviewRating}
+                onChange={(e) => setReviewRating(Number(e.target.value))}
+                className="bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-500"
+              >
+                <option value={5}>5 Stars - Excellent</option>
+                <option value={4}>4 Stars - Good</option>
+                <option value={3}>3 Stars - Average</option>
+                <option value={2}>2 Stars - Poor</option>
+                <option value={1}>1 Star - Terrible</option>
+              </select>
+            </div>
+            <textarea
+              placeholder="Write your review here..."
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+              required
+              rows={2}
+              className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-500 resize-none"
+            />
+            <button
+              type="submit"
+              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-lg transition cursor-pointer"
+            >
+              Submit Review
+            </button>
+          </form>
+        </div>
 
         {/* Action Buttons */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-800 gap-3">
