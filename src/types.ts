@@ -28,6 +28,25 @@ export interface Property {
   createdAt?: string;
 }
 
+export interface Review {
+  id?: string;
+  name: string;
+  comment: string;
+  rating: number;
+  date: string;
+}
+
+export interface Property {
+  id: string;
+  title: string;
+  price: number | string;
+  location: string;
+  description: string;
+  imageUrl?: string;
+  reviews?: Review[]; // ప్రాపర్టీ కింద క్లైంట్స్ ఇచ్చే రివ్యూల కోసం
+  [key: string]: any; // అదనపు ఫీల్డ్స్ ఏవైనా ఉంటే సపోర్ట్ చేయడానికి
+}
+
 export interface User {
   id: string;
   name: string;
