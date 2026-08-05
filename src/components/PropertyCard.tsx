@@ -1,18 +1,8 @@
 import React, { useState } from 'react';
 import { Property, User } from '../types';
-import {
-  MapPin,
-  Heart,
-  Eye,
-  RefreshCw,
-  Edit,
-  Trash2,
-  Lock,
-  CheckCircle,
-  Share2,
-  Check,
-  Save,
-  X,
+import { 
+  Heart, MapPin, Bed, Maximize2, IndianRupee, 
+  Edit3, Trash2, Clock, X, Save 
 } from 'lucide-react';
 
 interface PropertyCardProps {
@@ -38,283 +28,211 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   onDelete,
   formatCurrency,
 }) => {
-  const [copied, setCopied] = useState(false);
-  const [isInternalEditing, setIsInternalEditing] = useState(false); // కార్డ్ లోపల ఎడిట్ ఓపెన్ కావడానికి లోకల్ స్టేట్
+  const [isQuickEditing, setIsQuickEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(property.title);
+  const [editPrice, setEditPrice] = useState(property.price);
+  const [editStatus, setEditStatus] = useState(property.status);
+  const [editLocality, setEditLocality] = useState(property.locality);
+  const [editCity, setEditCity] = useState(property.city);
+  const [editRentType, setEditRentType] = useState(property.rentType || 'Monthly');
 
-  // --- Form States ---
-  const [editTitle, setEditTitle] = useState(property.title || '');
-  const [editPrice, setEditPrice] = useState(property.price || 0);
-  const [editLocality, setEditLocality] = useState(property.locality || '');
-  const [editCity, setEditCity] = useState(property.city || '');
-  const [editStatus, setEditStatus] = useState(property.status || 'Available');
-  
-  const [editRentTypes, setEditRentTypes] = useState<string[]>(
-    Array.isArray(property.rentType) 
-      ? property.rentType 
-      : property.rentType === 'Both' 
-        ? ['Monthly', 'Daily'] 
-        : property.rentType 
-          ? [property.rentType] 
-          : ['Monthly']
-  );
+  const propertyId = (property as any).id || (property as any)._id;
+  const isOwnerOrAdmin = currentUser && (currentUser.role === 'Administrator' || property.ownerId === currentUser.id);
 
-  const propertyOwnerId = (property as any).ownerId;
-  const isOwner = currentUser && (currentUser.id === propertyOwnerId || currentUser.role === 'Administrator');
-
-  const handleShare = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const shareText = `Check out "${property.title}" in ${property.locality}, ${property.city} for ₹${formatCurrency(property.price)} on BookMyHomez!`;
-    const propertyId = (property as any).id || (property as any)._id || '';
-    const shareUrl = propertyId ? `${window.location.origin}/?propertyId=${propertyId}` : window.location.href;
-
-    if (navigator.share) {
-      navigator.share({ title: property.title, text: shareText, url: shareUrl }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    }
-  };
-
-  const handleRentTypeToggle = (type: string) => {
-    if (editRentTypes.includes(type)) {
-      if (editRentTypes.length > 1) {
-        setEditRentTypes(editRentTypes.filter((t) => t !== type));
-      }
-    } else {
-      setEditRentTypes([...editRentTypes, type]);
-    }
-  };
-
-  // ఇక్కడ సేవ్ క్లిక్ చేయగానే మెయిన్ మోడల్ ఓపెన్ అవ్వకుండా నేరుగా డేటా అప్‌డేట్ అవుతుంది
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveQuickEdit = (e: React.FormEvent) => {
     e.preventDefault();
-    e.stopPropagation();
-    
-    const updatedProperty: Property = {
+    const updated: Property = {
       ...property,
       title: editTitle,
       price: Number(editPrice),
+      status: editStatus as any,
       locality: editLocality,
       city: editCity,
-      status: editStatus,
-      rentType: editRentTypes.length > 1 ? 'Both' : editRentTypes[0],
-    } as any;
-    
-    onEdit(updatedProperty); // Parent లో ఉన్న ఫైర్‌బేస్ అప్‌డేట్ ఫంక్షన్‌కి పంపిస్తుంది
-    setIsInternalEditing(false); // ఎడిట్ ఫామ్‌ని క్లోజ్ చేస్తుంది
-  };
-
-  const handleDeleteClick = () => {
-    const targetId = (property as any).id || (property as any)._id;
-    if (targetId !== undefined && targetId !== null) {
-      onDelete(targetId);
-    }
+      rentType: editRentType as any,
+    };
+    onEdit(updated);
+    setIsQuickEditing(false);
   };
 
   return (
-    <div className="bg-slate-900/80 backdrop-blur-md rounded-2xl overflow-hidden border border-slate-800 hover:border-indigo-500/50 transition duration-300 flex flex-col group relative">
+    <div className="bg-slate-900/90 rounded-3xl border border-slate-800 overflow-hidden shadow-xl hover:border-indigo-500/50 transition duration-300 flex flex-col relative group">
       
-      {/* Property Image Container */}
-      <div className="relative h-60 overflow-hidden bg-slate-900">
-        <img
-          src={property.images && property.images[0] ? property.images[0] : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80'}
+      {/* Image & Badges */}
+      <div className="relative h-52 overflow-hidden bg-slate-950">
+        <img 
+          src={property.images?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'} 
           alt={property.title}
           className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+        
+        <div className="absolute top-3 left-3 flex gap-2">
+          <span className="px-3 py-1 rounded-xl bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-extrabold border border-slate-700">
+            {property.category}
+          </span>
+          <span className={`px-3 py-1 rounded-xl backdrop-blur-md text-[11px] font-extrabold border ${
+            property.status === 'Booked' ? 'bg-rose-500/80 text-white border-rose-400' : 'bg-emerald-500/80 text-white border-emerald-400'
+          }`}>
+            {property.status || 'Available'}
+          </span>
+        </div>
 
-        {/* Category Tag */}
-        <span className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-indigo-300 text-[10px] font-black px-3 py-1 rounded-full uppercase border border-indigo-500/30">
-          {property.category}
-        </span>
-
-        {/* AVAILABLE / BOOKED BADGE */}
-        <span
-          className={`absolute top-3 right-3 px-3.5 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wide shadow-2xl border backdrop-blur-md flex items-center gap-1.5 ${
-            property.status === 'Booked'
-              ? 'bg-rose-600/95 text-white border-rose-400'
-              : 'bg-emerald-500/95 text-slate-950 border-emerald-300'
-          }`}
+        <button
+          onClick={() => onToggleSave(propertyId)}
+          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-slate-900/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-slate-800 transition cursor-pointer border border-slate-700"
         >
-          {property.status === 'Booked' ? <Lock className="w-3 h-3 text-white" /> : <CheckCircle className="w-3 h-3 text-slate-950" />}
-          {property.status || 'Available'}
-        </span>
+          <Heart className={`w-4 h-4 ${isSaved ? 'text-rose-500 fill-rose-500' : 'text-slate-300'}`} />
+        </button>
 
-        {/* Price Tag */}
-        <div className="absolute bottom-3 left-3 text-white">
-          <div className="text-3xl font-black text-emerald-400 mb-6 drop-shadow-md">
-            ₹{formatCurrency(property.price)}
-            <span className="text-xs text-slate-400 font-normal ml-1">
-              {property.category === 'Rent' && (
-                Array.isArray(property.rentType) 
-                  ? property.rentType.join(' / ') 
-                  : property.rentType === 'Both' 
-                    ? 'Monthly / Daily' 
-                    : property.rentType === 'Daily' 
-                      ? '/ day' 
-                      : '/ month'
-              )}
-            </span>
+        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+          <div className="text-xl font-black text-white drop-shadow-md flex items-center">
+            <IndianRupee className="w-4 h-4 mr-0.5" />
+            {formatCurrency(property.price)}
+            {property.category === 'Rent' && <span className="text-[10px] text-slate-300 font-normal ml-1">/mo</span>}
           </div>
         </div>
       </div>
 
-      {/* Card Body / Quick Edit Form */}
+      {/* Content */}
       <div className="p-5 flex-1 flex flex-col justify-between">
-        {isInternalEditing ? (
-          <form onSubmit={handleSaveEdit} className="space-y-3 text-xs">
-            <div className="flex justify-between items-center mb-1 border-b border-slate-800 pb-1">
-              <span className="font-bold text-indigo-400 uppercase text-[10px]">Quick Edit Property</span>
-              <button 
-                type="button" 
-                onClick={() => setIsInternalEditing(false)} 
-                className="text-slate-400 hover:text-white cursor-link"
+        <div>
+          <h3 className="text-base font-bold text-white mb-1 line-clamp-1">{property.title}</h3>
+          <p className="text-xs text-slate-400 flex items-center gap-1 mb-4">
+            <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+            {property.locality}, {property.city}
+          </p>
+
+          <div className="grid grid-cols-3 gap-2 py-3 border-t border-b border-slate-800/80 text-xs text-slate-300 font-semibold mb-4">
+            <div className="flex items-center gap-1.5">
+              <Bed className="w-4 h-4 text-indigo-400" />
+              <span>{property.bhk || 'N/A'}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Maximize2 className="w-4 h-4 text-indigo-400" />
+              <span>{property.area} sq.ft</span>
+            </div>
+            <div className="text-right text-slate-400 font-normal">
+              {property.furnishing || 'Furnished'}
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2 pt-2">
+          <button
+            onClick={() => onViewDetails(property)}
+            className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs transition cursor-pointer text-center"
+          >
+            View Details
+          </button>
+
+          {isOwnerOrAdmin && (
+            <>
+              <button
+                onClick={() => onToggleStatus(property)}
+                title="Toggle Status (Available/Booked)"
+                className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 transition cursor-pointer border border-slate-700"
               >
-                <X className="w-4 h-4" />
+                <Clock className="w-4 h-4" />
               </button>
-            </div>
 
-            <div>
-              <label className="text-[10px] text-slate-400">Title</label>
-              <input
-                type="text"
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
-                required
-              />
-            </div>
+              <button
+                onClick={() => setIsQuickEditing(!isQuickEditing)}
+                title="Quick Edit"
+                className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-indigo-400 transition cursor-pointer border border-slate-700"
+              >
+                <Edit3 className="w-4 h-4" />
+              </button>
 
-            {property.category === 'Rent' && (
+              <button
+                onClick={() => onDelete(propertyId)}
+                title="Delete Property"
+                className="p-2.5 rounded-xl bg-slate-800 hover:bg-rose-900/50 text-rose-400 transition cursor-pointer border border-slate-700"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Quick Edit Overlay / Drawer Inside Card */}
+      {isQuickEditing && (
+        <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-xl p-5 z-20 flex flex-col overflow-y-auto">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+            <h4 className="text-xs font-black uppercase tracking-wider text-indigo-400">Quick Edit Property</h4>
+            <button onClick={() => setIsQuickEditing(false)} className="text-slate-400 hover:text-white cursor-pointer">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <form onSubmit={handleSaveQuickEdit} className="space-y-3 flex-1 flex flex-col justify-between">
+            <div className="space-y-3">
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1">Rent Type</label>
-                <div className="flex gap-4 bg-slate-950 p-2 rounded-lg border border-slate-800">
-                  <label className="flex items-center gap-2 cursor-pointer text-white">
-                    <input
-                      type="checkbox"
-                      checked={editRentTypes.includes('Monthly')}
-                      onChange={() => handleRentTypeToggle('Monthly')}
-                      className="accent-indigo-500 w-3.5 h-3.5"
-                    />
-                    Monthly
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer text-white">
-                    <input
-                      type="checkbox"
-                      checked={editRentTypes.includes('Daily')}
-                      onChange={() => handleRentTypeToggle('Daily')}
-                      className="accent-indigo-500 w-3.5 h-3.5"
-                    />
-                    Daily
-                  </label>
+                <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Title</label>
+                <input
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Price (₹)</label>
+                  <input
+                    type="number"
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(Number(e.target.value))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Status</label>
+                  <select
+                    value={editStatus}
+                    onChange={(e) => setEditStatus(e.target.value as any)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-bold"
+                  >
+                    <option value="Available">Available</option>
+                    <option value="Booked">Booked</option>
+                  </select>
                 </div>
               </div>
-            )}
 
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="text-[10px] text-slate-400">Status</label>
-                <select
-                  value={editStatus}
-                  onChange={(e) => setEditStatus(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold focus:outline-none focus:border-indigo-500"
-                >
-                  <option value="Available">Available</option>
-                  <option value="Booked">Booked</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-[10px] text-slate-400">Price (₹)</label>
-                <input
-                  type="number"
-                  value={editPrice}
-                  onChange={(e) => setEditPrice(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="text-[10px] text-slate-400">Locality</label>
-                <input
-                  type="text"
-                  value={editLocality}
-                  onChange={(e) => setEditLocality(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-slate-400">City</label>
-                <input
-                  type="text"
-                  value={editCity}
-                  onChange={(e) => setEditCity(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Locality</label>
+                  <input
+                    type="text"
+                    value={editLocality}
+                    onChange={(e) => setEditLocality(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">City</label>
+                  <input
+                    type="text"
+                    value={editCity}
+                    onChange={(e) => setEditCity(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                  />
+                </div>
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer mt-2"
+              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 cursor-pointer mt-4"
             >
-              <Save className="w-4 h-4" /> Save Changes Immediately
+              <Save className="w-3.5 h-3.5" /> Save Changes Immediately
             </button>
           </form>
-        ) : (
-          <div>
-            <h3 className="text-base font-bold text-white group-hover:text-indigo-400 transition line-clamp-1 mb-1">
-              {property.title}
-            </h3>
-            <p className="text-xs text-slate-400 flex items-center gap-1.5 mb-3">
-              <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-              <span className="truncate">{property.locality}, {property.city}</span>
-            </p>
-          </div>
-        )}
+        </div>
+      )}
 
-        {/* Action Buttons */}
-        {!isInternalEditing && (
-          <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-            <button
-              onClick={() => onViewDetails(property)}
-              className="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <Eye className="w-3.5 h-3.5" /> View Details
-            </button>
-
-            {isOwner && (
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => onToggleStatus(property)}
-                  className="px-2.5 py-2.5 bg-amber-500/20 text-amber-300 hover:bg-amber-500 hover:text-slate-950 rounded-xl text-xs font-bold transition cursor-pointer"
-                  title="Toggle Available / Booked"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={() => setIsInternalEditing(true)}
-                  className="px-2.5 py-2.5 bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600 hover:text-white rounded-xl text-xs font-bold transition cursor-pointer"
-                  title="Quick Edit"
-                >
-                  <Edit className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={handleDeleteClick}
-                  className="px-2.5 py-2.5 bg-rose-600/20 text-rose-400 hover:bg-rose-600 hover:text-white rounded-xl text-xs font-bold transition cursor-pointer"
-                  title="Delete from Firebase"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
     </div>
   );
 };
