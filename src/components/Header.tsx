@@ -119,6 +119,17 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </nav>
 
+        <button
+  onClick={() => navigateTo('blog')}
+  className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+    currentTab === 'blog'
+      ? 'bg-indigo-600 text-white shadow-md'
+      : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+  }`}
+>
+  Blog
+</button>
+
         {/* Action Controls */}
         <div className="flex items-center gap-3">
           {/* List Property Button with Prominent Blue Background */}
