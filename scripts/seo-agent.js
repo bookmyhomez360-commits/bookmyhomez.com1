@@ -32,7 +32,10 @@ async function runSEOAgent() {
     codeSnippet = fs.readFileSync('./src/App.tsx', 'utf8');
   }
 
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const model = genAI.getGenerativeModel({ 
+  model: "gemini-1.5-flash",
+  apiVersion: "v1" 
+});
 
   const prompt = `
 You are an autonomous SEO Optimization Agent for a home rental platform "BookMyHomez".
