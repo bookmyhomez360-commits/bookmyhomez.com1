@@ -561,9 +561,9 @@ export default function App() {
                     <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
                       <House className="w-6 h-6" />
                     </div>
-                    <h3 className="text-base font-bold text-white group-hover:text-indigo-400 transition">
+                    <h2 className="text-base font-bold text-white group-hover:text-indigo-400 transition">
                       Homes to Buy
-                    </h3>
+                    </h2>
                     <p className="text-xs text-slate-400 mt-1">
                       Luxury flats, apartments & villas
                     </p>
@@ -580,9 +580,9 @@ export default function App() {
                     <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
                       <Key className="w-6 h-6" />
                     </div>
-                    <h3 className="text-base font-bold text-white group-hover:text-emerald-400 transition">
+                    <h2 className="text-base font-bold text-white group-hover:text-emerald-400 transition">
                       Rentals & PGs
-                    </h3>
+                    </h2>
                     <p className="text-xs text-slate-400 mt-1">
                       Furnished flats & coliving spaces
                     </p>
@@ -599,9 +599,9 @@ export default function App() {
                     <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
                       <Umbrella className="w-6 h-6" />
                     </div>
-                    <h3 className="text-base font-bold text-white group-hover:text-amber-400 transition">
+                    <h2 className="text-base font-bold text-white group-hover:text-amber-400 transition">
                       Short Stays
-                    </h3>
+                    </h2>
                     <p className="text-xs text-slate-400 mt-1">
                       Serviced homes & vacation retreats
                     </p>
@@ -616,11 +616,13 @@ export default function App() {
                     className="group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-violet-500/50 hover:bg-slate-900/90 transition duration-300"
                   >
                     <div className="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                      <Grid3X3 className="w-6 h-6" />
+                      <h2 className="text-base font-bold text-white group-hover:text-violet-400 transition">
+                        Land & Plots
+                      </h2>
                     </div>
-                    <h3 className="text-base font-bold text-white group-hover:text-violet-400 transition">
+                    <h2 className="text-base font-bold text-white group-hover:text-violet-400 transition">
                       Land & Plots
-                    </h3>
+                    </h2>
                     <p className="text-xs text-slate-400 mt-1">
                       Residential & commercial land
                     </p>
@@ -921,7 +923,7 @@ export default function App() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {userProperties.map((item) => (
+                  {userProperties.comap((item) => (
                     <PropertyCard
                       key={(item as any).id || (item as any)._id}
                       property={item}
@@ -977,7 +979,7 @@ export default function App() {
               email: acc.email,
               role: 'Verified Owner',
               avatar: acc.avatar,
-              id: 'usr_' + acc.email.replace(/[^a-zA-Z0-9]/g, '_'),
+              id: 'usr_' + acc.email.ref('usr_' + acc.email.replace(/[^a-zA-Z0-9]/g, '_'),
             };
             setCurrentUser(userObj);
             setShowAuthModal(false);
