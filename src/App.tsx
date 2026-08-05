@@ -39,7 +39,6 @@ import {
   House,
   Key,
   Umbrella,
-  Grid3X3,
   SearchX,
   Heart,
   PlusCircle,
@@ -92,18 +91,14 @@ export default function App() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // టోగుల్ స్టేటస్ ఫంక్షన్ (Firebase Integration)
   const handleToggleStatus = async (property: Property) => {
-    // ఐడీని నంబర్ లేదా స్ట్రింగ్ రూపంలో సరిగ్గా గుర్తించడానికి
     const propertyId = String((property as any).id || (property as any)._id);
     const newStatus = property.status === 'Booked' ? 'Available' : 'Booked';
 
     try {
-      // ఫైర్‌బేస్‌లో డాక్యుమెంట్ రెఫరెన్స్
       const propertyRef = doc(db, "properties", propertyId);
       await updateDoc(propertyRef, { status: newStatus });
 
-      // లోకల్ స్టేట్ అప్‌డేట్ చేయడం
       setProperties((prev) =>
         prev.map((p) =>
           (String((p as any).id || (p as any)._id) === propertyId)
@@ -117,12 +112,12 @@ export default function App() {
       }
 
       await updatePropertyInFirestore(propertyId, { status: newStatus });
-      console.log("Status updated successfully to:", newStatus);
     } catch (error) {
       console.error("Error toggling status in Firebase:", error);
-      alert("Failed to update status in database. Check console for details.");
+      alert("Failed to update status in database.");
     }
   };
+
   useEffect(() => {
     const checkUrlProperty = () => {
       const params = new URLSearchParams(window.location.search);
@@ -227,7 +222,6 @@ export default function App() {
     );
   };
 
-  // --- FIREBASE DELETE HANDLER ---
   const handleDeleteProperty = async (id: number | string) => {
     if (confirm('Are you sure you want to delete this property?')) {
       setProperties((prev) => prev.filter((p) => (p.id || (p as any)._id) !== id));
@@ -252,7 +246,6 @@ export default function App() {
     }
   };
 
-  // --- CARD QUICK EDIT HANDLER ---
   const handleEditProperty = async (updatedProperty: Property) => {
     const targetId = (updatedProperty as any).id || (updatedProperty as any)._id;
     
@@ -268,12 +261,6 @@ export default function App() {
     } catch (error) {
       console.error("Error updating property in Firebase:", error);
     }
-  };
-
-  const openEditWizard = (item: Property) => {
-    setIsEditing(true);
-    setEditingId(Number((item as any).id || (item as any)._id));
-    setShowWizardModal(true);
   };
 
   const handlePublishListing = async (
@@ -403,7 +390,7 @@ export default function App() {
         {isUrlLoading && (
           <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-3 text-center text-amber-300 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 sticky top-0 z-50 backdrop-blur-md">
             <Clock className="w-4 h-4 animate-spin text-amber-400" />
-            <span>Property details is loding please wait a minute.</span>
+            <span>Property details is loading please wait a minute.</span>
           </div>
         )}
 
@@ -439,6 +426,7 @@ export default function App() {
                           {currentVilla.badgeText}
                         </span>
 
+                        {/* Proper H1 Tag for SEO */}
                         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight sm:leading-none mb-6">
                           {currentVilla.heroHeadline}{' '}
                           <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-amber-300 bg-clip-text text-transparent">
@@ -541,14 +529,15 @@ export default function App() {
                 </div>
               </section>
 
+              {/* Proper H2 Tag for SEO Sections */}
               <section className="max-w-7xl mx-auto px-4 py-12">
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h2 className="text-xl sm:text-2xl font-black text-white">
-                      Explore Categories
+                      Top Travel Destinations for Vacation Home Rentals
                     </h2>
                     <p className="text-xs text-slate-400 mt-1">
-                      Select a category to view dedicated property listings on a new page
+                      Select a category to view dedicated property listings
                     </p>
                   </div>
                 </div>
@@ -561,9 +550,9 @@ export default function App() {
                     <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
                       <House className="w-6 h-6" />
                     </div>
-                    <h2 className="text-base font-bold text-white group-hover:text-indigo-400 transition">
+                    <h3 className="text-base font-bold text-white group-hover:text-indigo-400 transition">
                       Homes to Buy
-                    </h2>
+                    </h3>
                     <p className="text-xs text-slate-400 mt-1">
                       Luxury flats, apartments & villas
                     </p>
@@ -580,9 +569,9 @@ export default function App() {
                     <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
                       <Key className="w-6 h-6" />
                     </div>
-                    <h2 className="text-base font-bold text-white group-hover:text-emerald-400 transition">
+                    <h3 className="text-base font-bold text-white group-hover:text-emerald-400 transition">
                       Rentals & PGs
-                    </h2>
+                    </h3>
                     <p className="text-xs text-slate-400 mt-1">
                       Furnished flats & coliving spaces
                     </p>
@@ -599,9 +588,9 @@ export default function App() {
                     <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
                       <Umbrella className="w-6 h-6" />
                     </div>
-                    <h2 className="text-base font-bold text-white group-hover:text-amber-400 transition">
-                      Short Stays
-                    </h2>
+                    <h3 className="text-base font-bold text-white group-hover:text-amber-400 transition">
+                      Featured Luxury Villas & Private Pool Stays
+                    </h3>
                     <p className="text-xs text-slate-400 mt-1">
                       Serviced homes & vacation retreats
                     </p>
@@ -616,13 +605,11 @@ export default function App() {
                     className="group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-violet-500/50 hover:bg-slate-900/90 transition duration-300"
                   >
                     <div className="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                      <h2 className="text-base font-bold text-white group-hover:text-violet-400 transition">
-                        Land & Plots
-                      </h2>
+                      <House className="w-6 h-6" />
                     </div>
-                    <h2 className="text-base font-bold text-white group-hover:text-violet-400 transition">
+                    <h3 className="text-base font-bold text-white group-hover:text-violet-400 transition">
                       Land & Plots
-                    </h2>
+                    </h3>
                     <p className="text-xs text-slate-400 mt-1">
                       Residential & commercial land
                     </p>
@@ -654,7 +641,7 @@ export default function App() {
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
-                    <h1 className="text-2xl sm:text-3xl font-black text-white">
+                    <h2 className="text-2xl sm:text-3xl font-black text-white">
                       {activeFilterCategory === 'All'
                         ? 'Browse All Real Estate'
                         : activeFilterCategory === 'Buy'
@@ -664,7 +651,7 @@ export default function App() {
                         : activeFilterCategory === 'Short Stay'
                         ? 'Short Stay & Vacation Rentals'
                         : 'Land & Residential Plots'}
-                    </h1>
+                    </h2>
                     <p className="text-xs text-slate-400 mt-1">
                       Displaying {filteredProperties.length} verified listings matching your preferences
                     </p>
@@ -923,7 +910,7 @@ export default function App() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {userProperties.comap((item) => (
+                  {userProperties.map((item) => (
                     <PropertyCard
                       key={(item as any).id || (item as any)._id}
                       property={item}
@@ -979,7 +966,7 @@ export default function App() {
               email: acc.email,
               role: 'Verified Owner',
               avatar: acc.avatar,
-              id: 'usr_' + acc.email.ref('usr_' + acc.email.replace(/[^a-zA-Z0-9]/g, '_'),
+              id: 'usr_' + acc.email.replace(/[^a-zA-Z0-9]/g, '_'),
             };
             setCurrentUser(userObj);
             setShowAuthModal(false);
