@@ -973,3 +973,6 @@ export default function App() {
           openWizard();
         }}
       />
+    </div>
+  );
+}
