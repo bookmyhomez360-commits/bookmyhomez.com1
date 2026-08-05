@@ -19,11 +19,11 @@ interface PropertyCardProps {
   property: Property;
   currentUser: User | null;
   isSaved: boolean;
-  onToggleSave: (id: number) => void;
+  onToggleSave: (id: number | string) => void;
   onViewDetails: (property: Property) => void;
   onToggleStatus: (property: Property) => void;
   onEdit: (property: Property) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: number | string) => void;
   formatCurrency: (val: number) => string;
 }
 
@@ -41,48 +41,37 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const [copied, setCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  // --- Complete Property Fields State including Multi Rent Options & Status ---
+  // --- Form Edit States ---
   const [editTitle, setEditTitle] = useState(property.title || '');
   const [editPrice, setEditPrice] = useState(property.price || 0);
   const [editLocality, setEditLocality] = useState(property.locality || '');
   const [editCity, setEditCity] = useState(property.city || '');
   const [editArea, setEditArea] = useState(property.area || 0);
-  const [editSubtype, setEditSubtype] = useState(property.subType || '');
-  const [editBhk, setEditBhk] = useState(property.bhk || '');
-  const [editBedrooms, setEditBedrooms] = useState(property.bedrooms || 1);
-  const [editBathrooms, setEditBathrooms] = useState(property.bathrooms || 1);
-  const [editBalconies, setEditBalconies] = useState(property.balconies || 1);
-  const [editFacing, setEditFacing] = useState(property.facing || '');
-  const [editPropertyAge, setEditPropertyAge] = useState(property.propertyAge || '');
-  const [editFurnishing, setEditFurnishing] = useState(property.furnishing || '');
-  const [editDeposit, setEditDeposit] = useState(property.deposit || 0);
-  const [editAvailableFrom, setEditAvailableFrom] = useState(property.availableFrom || '');
   const [editStatus, setEditStatus] = useState(property.status || 'Available');
   
-  // Rent Types state to handle both Monthly and Daily selection
+  // Rent Types state (Monthly / Daily support)
   const [editRentTypes, setEditRentTypes] = useState<string[]>(
-    Array.isArray(property.rentType) ? property.rentType : property.rentType ? [property.rentType] : ['Monthly']
+    Array.isArray(property.rentType) 
+      ? property.rentType 
+      : property.rentType === 'Both' 
+        ? ['Monthly', 'Daily'] 
+        : property.rentType 
+          ? [property.rentType] 
+          : ['Monthly']
   );
 
-  const isOwner = currentUser && (currentUser.id === property.ownerId || currentUser.role === 'Administrator');
+  // Check if current user is owner or admin
+  const propertyOwnerId = (property as any).ownerId;
+  const isOwner = currentUser && (currentUser.id === propertyOwnerId || currentUser.role === 'Administrator');
 
   const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation();
     const shareText = `Check out "${property.title}" in ${property.locality}, ${property.city} for ₹${formatCurrency(property.price)} on BookMyHomez!`;
-    
     const propertyId = (property as any).id || (property as any)._id || '';
-    const shareUrl = propertyId 
-      ? `${window.location.origin}/?propertyId=${propertyId}` 
-      : window.location.href;
+    const shareUrl = propertyId ? `${window.location.origin}/?propertyId=${propertyId}` : window.location.href;
 
     if (navigator.share) {
-      navigator
-        .share({
-          title: property.title,
-          text: shareText,
-          url: shareUrl,
-        })
-        .catch(() => {});
+      navigator.share({ title: property.title, text: shareText, url: shareUrl }).catch(() => {});
     } else {
       navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
       setCopied(true);
@@ -100,7 +89,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
     }
   };
 
-  // Submit all edited fields including multiple rent types and sync with Firebase
+  // Save changes directly without opening multi-step wizards
   const handleSaveEdit = (e: React.FormEvent) => {
     e.preventDefault();
     const updatedProperty: Property = {
@@ -110,22 +99,19 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       locality: editLocality,
       city: editCity,
       area: Number(editArea),
-      subType: editSubtype,
-      bhk: editBhk,
-      bedrooms: Number(editBedrooms),
-      bathrooms: Number(editBathrooms),
-      balconies: Number(editBalconies),
-      facing: editFacing,
-      propertyAge: editPropertyAge,
-      furnishing: editFurnishing,
-      deposit: Number(editDeposit),
-      availableFrom: editAvailableFrom,
       status: editStatus,
-      rentType: editRentTypes.length > 1 ? 'Both' : editRentTypes[0], // Supports both or individual
+      rentType: editRentTypes.length > 1 ? 'Both' : editRentTypes[0],
     } as any;
     
-    onEdit(updatedProperty);
+    onEdit(updatedProperty); // Triggers parent handler to update Firebase & State
     setIsEditing(false);
+  };
+
+  const handleDeleteClick = () => {
+    const targetId = (property as any).id || (property as any)._id;
+    if (targetId !== undefined && targetId !== null) {
+      onDelete(targetId);
+    }
   };
 
   return (
@@ -144,7 +130,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           {property.category}
         </span>
 
-        {/* PROMINENT AVAILABLE / BOOKED SLAB BADGE */}
+        {/* AVAILABLE / BOOKED BADGE */}
         <span
           className={`absolute top-3 right-3 px-3.5 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wide shadow-2xl border backdrop-blur-md flex items-center gap-1.5 ${
             property.status === 'Booked'
@@ -152,43 +138,11 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               : 'bg-emerald-500/95 text-slate-950 border-emerald-300'
           }`}
         >
-          {property.status === 'Booked' ? (
-            <Lock className="w-3 h-3 text-white" />
-          ) : (
-            <CheckCircle className="w-3 h-3 text-slate-950" />
-          )}
+          {property.status === 'Booked' ? <Lock className="w-3 h-3 text-white" /> : <CheckCircle className="w-3 h-3 text-slate-950" />}
           {property.status || 'Available'}
         </span>
 
-        {/* Top Right Buttons: Share & Favorite */}
-        <div className="absolute bottom-3 right-3 flex items-center gap-2">
-          <button
-            onClick={handleShare}
-            className="w-9 h-9 rounded-full bg-slate-950/80 text-slate-300 hover:text-indigo-400 flex items-center justify-center transition cursor-pointer"
-            title="Share Property"
-          >
-            {copied ? (
-              <Check className="w-4 h-4 text-emerald-400" />
-            ) : (
-              <Share2 className="w-4 h-4" />
-            )}
-          </button>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleSave(property.id);
-            }}
-            className="w-9 h-9 rounded-full bg-slate-950/80 text-slate-300 hover:text-rose-500 flex items-center justify-center transition cursor-pointer"
-            title="Save Property"
-          >
-            <Heart
-              className={`w-4 h-4 ${isSaved ? 'text-rose-500 fill-rose-500' : ''}`}
-            />
-          </button>
-        </div>
-
-        {/* Price Tag with Multi Rent Type Support Display */}
+        {/* Price Tag */}
         <div className="absolute bottom-3 left-3 text-white">
           <div className="text-3xl font-black text-emerald-400 mb-6 drop-shadow-md">
             ₹{formatCurrency(property.price)}
@@ -207,17 +161,13 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         </div>
       </div>
 
-      {/* Property Details Body / Comprehensive Edit Form */}
+      {/* Card Body / Quick Edit Form */}
       <div className="p-5 flex-1 flex flex-col justify-between">
         {isEditing ? (
-          <form onSubmit={handleSaveEdit} className="space-y-2.5 text-xs max-h-[360px] overflow-y-auto pr-1">
-            <div className="flex justify-between items-center mb-1 sticky top-0 bg-slate-900/95 py-1 z-10 border-b border-slate-800">
-              <span className="font-bold text-indigo-400 uppercase text-[10px]">Edit Property & Rent Options</span>
-              <button
-                type="button"
-                onClick={() => setIsEditing(false)}
-                className="text-slate-400 hover:text-white"
-              >
+          <form onSubmit={handleSaveEdit} className="space-y-3 text-xs">
+            <div className="flex justify-between items-center mb-1 border-b border-slate-800 pb-1">
+              <span className="font-bold text-indigo-400 uppercase text-[10px]">Quick Edit Property</span>
+              <button type="button" onClick={() => setIsEditing(false)} className="text-slate-400 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -228,15 +178,14 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                 type="text"
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-white focus:outline-none focus:border-indigo-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
                 required
               />
             </div>
 
-            {/* Rent Type Checkboxes (Select both Monthly & Daily if applicable) */}
             {property.category === 'Rent' && (
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1">Rent Type (Select one or both)</label>
+                <label className="text-[10px] text-slate-400 block mb-1">Rent Type (Select)</label>
                 <div className="flex gap-4 bg-slate-950 p-2 rounded-lg border border-slate-800">
                   <label className="flex items-center gap-2 cursor-pointer text-white">
                     <input
@@ -260,36 +209,26 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               </div>
             )}
 
-            <div>
-              <label className="text-[10px] text-slate-400">Property Status</label>
-              <select
-                value={editStatus}
-                onChange={(e) => setEditStatus(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-white focus:outline-none focus:border-indigo-500 font-bold"
-              >
-                <option value="Available">Available</option>
-                <option value="Booked">Booked</option>
-              </select>
-            </div>
-
             <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[10px] text-slate-400">Status</label>
+                <select
+                  value={editStatus}
+                  onChange={(e) => setEditStatus(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="Available">Available</option>
+                  <option value="Booked">Booked</option>
+                </select>
+              </div>
               <div>
                 <label className="text-[10px] text-slate-400">Price (₹)</label>
                 <input
                   type="number"
                   value={editPrice}
                   onChange={(e) => setEditPrice(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
                   required
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-slate-400">Deposit (₹)</label>
-                <input
-                  type="number"
-                  value={editDeposit}
-                  onChange={(e) => setEditDeposit(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
@@ -301,7 +240,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                   type="text"
                   value={editLocality}
                   onChange={(e) => setEditLocality(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
                   required
                 />
               </div>
@@ -311,47 +250,17 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                   type="text"
                   value={editCity}
                   onChange={(e) => setEditCity(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
                   required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-1.5">
-              <div>
-                <label className="text-[10px] text-slate-400">Sub-Type</label>
-                <input
-                  type="text"
-                  value={editSubtype}
-                  onChange={(e) => setEditSubtype(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-white focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-slate-400">BHK Config</label>
-                <input
-                  type="text"
-                  value={editBhk}
-                  onChange={(e) => setEditBhk(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-white focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-slate-400">Area (sq.ft)</label>
-                <input
-                  type="number"
-                  value={editArea}
-                  onChange={(e) => setEditArea(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer mt-2"
+              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer mt-2"
             >
-              <Save className="w-3.5 h-3.5" /> Save & Sync to Firebase
+              <Save className="w-4 h-4" /> Save Changes Immediately
             </button>
           </form>
         ) : (
@@ -359,48 +268,14 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             <h3 className="text-base font-bold text-white group-hover:text-indigo-400 transition line-clamp-1 mb-1">
               {property.title}
             </h3>
-            <p className="text-xs text-slate-400 flex items-center gap-1.5 mb-2">
+            <p className="text-xs text-slate-400 flex items-center gap-1.5 mb-3">
               <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-              <span className="truncate">
-                {property.locality}, {property.city}
-              </span>
-            </p>
-
-            {/* Quick Property Specs Highlights in Card */}
-            <div className="flex flex-wrap gap-1.5 my-2.5 text-[11px] text-slate-300">
-              <span className="bg-slate-950 px-2 py-1 rounded-md border border-slate-800 font-bold">
-                {property.bhk || property.subType || 'Apartment'}
-              </span>
-              <span className="bg-slate-950 px-2 py-1 rounded-md border border-slate-800">
-                {property.area} sq.ft
-              </span>
-              {property.facing && (
-                <span className="bg-slate-950 px-2 py-1 rounded-md border border-slate-800 text-indigo-400 font-bold">
-                  {property.facing} Facing
-                </span>
-              )}
-              <span className="bg-slate-950 px-2 py-1 rounded-md border border-slate-800">
-                {property.furnishing || 'Semi Furnished'}
-              </span>
-            </div>
-
-            <p className="text-[11px] text-slate-500 mb-4 flex items-center justify-between">
-              <span>
-                Listed by:{' '}
-                <span className="text-slate-300 font-bold">
-                  {property.ownerName || 'Verified Agent'}
-                </span>
-              </span>
-              {copied && (
-                <span className="text-emerald-400 font-bold text-[10px]">
-                  Link Copied!
-                </span>
-              )}
+              <span className="truncate">{property.locality}, {property.city}</span>
             </p>
           </div>
         )}
 
-        {/* Action Controls */}
+        {/* Action Buttons */}
         {!isEditing && (
           <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
             <button
@@ -408,14 +283,6 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               className="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Eye className="w-3.5 h-3.5" /> View Details
-            </button>
-
-            <button
-              onClick={handleShare}
-              className="p-2.5 bg-slate-800 hover:bg-indigo-600/30 text-slate-300 hover:text-indigo-300 rounded-xl text-xs font-bold transition cursor-pointer"
-              title="Share Property"
-            >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
             </button>
 
             {isOwner && (
@@ -430,14 +297,14 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                 <button
                   onClick={() => setIsEditing(true)}
                   className="px-2.5 py-2.5 bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600 hover:text-white rounded-xl text-xs font-bold transition cursor-pointer"
-                  title="Edit All Details & Rent Options"
+                  title="Quick Edit"
                 >
                   <Edit className="w-3.5 h-3.5" />
                 </button>
                 <button
-                  onClick={() => onDelete(property.id)}
+                  onClick={handleDeleteClick}
                   className="px-2.5 py-2.5 bg-rose-600/20 text-rose-400 hover:bg-rose-600 hover:text-white rounded-xl text-xs font-bold transition cursor-pointer"
-                  title="Delete Property from Firebase"
+                  title="Delete from Firebase"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
