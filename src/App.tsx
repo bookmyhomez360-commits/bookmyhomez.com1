@@ -4,7 +4,7 @@ import { SplashScreen } from './components/SplashScreen';
 import { Header } from './components/Header';
 import { PropertyCard } from './components/PropertyCard';
 import { PropertyDetailsModal } from './components/PropertyDetailsModal';
-import  WizardModal  from './components/WizardModal';
+import WizardModal from './components/WizardModal';
 import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
 import {
@@ -92,7 +92,6 @@ export default function App() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // టోగుల్ స్టేటస్ ఫంక్షన్ (Firebase Integration)
   const handleToggleStatus = async (property: Property) => {
     const propertyId = String((property as any).id || (property as any)._id);
     const newStatus = property.status === 'Booked' ? 'Available' : 'Booked';
@@ -377,14 +376,12 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#090D16] text-slate-100 font-sans selection:bg-indigo-600 selection:text-white relative">
-      
       <ThreeBackground
         activeVillaIndex={activeVillaIndex}
         onVillaChange={setActiveVillaIndex}
       />
 
       <div className="flex flex-col flex-1 min-h-screen relative z-10">
-        
         {showSplashScreen && (
           <SplashScreen onDismiss={() => setShowSplashScreen(false)} />
         )}
@@ -410,7 +407,6 @@ export default function App() {
         />
 
         <main className="flex-1">
-
           {currentTab === 'explore' && (
             <div>
               <section className="relative min-h-[540px] lg:min-h-[620px] flex items-center justify-center px-4 py-16 overflow-hidden">
@@ -428,7 +424,6 @@ export default function App() {
                           {currentVilla.badgeText}
                         </span>
 
-                        {/* పేజీకి ఒకే ఒక్క ప్రైమరీ H1 హెడ్డింగ్ */}
                         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight sm:leading-none mb-6">
                           {currentVilla.heroHeadline}{' '}
                           <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-amber-300 bg-clip-text text-transparent">
@@ -534,7 +529,6 @@ export default function App() {
               <section className="max-w-7xl mx-auto px-4 py-12">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    {/* సెక్షన్ హెడ్డింగ్స్ అన్నింటికీ H2 ట్యాగ్స్ */}
                     <h2 className="text-xl sm:text-2xl font-black text-white">
                       Explore Categories
                     </h2>
@@ -643,7 +637,6 @@ export default function App() {
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
-                    {/* ఇక్కడ కూడా సెక్షన్ హెడ్డింగ్ కాబట్టి H2 గా మార్చబడింది */}
                     <h2 className="text-2xl sm:text-3xl font-black text-white">
                       {activeFilterCategory === 'All'
                         ? 'Browse All Real Estate'
@@ -931,7 +924,6 @@ export default function App() {
               )}
             </section>
           )}
-
         </main>
 
         <PropertyDetailsModal
@@ -985,7 +977,6 @@ export default function App() {
           navigateToCategory={navigateToCategory}
           filterByLocation={filterByLocation}
         />
-
       </div>
     </div>
   );
