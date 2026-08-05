@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Video,
   Star,
+  Trash2,
 } from 'lucide-react';
 
 interface PropertyDetailsModalProps {
@@ -26,7 +27,8 @@ interface PropertyDetailsModalProps {
 }
 
 interface Review {
-  name: string;
+  userName?: string;
+  name?: string;
   comment: string;
   rating: number;
 }
@@ -41,10 +43,12 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
   const [copied, setCopied] = useState(false);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
-  // --- NEW: Reviews State ---
-  const [reviews, setReviews] = useState<Review[]>([
-    { name: "Suresh Kumar", comment: "Property is very clean and located in a prime area.", rating: 5 },
-  ]);
+  // --- Reviews State ---
+  const [reviews, setReviews] = useState<Review[]>(
+    property?.reviews || [
+      { name: "Suresh Kumar", comment: "Property is very clean and located in a prime area.", rating: 5 },
+    ]
+  );
   const [reviewerName, setReviewerName] = useState('');
   const [reviewComment, setReviewComment] = useState('');
   const [reviewRating, setReviewRating] = useState(5);
@@ -62,7 +66,6 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
   const mediaList = directVideo ? [...images, directVideo] : images;
 
   const isVideoItem = (url: string) => {
-    // Check if it's a video file or video link
     return url === directVideo && (!url.includes('youtube.com') && !url.includes('youtu.be'));
   };
 
@@ -107,7 +110,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
     }
   };
 
-  // --- NEW: Handle Review Submit ---
+  // --- Handle Review Submit ---
   const handleReviewSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!reviewerName || !reviewComment) return;
@@ -118,10 +121,18 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
       rating: reviewRating,
     };
 
-    setReviews([...reviews, newReview]);
+    const updatedReviews = [...reviews, newReview];
+    setReviews(updatedReviews);
     setReviewerName('');
     setReviewComment('');
     setReviewRating(5);
+  };
+
+  // --- Handle Delete Review (Admin Only) ---
+  const handleDeleteReview = (idx: number) => {
+    const updatedReviews = reviews.filter((_, i) => i !== idx);
+    setReviews(updatedReviews);
+    property.reviews = updatedReviews; // ప్రాపర్టీ ఆబ్జెక్ట్‌లో కూడా అప్‌డేట్ చేయడానికి
   };
 
   const currentMedia = mediaList[currentMediaIndex];
@@ -363,30 +374,43 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           </div>
         )}
 
-        {/* --- NEW: Client Reviews & Add Review Section --- */}
-        <div className="mb-6 bg-slate-950 p-4 rounded-2xl border border-slate-800">
-          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
-            Client Reviews & Feedback
-          </h4>
-
-          {/* Display Existing Reviews */}
-          <div className="space-y-3 mb-4 max-h-44 overflow-y-auto pr-1">
-            {reviews.map((rev, index) => (
-              <div key={index} className="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-white">{rev.name}</span>
-                  <div className="flex items-center gap-1 text-amber-400">
-                    <Star className="w-3 h-3 fill-amber-400" />
-                    <span>{rev.rating} / 5</span>
+        {/* --- Customer Reviews & Ratings Section (With Admin Delete Option) --- */}
+        <div className="mt-6 border-t border-slate-800 pt-6">
+          <h4 className="text-sm font-bold text-white mb-4">Customer Reviews & Ratings</h4>
+          
+          {reviews && reviews.length > 0 ? (
+            <div className="space-y-3 mb-4 max-h-44 overflow-y-auto pr-1">
+              {reviews.map((rev: any, idx: number) => (
+                <div key={idx} className="bg-slate-950 p-4 rounded-xl border border-slate-800/80 flex items-start justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-bold text-white">{rev.userName || rev.name || 'Verified User'}</span>
+                      <span className="text-[10px] text-amber-400 flex items-center gap-0.5">
+                        <Star className="w-3 h-3 fill-amber-400" /> {rev.rating} / 5
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300">{rev.comment}</p>
                   </div>
+
+                  {/* Only Admin can delete reviews */}
+                  {currentUser && currentUser.role === 'Administrator' && (
+                    <button
+                      onClick={() => handleDeleteReview(idx)}
+                      className="text-slate-500 hover:text-rose-400 p-1.5 rounded-lg transition cursor-pointer bg-slate-900 border border-slate-800"
+                      title="Delete Review (Admin Only)"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
-                <p className="text-slate-300">{rev.comment}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-500 mb-4">No reviews yet for this property.</p>
+          )}
 
           {/* Add Review Form */}
-          <form onSubmit={handleReviewSubmit} className="bg-slate-900/60 p-3 rounded-xl border border-slate-800 space-y-3 text-xs">
+          <form onSubmit={handleReviewSubmit} className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3 text-xs">
             <span className="font-bold text-slate-300 block">Leave a Review</span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <input
@@ -395,12 +419,12 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
                 value={reviewerName}
                 onChange={(e) => setReviewerName(e.target.value)}
                 required
-                className="bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-500"
+                className="bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-500"
               />
               <select
                 value={reviewRating}
                 onChange={(e) => setReviewRating(Number(e.target.value))}
-                className="bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-500"
+                className="bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-500 font-bold"
               >
                 <option value={5}>5 Stars - Excellent</option>
                 <option value={4}>4 Stars - Good</option>
@@ -415,11 +439,11 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
               onChange={(e) => setReviewComment(e.target.value)}
               required
               rows={2}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-500 resize-none"
+              className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-500 resize-none"
             />
             <button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-lg transition cursor-pointer"
+              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-lg transition cursor-pointer shadow-md"
             >
               Submit Review
             </button>
@@ -427,7 +451,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-4 border-t border-slate-800 gap-3">
+        <div className="flex items-center justify-between pt-6 mt-6 border-t border-slate-800 gap-3">
           <div className="flex items-center gap-2">
             <a
               href={`https://wa.me/919916475749?text=${whatsappMessage}`}
