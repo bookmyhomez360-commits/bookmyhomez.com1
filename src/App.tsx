@@ -7,6 +7,7 @@ import { PropertyDetailsModal } from './components/PropertyDetailsModal';
 import WizardModal from './components/WizardModal';
 import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
+import Blog from './components/Blog';
 import {
   Property,
   User,
