@@ -13,7 +13,7 @@ import {
   Building,
   CirclePlus,
   LogOut,
-  LogIn,
+  User as UserIcon,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -228,10 +228,12 @@ export const Header: React.FC<HeaderProps> = ({
           ) : (
             <button
               onClick={openAuthModal}
-              className="p-2.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition cursor-pointer flex items-center justify-center"
+              className="w-10 h-10 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition cursor-pointer flex items-center justify-center shadow-md"
               title="Log In / Sign Up"
             >
-              <LogIn className="w-4 h-4 text-rose-400" />
+              <div className="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-indigo-400">
+                <UserIcon className="w-4 h-4" />
+              </div>
             </button>
           )}
         </div>
