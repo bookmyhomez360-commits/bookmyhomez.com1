@@ -408,6 +408,9 @@ export default function App() {
         />
 
         <main className="flex-1">
+          {currentTab === 'blog' && (
+  <Blog />
+)}
           {currentTab === 'explore' && (
             <div>
               <section className="relative min-h-[540px] lg:min-h-[620px] flex items-center justify-center px-4 py-16 overflow-hidden">
