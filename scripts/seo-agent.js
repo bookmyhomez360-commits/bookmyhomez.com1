@@ -5,7 +5,6 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Increased initial delay and retry timing to respect Gemini Free Tier 60s cooldown
 async function generateWithRetry(model, prompt, retries = 3, delay = 60000) {
   for (let i = 0; i < retries; i++) {
     try {
@@ -15,7 +14,7 @@ async function generateWithRetry(model, prompt, retries = 3, delay = 60000) {
       if (error.status === 429 && i < retries - 1) {
         console.log(`Rate limit (429) hit. Waiting ${delay / 1000} seconds before retrying...`);
         await sleep(delay);
-        delay += 30000; // Add 30 more seconds if it fails again
+        delay += 30000;
       } else {
         throw error;
       }
@@ -33,7 +32,7 @@ async function runSEOAgent() {
     codeSnippet = fs.readFileSync('./src/App.tsx', 'utf8');
   }
 
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const prompt = `
 You are an autonomous SEO Optimization Agent for a home rental platform "BookMyHomez".
@@ -52,7 +51,6 @@ Do not include any backticks or markdown formatting like \`\`\`json.
 `;
 
   try {
-    // Initial 5-second pause to avoid bursting API limits right on workflow boot
     await sleep(5000);
 
     const result = await generateWithRetry(model, prompt);
