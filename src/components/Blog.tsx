@@ -5,15 +5,19 @@ import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from 'fir
 export default function Blog() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  
+  // ఫారమ్ స్టేట్స్ (ఇమేజ్ లింక్‌తో కలిపి)
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
+  const [newImage, setNewImage] = useState('');
   const [newContent, setNewContent] = useState('');
+  
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchBlogs = async () => {
     try {
-      const q = query(collection(db, 'blogs'), orderBy('date', 'desc'));
+      const q = query(collection(db, 'blogs'), orderBy('createdAt', 'desc'));
       const querySnapshot = await getDocs(q);
       const posts: any[] = [];
       querySnapshot.forEach((doc) => {
@@ -35,7 +39,7 @@ export default function Blog() {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  // ఎవరైనా కొత్త బ్లాగ్ రాయవచ్చు (అందరికీ పబ్లిష్ అవుతుంది)
+  // కొత్త బ్లాగ్ మరియు ఇమేజ్ లింక్‌ని ఫైర్‌బేస్‌లో సేవ్ చేయడం
   const handleAddBlog = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle || !newDesc || !newContent) return;
@@ -46,12 +50,14 @@ export default function Blog() {
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
         readTime: "4 min read",
         description: newDesc,
+        imageUrl: newImage || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800", // ఇమేజ్ ఇవ్వకపోతే డిఫాల్ట్ రియల్ ఎస్టేట్ ఇమేజ్ వస్తుంది
         fullContent: newContent,
         createdAt: Date.now()
       });
 
       setNewTitle('');
       setNewDesc('');
+      setNewImage('');
       setNewContent('');
       setShowForm(false);
       fetchBlogs();
@@ -60,11 +66,10 @@ export default function Blog() {
     }
   };
 
-  // కేవలం అడ్మిన్ పాస్‌వర్డ్ ఎంటర్ చేస్తేనే డిలీట్ అయ్యే ఫంక్షన్
+  // అడ్మిన్ పాస్‌వర్డ్ తో డిలీట్ చేసే ఆప్షన్
   const handleDeleteBlog = async (id: string) => {
     const adminPassword = prompt("Enter Admin Password to Delete:");
     
-    // ఇక్కడ మీ ఇష్టమైన పాస్‌వర్డ్ పెట్టుకోవచ్చు (ఉదాహరణకు: admin123)
     if (adminPassword === "admin123") {
       try {
         await deleteDoc(doc(db, 'blogs', id));
@@ -98,9 +103,11 @@ export default function Blog() {
           </button>
         </div>
 
+        {/* బ్లాగ్ క్రియేట్ చేసే ఫారమ్ (టెక్స్ట్ కలర్ క్లియర్ గా కనిపించేలా మరియు ఇమేజ్ లింక్ తో) */}
         {showForm && (
           <form onSubmit={handleAddBlog} className="bg-white p-6 rounded-lg shadow-md mb-8 space-y-4 border border-indigo-100">
             <h2 className="text-xl font-bold text-gray-800">Create a New Blog Post</h2>
+            
             <div>
               <label className="block text-sm font-medium text-gray-700">Blog Title</label>
               <input
@@ -109,9 +116,10 @@ export default function Blog() {
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="Enter blog title..."
                 required
-                className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 w-full p-2 border border-gray-300 rounded-md text-gray-900 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Short Description</label>
               <input
@@ -120,20 +128,33 @@ export default function Blog() {
                 onChange={(e) => setNewDesc(e.target.value)}
                 placeholder="Short summary of the blog..."
                 required
-                className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 w-full p-2 border border-gray-300 rounded-md text-gray-900 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Image URL (Optional)</label>
+              <input
+                type="url"
+                value={newImage}
+                onChange={(e) => setNewImage(e.target.value)}
+                placeholder="Paste image web link (URL) here..."
+                className="mt-1 w-full p-2 border border-gray-300 rounded-md text-gray-900 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Full Content</label>
               <textarea
                 value={newContent}
                 onChange={(e) => setNewContent(e.target.value)}
                 placeholder="Write your complete article here..."
-                rows={4}
+                rows={5}
                 required
-                className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 w-full p-2 border border-gray-300 rounded-md text-gray-900 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
+
             <button
               type="submit"
               className="bg-green-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-green-700 transition cursor-pointer"
@@ -151,40 +172,53 @@ export default function Blog() {
               <p className="text-center text-gray-500">No blogs found. Create your first blog!</p>
             ) : (
               blogPosts.map((post) => (
-                <div key={post.id} className="bg-white shadow rounded-lg p-6 transition hover:shadow-md relative">
+                <div key={post.id} className="bg-white shadow rounded-lg overflow-hidden transition hover:shadow-md relative">
                   
-                  {/* డిలీట్ బటన్ - నొక్కితే పాస్‌వర్డ్ అడుగుతుంది */}
-                  <button
-                    onClick={() => handleDeleteBlog(post.id)}
-                    className="absolute top-6 right-6 text-red-500 hover:text-red-700 text-sm font-semibold cursor-pointer border border-red-200 px-3 py-1 rounded-md"
-                  >
-                    Delete Blog
-                  </button>
-
-                  <div className="flex items-center text-sm text-gray-500 space-x-4 mb-2">
-                    <span>{post.date}</span>
-                    <span>•</span>
-                    <span>{post.readTime}</span>
-                  </div>
-                  <h2 className="text-xl font-bold text-gray-900 mb-3 pr-24">
-                    {post.title}
-                  </h2>
-                  <p className="text-gray-600 mb-4">
-                    {post.description}
-                  </p>
-
-                  {expandedId === post.id && (
-                    <div className="mt-4 pt-4 border-t border-gray-100 text-gray-700 leading-relaxed space-y-3">
-                      <p>{post.fullContent}</p>
-                    </div>
+                  {/* బ్లాగ్ ఇమేజ్ డిస్‌ప్లే */}
+                  {post.imageUrl && (
+                    <img 
+                      src={post.imageUrl} 
+                      alt={post.title} 
+                      className="w-full h-64 object-cover"
+                    />
                   )}
 
-                  <button 
-                    onClick={() => toggleReadMore(post.id)}
-                    className="mt-4 text-indigo-600 font-semibold hover:text-indigo-800 flex items-center gap-1 cursor-pointer"
-                  >
-                    {expandedId === post.id ? 'Show Less ↑' : 'Read More →'}
-                  </button>
+                  <div className="p-6">
+                    {/* అడ్మిన్ పాస్‌వర్డ్ అడిగే డిలీట్ బటన్ */}
+                    <button
+                      onClick={() => handleDeleteBlog(post.id)}
+                      className="absolute top-6 right-6 bg-white/90 text-red-500 hover:text-red-700 text-sm font-semibold cursor-pointer border border-red-200 px-3 py-1 rounded-md shadow-sm"
+                    >
+                      Delete Blog
+                    </button>
+
+                    <div className="flex items-center text-sm text-gray-500 space-x-4 mb-2">
+                      <span>{post.date}</span>
+                      <span>•</span>
+                      <span>{post.readTime}</span>
+                    </div>
+
+                    <h2 className="text-2xl font-bold text-gray-900 mb-3 pr-24">
+                      {post.title}
+                    </h2>
+
+                    <p className="text-gray-600 mb-4">
+                      {post.description}
+                    </p>
+
+                    {expandedId === post.id && (
+                      <div className="mt-4 pt-4 border-t border-gray-100 text-gray-700 leading-relaxed space-y-3 whitespace-pre-line">
+                        <p>{post.fullContent}</p>
+                      </div>
+                    )}
+
+                    <button 
+                      onClick={() => toggleReadMore(post.id)}
+                      className="mt-4 text-indigo-600 font-semibold hover:text-indigo-800 flex items-center gap-1 cursor-pointer"
+                    >
+                      {expandedId === post.id ? 'Show Less ↑' : 'Read More →'}
+                    </button>
+                  </div>
                 </div>
               ))
             )}
