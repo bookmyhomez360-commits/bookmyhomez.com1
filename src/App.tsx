@@ -1,249 +1,124 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 
 interface DoorIntroProps {
   onComplete?: () => void;
+  // మీ ప్రొజెక్ట్ లో ఉన్న door image path ని ఇక్కడ పాస్ చేయవచ్చు
+  doorImageUrl?: string; 
 }
 
-export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
+export const DoorIntro: React.FC<DoorIntroProps> = ({ 
+  onComplete,
+  doorImageUrl = "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1600" // Replace with your image
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState<'te' | 'en' | 'kn'>('te');
-  const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const introContent = {
-    te: {
-      greeting: "నమస్కారం, ఇది మధు bookmyhomez నుండి పరిచయం చేసుకుంటున్నాను.",
-      desc: "మన వెబ్‌సైట్‌లో ప్రాపర్టీస్ రెంట్ కోసం మరియు షార్ట్ స్టే కోసం అందుబాటులో ఉన్నాయి. మీ ప్రాపర్టీస్‌ని మీరు ఉచితంగా లిస్ట్ చేసుకోవచ్చు.",
-      btnText: "వెబ్‌సైట్‌లోకి ప్రవేశించండి",
-      skipText: "స్కిప్ (Skip)",
-      speechText: "నమస్కారం, ఇది మధు, bookmyhomez నుండి పరిచయం చేసుకుంటున్నాను. మన వెబ్‌సైట్‌లో ప్రాపర్టీస్ రెంట్ కోసం మరియు షార్ట్ స్టే కోసం అందుబాటులో ఉన్నాయి. మీ ప్రాపర్టీస్‌ని మీరు ఉచితంగా లిస్ట్ చేసుకోవచ్చు."
-    },
-    en: {
-      greeting: "Hello, this is Madhu from bookmyhomez.",
-      desc: "Properties for rent and short stay are available on our website. You can also list your properties for free.",
-      btnText: "Enter Website",
-      skipText: "Skip",
-      speechText: "Hello, this is Madhu from bookmyhomez. Properties for rent and short stay are available on our website. You can also list your properties for free."
-    },
-    kn: {
-      greeting: "ನಮಸ್ಕಾರ, ಇದು ಮಧು bookmyhomez ನಿಂದ ಪರಿಚಯಿಸಿಕೊಳ್ಳುತ್ತಿದ್ದೇನೆ.",
-      desc: "ನಮ್ಮ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಬಾಡಿಗೆಗೆ ಮತ್ತು ಶಾರ್ಟ್ ಸ್ಟೇಗಾಗಿ ಪ್ರಾಪರ್ಟೀಸ್ ಲಭ್ಯವಿವೆ. ನಿಮ್ಮ ಪ್ರಾಪರ್ಟೀಸ್‌ಗಳನ್ನು ನೀವು ಉಚಿತವಾಗಿ ಲಿಸ್ಟ್ ಮಾಡಬಹುದು.",
-      btnText: "ವೆಬ್‌ಸೈಟ್‌ಗೆ ಪ್ರವೇಶಿಸಿ",
-      skipText: "ಸ್ಕಿಪ್ (Skip)",
-      speechText: "ನಮಸ್ಕಾರ, ಇದು ಮಧು bookmyhomez ನಿಂದ ಪರಿಚಯಿಸಿಕೊಳ್ಳುತ್ತಿದ್ದೇನೆ. ನಮ್ಮ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಬಾಡಿಗೆಗೆ ಮತ್ತು ಶಾರ್ಟ್ ಸ್ಟೇಗಾಗಿ ಪ್ರಾಪರ್ಟೀಸ್ ಲಭ್ಯವಿವೆ. ನಿಮ್ಮ ಪ್ರಾಪರ್ಟೀಸ್‌ಗಳನ್ನು ನೀವು ಉಚಿತವಾಗಿ ಲಿಸ್ಟ್ ಮಾಡಬಹುದು."
-    }
-  };
-
-  const speakIntro = (lang: 'te' | 'en' | 'kn') => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(introContent[lang].speechText);
-      if (lang === 'te') utterance.lang = 'te-IN';
-      else if (lang === 'kn') utterance.lang = 'kn-IN';
-      else utterance.lang = 'en-US';
-
-      utterance.rate = 0.95;
-      speechRef.current = utterance;
-      window.speechSynthesis.speak(utterance);
-    }
-  };
-
-  const handleDoorClick = () => {
+  const handleOpen = () => {
     if (isOpen) return;
     setIsOpen(true);
-    speakIntro(currentLanguage);
-  };
 
-  const handleLanguageChange = (lang: 'te' | 'en' | 'kn', e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentLanguage(lang);
-    if (isOpen) {
-      speakIntro(lang);
-    }
+    // 1.8 సెకన్ల 3D యానిమేషన్ తర్వాత Intro స్క్రీన్ రిమూవ్ అవుతుంది
+    setTimeout(() => {
+      setIsHidden(true);
+      if (onComplete) onComplete();
+    }, 1800);
   };
-
-  const handleFinalUnlock = () => {
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    setIsHidden(true);
-    if (onComplete) onComplete();
-  };
-
-  useEffect(() => {
-    return () => {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
 
   if (isHidden) return null;
 
   return (
     <div 
-      className="fixed inset-0 z-[999999] overflow-hidden bg-[#0f0d0c] flex items-center justify-center select-none w-screen h-screen"
-      style={{ perspective: '2000px' }}
+      className="fixed inset-0 z-50 overflow-hidden bg-stone-950 flex items-center justify-center select-none"
+      style={{ perspective: '2000px' }} // High 3D Perspective Depth
     >
-      
-      {/* తలుపులు తెరుచుకున్నాక వెనుక వచ్చే లగ్జరీ బ్యానర్ వ్యూ */}
-      <div className={`absolute inset-0 z-0 flex items-center justify-center bg-gradient-to-br from-[#0c0a09] via-[#1c1917] to-[#292524] p-4 sm:p-8 transition-opacity duration-1000 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-        
-        {/* టాప్-రైట్ కార్నర్‌లో 'Skip' బటన్ */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleFinalUnlock();
+      {/* 3D Door Container */}
+      <div 
+        className="relative w-full h-full flex justify-center items-center"
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        {/* Left Door Panel */}
+        <div
+          onClick={handleOpen}
+          className={`absolute top-0 left-0 w-1/2 h-full cursor-pointer transition-all duration-[1600ms] cubic-bezier(0.4, 0, 0.2, 1) origin-left z-10 ${
+            isOpen ? '[transform:rotateY(-115deg)] opacity-0' : '[transform:rotateY(0deg)]'
+          }`}
+          style={{
+            transformStyle: 'preserve-3d',
+            backgroundImage: `url('${doorImageUrl}')`,
+            backgroundSize: '200% 100%',
+            backgroundPosition: 'left center',
+            boxShadow: isOpen ? 'none' : 'inset -15px 0 30px rgba(0,0,0,0.6)'
           }}
-          className="absolute top-6 right-6 z-50 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs sm:text-sm font-bold px-5 py-2 rounded-full backdrop-blur-md border border-amber-500/40 transition-all cursor-pointer shadow-lg font-sans"
         >
-          {introContent[currentLanguage].skipText} ⏭
-        </button>
+          {/* Inner 3D Edge Shadow */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/30 pointer-events-none" />
+        </div>
 
-        {/* మెయిన్ లగ్జరీ బ్యానర్ కార్డ్ */}
-        <div className="w-full max-w-5xl bg-gradient-to-r from-slate-950/90 to-zinc-900/90 border-2 border-amber-500/40 rounded-3xl p-6 sm:p-10 shadow-[0_0_60px_rgba(245,158,11,0.2)] flex flex-col lg:flex-row items-center justify-between gap-8 backdrop-blur-2xl">
-          
-          {/* లెఫ్ట్ సైడ్: లోగో, భాషల బటన్లు, టెక్స్ట్ */}
-          <div className="flex-1 text-white flex flex-col space-y-5 text-center lg:text-left z-10 font-sans">
+        {/* Right Door Panel */}
+        <div
+          onClick={handleOpen}
+          className={`absolute top-0 right-0 w-1/2 h-full cursor-pointer transition-all duration-[1600ms] cubic-bezier(0.4, 0, 0.2, 1) origin-right z-10 ${
+            isOpen ? '[transform:rotateY(115deg)] opacity-0' : '[transform:rotateY(0deg)]'
+          }`}
+          style={{
+            transformStyle: 'preserve-3d',
+            backgroundImage: `url('${doorImageUrl}')`,
+            backgroundSize: '200% 100%',
+            backgroundPosition: 'right center',
+            boxShadow: isOpen ? 'none' : 'inset 15px 0 30px rgba(0,0,0,0.6)'
+          }}
+        >
+          {/* Inner 3D Edge Shadow */}
+          <div className="absolute inset-0 bg-gradient-to-l from-black/40 via-transparent to-black/30 pointer-events-none" />
+        </div>
+
+        {/* Center Key & TAP ON DOOR Graphic */}
+        <div
+          onClick={handleOpen}
+          className={`absolute z-20 cursor-pointer transition-all duration-700 ease-out flex items-center justify-center ${
+            isOpen 
+              ? 'scale-150 opacity-0 pointer-events-none translate-z-20' 
+              : 'scale-100 opacity-100 hover:scale-105 active:scale-95'
+          }`}
+        >
+          <div className="relative flex items-center justify-center filter drop-shadow-[0_15px_15px_rgba(0,0,0,0.9)]">
             
-            {/* లోగో */}
-            <div className="flex justify-center lg:justify-start">
-              <div className="bg-white p-3 rounded-2xl shadow-xl border-2 border-amber-500/50 inline-block">
-                <div className="text-slate-950 font-black tracking-wider text-lg sm:text-xl flex items-center gap-2">
-                  <span className="bg-amber-500 text-slate-950 px-2 py-0.5 rounded">BMH</span> BOOK MY HOMEZ
-                </div>
-              </div>
-            </div>
-
-            {/* లాంగ్వేజ్ సెలెక్షన్ */}
-            <div className="flex items-center justify-center lg:justify-start gap-2 bg-black/60 p-2.5 rounded-2xl border border-amber-500/30 w-fit mx-auto lg:mx-0">
-              <span className="text-xs text-amber-300 font-bold px-1">Language:</span>
-              {(['te', 'en', 'kn'] as const).map((lang) => (
-                <button
-                  key={lang}
-                  onClick={(e) => handleLanguageChange(lang, e)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold uppercase transition-all cursor-pointer ${currentLanguage === lang ? 'bg-amber-500 text-slate-950 shadow-lg scale-105' : 'bg-slate-800 text-gray-300 hover:bg-slate-700'}`}
-                >
-                  {lang === 'te' ? 'తెలుగు' : lang === 'en' ? 'English' : 'ಕನ್ನಡ'}
-                </button>
-              ))}
-            </div>
-
-            <h1 className="text-lg sm:text-2xl font-black text-amber-300 leading-snug tracking-wide">
-              {introContent[currentLanguage].greeting}
-            </h1>
-
-            <p className="text-gray-300 text-xs sm:text-sm leading-relaxed max-w-xl">
-              {introContent[currentLanguage].desc}
-            </p>
-
-            {/* వెబ్‌సైట్‌లోకి ప్రవేశించే బటన్ */}
-            <div className="pt-2 flex justify-center lg:justify-start">
-              <button
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  handleFinalUnlock(); 
-                }}
-                className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold px-8 py-3.5 rounded-xl shadow-[0_0_25px_rgba(245,158,11,0.6)] transition-all hover:scale-105 active:scale-95 uppercase text-xs sm:text-sm tracking-wider cursor-pointer border border-amber-200"
-              >
-                {introContent[currentLanguage].btnText} →
-              </button>
-            </div>
-          </div>
-
-          {/* రైట్ సైడ్: ప్రొఫెషనల్ ఫోటో */}
-          <div className="flex-shrink-0 flex items-center justify-center relative font-sans">
-            <div className="relative w-52 h-68 sm:w-64 sm:h-84 rounded-2xl overflow-hidden border-2 border-amber-500/60 shadow-[0_0_40px_rgba(245,158,11,0.4)] bg-slate-900">
-              <img 
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80" 
-                alt="Madhu - BookMyHomez" 
-                className="w-full h-full object-cover object-top"
+            {/* Vintage Golden Key (SVG) */}
+            <svg
+              className="w-[280px] sm:w-[450px] md:w-[600px] h-auto text-amber-500"
+              viewBox="0 0 500 120"
+              fill="currentColor"
+            >
+              <defs>
+                <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#fef08a" />
+                  <stop offset="30%" stopColor="#d97706" />
+                  <stop offset="70%" stopColor="#78350f" />
+                  <stop offset="100%" stopColor="#fef08a" />
+                </linearGradient>
+              </defs>
+              
+              {/* Key Shape */}
+              <path
+                fill="url(#goldGradient)"
+                d="M100,20 C55,20 20,55 20,100 C20,145 55,180 100,180 C135,180 165,158 175,125 L380,125 L380,150 L410,150 L410,125 L430,125 L430,160 L470,160 L470,80 L175,80 C165,42 135,20 100,20 Z M100,60 C122,60 140,78 140,100 C140,122 122,140 100,140 C78,140 60,122 60,100 C60,78 78,60 100,60 Z"
+                transform="scale(0.5) translate(50, 20)"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-4">
-                <span className="text-white font-black text-base sm:text-lg">Madhu</span>
-                <span className="text-amber-400 text-xs font-semibold tracking-wider">Founder, BookMyHomez</span>
-              </div>
-            </div>
+            </svg>
+
+            {/* Glowing Metallic Text */}
+            <span 
+              className="absolute font-serif font-extrabold tracking-[0.25em] text-amber-200 text-sm sm:text-xl md:text-2xl uppercase ml-12 sm:ml-24"
+              style={{
+                textShadow: '0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(217,119,6,0.5)',
+              }}
+            >
+              TAP ON DOOR
+            </span>
           </div>
-
         </div>
 
       </div>
-
-      {/* 3D Left House Door */}
-      <div
-        onClick={handleDoorClick}
-        className={`absolute top-0 left-0 w-1/2 h-full cursor-pointer transition-transform duration-1000 ease-in-out origin-left z-10 ${
-          isOpen ? '-rotate-y-90 opacity-70 pointer-events-none' : ''
-        }`}
-        style={{
-          transformStyle: 'preserve-3d',
-          backgroundColor: '#382211',
-          backgroundImage: `
-            linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.4) 100%),
-            radial-gradient(ellipse at center, rgba(139,94,60,0.4) 0%, rgba(30,18,10,0.9) 100%)
-          `,
-          boxShadow: 'inset -30px 0 60px rgba(0,0,0,0.8)',
-          borderRight: '5px solid #1a1008'
-        }}
-      >
-        {/* మోడరన్ హౌస్ డోర్ ప్యానెల్స్ */}
-        <div className="absolute inset-10 border-4 border-[#22140a] bg-[#2a1a0e] flex flex-col justify-around p-6 shadow-inner">
-          <div className="h-[42%] border-2 border-[#160d06] bg-[#1f1208] shadow-[inset_0_2px_8px_rgba(0,0,0,0.9)] rounded"></div>
-          <div className="h-[42%] border-2 border-[#160d06] bg-[#1f1208] shadow-[inset_0_2px_8px_rgba(0,0,0,0.9)] rounded"></div>
-        </div>
-      </div>
-
-      {/* 3D Right House Door */}
-      <div
-        onClick={handleDoorClick}
-        className={`absolute top-0 right-0 w-1/2 h-full cursor-pointer transition-transform duration-1000 ease-in-out origin-right z-10 ${
-          isOpen ? 'rotate-y-90 opacity-70 pointer-events-none' : ''
-        }`}
-        style={{
-          transformStyle: 'preserve-3d',
-          backgroundColor: '#382211',
-          backgroundImage: `
-            linear-gradient(-90deg, rgba(0,0,0,0.6) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.4) 100%),
-            radial-gradient(ellipse at center, rgba(139,94,60,0.4) 0%, rgba(30,18,10,0.9) 100%)
-          `,
-          boxShadow: 'inset 30px 0 60px rgba(0,0,0,0.8)',
-          borderLeft: '5px solid #1a1008'
-        }}
-      >
-        {/* మోడరన్ హౌస్ డోర్ ప్యానెల్స్ */}
-        <div className="absolute inset-10 border-4 border-[#22140a] bg-[#2a1a0e] flex flex-col justify-around p-6 shadow-inner">
-          <div className="h-[42%] border-2 border-[#160d06] bg-[#1f1208] shadow-[inset_0_2px_8px_rgba(0,0,0,0.9)] rounded"></div>
-          <div className="h-[42%] border-2 border-[#160d06] bg-[#1f1208] shadow-[inset_0_2px_8px_rgba(0,0,0,0.9)] rounded"></div>
-        </div>
-      </div>
-
-      {/* Center Golden Key & TAP ON DOOR Button */}
-      <div
-        onClick={handleDoorClick}
-        className={`absolute z-20 cursor-pointer transition-all duration-500 transform hover:scale-105 active:scale-95 flex items-center justify-center ${
-          isOpen ? 'scale-75 opacity-0 pointer-events-none' : 'opacity-100'
-        }`}
-      >
-        <div className="relative flex items-center bg-gradient-to-r from-[#b8860b] via-[#ffd700] to-[#b8860b] px-8 py-4 rounded-full shadow-[0_0_50px_rgba(255,215,0,0.7)] border-2 border-amber-200">
-          
-          {/* కీ హెడ్ సర్కిల్ */}
-          <div className="w-14 h-14 rounded-full border-4 border-[#4a2e05] bg-gradient-to-br from-[#ffe259] via-[#d4af37] to-[#704214] flex items-center justify-center shadow-inner mr-4">
-            <div className="w-5 h-5 rounded-full bg-[#1a0c04] border-2 border-amber-300"></div>
-          </div>
-
-          {/* టెక్స్ట్ */}
-          <span className="font-sans text-[#1a0c04] font-black tracking-[0.2em] text-sm sm:text-xl uppercase drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
-            TAP ON DOOR
-          </span>
-
-          {/* కీ టీత్ */}
-          <div className="ml-4 flex flex-col justify-between w-5 h-8 bg-gradient-to-b from-[#d4af37] to-[#704214] border-2 border-[#4a2e05] rounded-r p-0.5">
-            <div className="w-full h-1.5 bg-[#1a0c04]"></div>
-            <div className="w-1/2 h-1.5 bg-[#1a0c04] self-end"></div>
-          </div>
-
-        </div>
-      </div>
-
     </div>
   );
 };
