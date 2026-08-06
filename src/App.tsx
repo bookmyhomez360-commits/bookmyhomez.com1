@@ -51,7 +51,7 @@ import {
 
 export default function App() {
   const [showSplashScreen, setShowSplashScreen] = useState(true);
-  const [isLocked, setIsLocked] = useState(true); // డోర్ ఇంట్రో లాక్ స్టేట్
+  const [isLocked, setIsLocked] = useState(true); // డోర్ ఇంట్రో & వీడియో లాక్ స్టేట్
   const [activeVillaIndex, setActiveVillaIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState<'explore' | 'listings' | 'favorites' | 'my_properties' | 'blog'>('explore');
   const [activeFilterCategory, setActiveFilterCategory] = useState<CategoryType>('All');
@@ -380,8 +380,8 @@ export default function App() {
   return (
     <div className="flex flex-col min-h-screen bg-[#090D16] text-slate-100 font-sans selection:bg-indigo-600 selection:text-white relative">
       
-      {/* డోర్ ఇంట్రో యానిమేషన్ స్క్రీన్ */}
-      {isLocked && <DoorIntro onUnlock={() => setIsLocked(false)} />}
+      {/* డోర్ ఇంట్రో అండ్ వీడియో యానిమేషన్ స్క్రీన్ */}
+      {isLocked && <DoorIntro onComplete={() => setIsLocked(false)} />}
 
       <ThreeBackground
         activeVillaIndex={activeVillaIndex}
