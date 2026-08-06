@@ -12,57 +12,61 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
   const handleDoorClick = () => {
     setIsOpen(true);
     
-    // డోర్ యానిమేషన్ కోసం 1 సెకన్ టైమ్
+    // డోర్ ఓపెన్ కాగానే వీడియో స్టార్ట్ అవుతుంది
     setTimeout(() => {
       setIsPlayingVideo(true);
-    }, 1000);
+      if (videoRef.current) {
+        videoRef.current.play().catch((err) => {
+          console.log("Autoplay issue handled: ", err);
+        });
+      }
+    }, 800);
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center overflow-hidden w-screen h-screen">
       {!isPlayingVideo ? (
         /* --- Door Intro Screen --- */
         <div 
           onClick={handleDoorClick} 
-          className="relative w-full h-full cursor-pointer flex items-center justify-center bg-cover bg-center bg-no-repeat select-none"
-          style={{ backgroundImage: "url('/door-background.jpg')" }}
+          className={`relative w-full h-full cursor-pointer flex items-center justify-center bg-cover bg-center bg-no-repeat select-none transition-transform duration-1000 ease-in-out ${
+            isOpen ? 'scale-110 opacity-0' : 'scale-100 opacity-100'
+          }`}
+          /* మీ క్రొత్త కార్టూన్ డోర్ ఇమేజ్ ని public/door-cartoon.jpg లేదా తగిన నేమ్‌తో సేవ్ చేసుకోండి */
+          style={{ backgroundImage: "url('/door-cartoon.jpg')" }}
         >
-          {/* mobile optimization overlay */}
-          <div 
-            className={`absolute inset-0 bg-black/30 transition-opacity duration-1000 ${
-              isOpen ? 'opacity-0 scale-105' : 'opacity-100'
-            }`} 
-          />
+          {/* Subtle Overlay to make text legible */}
+          <div className="absolute inset-0 bg-black/20" />
           
-          {/* Tap On Door Button / Text */}
+          {/* Tap On Door Hint - Fully responsive text */}
           {!isOpen && (
-            <div className="z-10 animate-bounce text-center px-4">
-              <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-yellow-400 drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] tracking-wider">
+            <div className="z-10 animate-pulse text-center px-4 pointer-events-none">
+              <span className="inline-block bg-black/60 backdrop-blur-md border border-yellow-400/50 text-yellow-400 font-extrabold text-xl sm:text-3xl md:text-5xl px-6 py-3 rounded-2xl shadow-2xl tracking-widest">
                 TAP ON DOOR
-              </h1>
+              </span>
             </div>
           )}
         </div>
       ) : (
-        /* --- Video Screen --- */
-        <div className="relative w-full h-full flex items-center justify-center bg-black">
+        /* --- Native Website-like Video Layer --- */
+        <div className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
           <video
             ref={videoRef}
             src="/intro-video.mp4"
             autoPlay
             playsInline
-            controls={false}
+            muted={false}
             onEnded={onComplete}
-            /* object-contain ఉపయోగించడం వల్ల మొబైల్ మరియు ల్యాప్‌టాప్‌లలో వీడియో కట్ అవ్వకుండా పూర్తి డిస్‌ప్లే అవుతుంది */
-            className="w-full h-full object-contain max-h-screen"
+            /* object-cover ఉపయోగించడం వలన ల్యాప్‌టాప్ లేదా మొబైల్ దేంట్లోనైనా నార్మల్ వీడియోలా కాకుండా ఒక వెబ్‌సైట్ లేఅవుట్‌లా ఫుల్ స్క్రీన్‌ను కవర్ చేస్తుంది */
+            className="w-full h-full object-cover pointer-events-none select-none"
           />
           
-          {/* Skip Button - Mobile responsive padding */}
+          {/* Custom Skip Button (వెబ్‌సైట్ లుక్ రావడానికి వీలుగా) */}
           <button
             onClick={onComplete}
-            className="absolute top-4 right-4 sm:top-6 sm:right-6 bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-sm sm:text-base px-4 py-2 rounded-full z-20 shadow-lg transition"
+            className="absolute top-5 right-5 bg-black/60 hover:bg-black/80 backdrop-blur-md text-white border border-white/30 font-semibold text-xs sm:text-sm px-4 py-2 rounded-full z-20 shadow-lg transition active:scale-95"
           >
-            Skip Intro
+            Skip Intro ➔
           </button>
         </div>
       )}
