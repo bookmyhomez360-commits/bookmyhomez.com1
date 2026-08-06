@@ -8,6 +8,7 @@ import WizardModal from './components/WizardModal';
 import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
 import Blog from './components/Blog';
+import { DoorIntro } from './components/DoorIntro';
 import {
   Property,
   User,
