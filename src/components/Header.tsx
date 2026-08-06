@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Logo } from './Logo';
 import { User, CategoryType } from '../types';
+import AICallModal from './AICallModal'; // న్యూ: AI Call Modal ఇంపోర్ట్
 import {
   Home,
   ShoppingBag,
@@ -42,6 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
   logout,
 }) => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // న్యూ: మోడల్ కంట్రోల్ స్టేట్
 
   return (
     <header className="sticky top-0 z-40 bg-[#090D16]/90 backdrop-blur-xl border-b border-slate-800/80 transition-all duration-300">
@@ -120,19 +122,29 @@ export const Header: React.FC<HeaderProps> = ({
         </nav>
 
         <button
-  onClick={() => navigateTo('blog')}
-  className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-    currentTab === 'blog'
-      ? 'bg-indigo-600 text-white shadow-md'
-      : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
-  }`}
->
-  Blog
-</button>
+          onClick={() => navigateTo('blog')}
+          className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+            currentTab === 'blog'
+              ? 'bg-indigo-600 text-white shadow-md'
+              : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+          }`}
+        >
+          Blog
+        </button>
 
         {/* Action Controls */}
         <div className="flex items-center gap-3">
-          {/* List Property Button with Prominent Blue Background */}
+          
+          {/* న్యూ: Fill Details Button */}
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-1.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow-[0_0_12px_rgba(34,197,94,0.4)] transition-all duration-300 border border-green-400 cursor-pointer"
+          >
+            <span className="text-sm">🤖</span>
+            <span className="whitespace-nowrap hidden sm:inline">Fill Details</span>
+          </button>
+
+          {/* అప్‌డేటెడ్: List Property + Sign In కంబైన్డ్ బటన్ */}
           <button
             onClick={() => {
               if (currentUser) {
@@ -143,11 +155,20 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             className="bg-blue-600 hover:bg-blue-500 text-white font-black px-4 py-2.5 rounded-xl text-xs shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center gap-2 cursor-pointer"
           >
-            <PlusCircle className="w-4 h-4" />
-            <span>List Property</span>
-            <span className="bg-white/20 text-white text-[10px] px-1.5 py-0.5 rounded uppercase font-extrabold hidden sm:inline">
-              Free
-            </span>
+            <PlusCircle className="w-4 h-4 hidden md:block" />
+            <span className="hidden sm:inline">List Property</span>
+            <span className="sm:hidden">List</span>
+            
+            {/* యూజర్ లాగిన్ అవ్వకపోతే 'Sign In' అని, లాగిన్ అయితే 'Free' అని చూపిస్తుంది */}
+            {!currentUser ? (
+              <span className="bg-indigo-900/80 text-white text-[10px] px-1.5 py-0.5 rounded uppercase font-extrabold border border-indigo-400/50">
+                Sign In
+              </span>
+            ) : (
+              <span className="bg-white/20 text-white text-[10px] px-1.5 py-0.5 rounded uppercase font-extrabold hidden sm:inline">
+                Free
+              </span>
+            )}
           </button>
 
           {/* Favorites Heart Counter Button */}
@@ -166,8 +187,8 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </button>
 
-          {/* User Account / Profile */}
-          {currentUser ? (
+          {/* User Account / Profile (లాగిన్ అయిన వాళ్ళకి మాత్రమే ప్రొఫైల్ డ్రాప్‌డౌన్ చూపిస్తుంది) */}
+          {currentUser && (
             <div className="relative">
               <button
                 onClick={() => setShowProfileDropdown(!showProfileDropdown)}
@@ -236,19 +257,13 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               )}
             </div>
-          ) : (
-            <button
-              onClick={openAuthModal}
-              className="w-10 h-10 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition cursor-pointer flex items-center justify-center shadow-md"
-              title="Log In / Sign Up"
-            >
-              <div className="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-indigo-400">
-                <UserIcon className="w-4 h-4" />
-              </div>
-            </button>
           )}
+          {/* పాత ప్రొఫైల్ ఐకాన్ (!currentUser) ఇక్కడి నుండి పూర్తిగా తొలగించబడింది */}
         </div>
       </div>
+      
+      {/* న్యూ: AI Call Modal ని కాల్ చేయడం */}
+      <AICallModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </header>
   );
 };
