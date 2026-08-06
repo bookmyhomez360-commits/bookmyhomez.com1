@@ -11,6 +11,7 @@
     <meta name="keywords" content="BookMyHomez, vacation home rentals, luxury villas in Goa, holiday homes India, rent villas with pool, book homestays online, heritage haveli Jaipur, Manali mountain chalets, verified home rentals" />
     <meta name="author" content="BookMyHomez" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- 3. Canonical Link Tag (Prevents duplicate content penalties) -->
     <link rel="canonical" href="https://bookmyhomez.com/" />
@@ -79,11 +80,7 @@
     }
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Yatra+One&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Fixed Full-Width Toran & Original Door Styles -->
+    <!-- Isolated Door Animation Styles with proper width handling -->
     <style>
       :root{
         --wood-dark:#4A2C1A;
@@ -92,204 +89,47 @@
         --wood-grain:#3B2213;
         --brass:#D4AF37;
         --brass-dark:#9C7A1E;
-        --marigold:#E8871E;
-        --marigold-light:#F4A93F;
-        --mango-leaf:#4F7942;
-        --mango-leaf-dark:#365930;
-        --maroon:#7A1F2B;
-        --cream:#FBF3E3;
-        --cream-2:#F5E8D0;
-        --ink:#2E1B10;
-        --sub:#6B5643;
-      }
-      *{box-sizing:border-box; margin:0; padding:0;}
-      html,body{
-        width:100%; height:100%;
-        background:var(--cream);
-        font-family:'Poppins','Noto Sans Telugu',sans-serif;
-        color:var(--ink);
-        overflow-x:hidden;
       }
       body.locked{overflow:hidden; height:100vh;}
-      .telugu{font-family:'Noto Sans Telugu','Poppins',sans-serif;}
 
       #door-stage{
-        position:fixed; inset:0; z-index:9999;
+        position:fixed; inset:0; z-index:99999;
         perspective:2200px;
         background:linear-gradient(180deg,#2b1a10,#1c1009);
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
       }
       #door-stage.done{display:none;}
 
       .door-frame{
         position:absolute; inset:0;
-        background:
-          radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%),
-          linear-gradient(180deg,#3a2415,#241407);
+        background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
       }
 
       .frame-pillar{
         position:absolute; top:0; bottom:0; width:26px; z-index:6;
         background:repeating-linear-gradient(180deg, #6B3E22 0px, #4A2C1A 18px, #6B3E22 36px);
-        box-shadow: inset 0 0 12px rgba(0,0,0,0.6);
       }
       .frame-pillar.left{ left:0; }
       .frame-pillar.right{ right:0; }
-      .frame-pillar::before, .frame-pillar::after{
-        content:''; position:absolute; left:50%; transform:translateX(-50%);
-        width:38px; height:10px; border-radius:4px;
-        background:linear-gradient(90deg, var(--brass-dark), var(--brass) 40%, #f6e2a0 50%, var(--brass) 60%, var(--brass-dark));
-        box-shadow:0 2px 4px rgba(0,0,0,0.5);
-      }
-      .frame-pillar::before{ top:18%; }
-      .frame-pillar::after{ bottom:18%; }
-
-      .serial-lights{
-        position:absolute; top:6%; bottom:6%; width:16px; z-index:9;
-        display:flex; flex-direction:column; justify-content:space-between; align-items:center;
-      }
-      .serial-lights.left{ left:32px; }
-      .serial-lights.right{ right:32px; }
-      .serial-lights::before{
-        content:''; position:absolute; top:0; bottom:0; left:50%;
-        width:2px; background:#241407; transform:translateX(-50%); z-index:-1;
-      }
-      .bulb{
-        width:9px; height:13px; border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
-        animation:twinkle 1.3s ease-in-out infinite;
-      }
-      .bulb:nth-child(5n+1){ background:#FFD23B; box-shadow:0 0 6px #FFD23B, 0 0 12px #FFD23B; animation-delay:0s; }
-      .bulb:nth-child(5n+2){ background:#FF6B3B; box-shadow:0 0 6px #FF6B3B, 0 0 12px #FF6B3B; animation-delay:0.18s; }
-      .bulb:nth-child(5n+3){ background:#3BD46B; box-shadow:0 0 6px #3BD46B, 0 0 12px #3BD46B; animation-delay:0.36s; }
-      .bulb:nth-child(5n+4){ background:#3BAFFF; box-shadow:0 0 6px #3BAFFF, 0 0 12px #3BAFFF; animation-delay:0.54s; }
-      .bulb:nth-child(5n){ background:#FF3B9E; box-shadow:0 0 6px #FF3B9E, 0 0 12px #FF3B9E; animation-delay:0.72s; }
-      @keyframes twinkle{
-        0%,100%{ opacity:0.35; transform:scale(0.82); }
-        50%{ opacity:1; transform:scale(1); }
-      }
-      #door-stage.opened .serial-lights{ opacity:0; transition:opacity 0.6s 1.2s; }
-
-      .stage-vignette{
-        position:absolute; inset:0; z-index:8; pointer-events:none;
-        background:radial-gradient(ellipse at 50% 42%, transparent 45%, rgba(0,0,0,0.35) 100%);
-      }
 
       .door{
         position:absolute; top:0; bottom:0; width:50%;
-        background:
-          repeating-linear-gradient(90deg,
-            rgba(0,0,0,0.10) 0px, transparent 2px, transparent 9px,
-            rgba(0,0,0,0.10) 11px, transparent 13px, transparent 22px,
-            rgba(0,0,0,0.07) 24px, transparent 26px, transparent 40px),
-          repeating-linear-gradient(90deg,
-            rgba(255,214,150,0.05) 0px, transparent 1px, transparent 6px),
-          linear-gradient(90deg, var(--wood-dark) 0%, var(--wood-light) 12%, var(--wood-mid) 30%, var(--wood-light) 55%, var(--wood-mid) 78%, var(--wood-dark) 100%);
-        box-shadow: inset 0 0 90px rgba(0,0,0,0.6), inset 0 0 3px rgba(0,0,0,0.8);
+        background:linear-gradient(90deg, var(--wood-dark) 0%, var(--wood-light) 12%, var(--wood-mid) 30%, var(--wood-light) 55%, var(--wood-mid) 78%, var(--wood-dark) 100%);
         transition: transform 1.6s cubic-bezier(.72,-0.15,.24,1.05);
         will-change: transform;
       }
-      .door-left{ left:0; transform-origin:left center; border-right:2px solid var(--wood-grain); box-shadow: inset -14px 0 24px rgba(0,0,0,0.35), inset 0 0 90px rgba(0,0,0,0.55); }
-      .door-right{ right:0; transform-origin:right center; border-left:2px solid var(--wood-grain); box-shadow: inset 14px 0 24px rgba(0,0,0,0.35), inset 0 0 90px rgba(0,0,0,0.55); }
-
-      .wood-grain{
-        position:absolute; inset:0; width:100%; height:100%;
-        mix-blend-mode:overlay; opacity:0.6; pointer-events:none;
-      }
-      .wood-sheen{
-        position:absolute; inset:0;
-        background:linear-gradient(115deg, rgba(255,235,200,0.16) 0%, transparent 22%, transparent 60%, rgba(0,0,0,0.18) 100%);
-        pointer-events:none;
-      }
-
-      .door-edge-frame{
-        position:absolute; inset:3%; border:8px solid transparent;
-        border-image: linear-gradient(180deg, var(--wood-grain), var(--wood-dark), var(--wood-grain)) 1;
-        box-shadow: inset 0 0 0 2px rgba(0,0,0,0.4);
-        pointer-events:none;
-      }
-
-      .door-panel{
-        position:absolute; left:13%; right:13%;
-        border-radius:4px;
-        background:
-          linear-gradient(135deg, rgba(255,255,255,0.07), rgba(0,0,0,0.12) 55%),
-          var(--wood-mid);
-        box-shadow:
-          inset 0 3px 6px rgba(255,255,255,0.10),
-          inset 0 -6px 14px rgba(0,0,0,0.65),
-          inset 6px 0 12px rgba(0,0,0,0.35),
-          inset -6px 0 12px rgba(0,0,0,0.35),
-          0 0 0 6px var(--wood-grain),
-          0 0 0 9px rgba(0,0,0,0.3);
-      }
-      .panel-top{ top:7%; height:30%; }
-      .panel-bottom{ bottom:7%; height:42%; }
-
-      .door-panel::before{
-        content:'';
-        position:absolute; inset:10px;
-        border:2px solid rgba(0,0,0,0.4);
-        border-radius:4px;
-        box-shadow:
-          inset 0 0 0 2px rgba(255,222,170,0.08),
-          inset 0 3px 6px rgba(0,0,0,0.45),
-          inset 0 -2px 3px rgba(255,222,170,0.06);
-        pointer-events:none;
-      }
-      .door-panel::after{
-        content:'';
-        position:absolute; left:50%; top:50%;
-        transform:translate(-50%,-50%);
-        border-radius:50%;
-        background:repeating-conic-gradient(from 0deg,
-          rgba(255,224,170,0.14) 0deg 5deg,
-          rgba(0,0,0,0.28) 5deg 10deg);
-        box-shadow:
-          inset 0 4px 8px rgba(0,0,0,0.55),
-          inset 0 -2px 5px rgba(255,224,170,0.10),
-          0 1px 1px rgba(255,224,170,0.06);
-        pointer-events:none;
-      }
-      .panel-top::after{ width:46px; height:46px; }
-      .panel-bottom::after{ width:78px; height:78px; }
-
-      .brass-corner{
-        position:absolute; width:26px; height:26px;
-        background:radial-gradient(circle at 32% 30%, #fbe9ab, var(--brass) 50%, var(--brass-dark) 100%);
-        box-shadow:0 2px 4px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(0,0,0,0.25);
-      }
-      .brass-corner.tl{ top:-6px; left:-6px; border-radius:0 0 100% 0; }
-      .brass-corner.tr{ top:-6px; right:-6px; border-radius:0 0 0 100%; }
-      .brass-corner.bl{ bottom:-6px; left:-6px; border-radius:0 100% 0 0; }
-      .brass-corner.br{ bottom:-6px; right:-6px; border-radius:100% 0 0 0; }
-
-      .door-handle{
-        position:absolute; top:44%; width:14px; height:110px; border-radius:7px;
-        background:linear-gradient(90deg, var(--brass-dark), var(--brass) 35%, #f6e2a0 50%, var(--brass) 65%, var(--brass-dark));
-        box-shadow:0 3px 8px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(0,0,0,0.3);
-      }
-      .door-left .door-handle{ right:6%; }
-      .door-right .door-handle{ left:6%; }
-      .door-handle::before, .door-handle::after{
-        content:''; position:absolute; left:50%; transform:translateX(-50%);
-        width:20px; height:8px; border-radius:4px;
-        background:radial-gradient(circle at 35% 30%, #f6e2a0, var(--brass) 60%, var(--brass-dark));
-        box-shadow:0 2px 4px rgba(0,0,0,0.5);
-      }
-      .door-handle::before{ top:-8px; }
-      .door-handle::after{ bottom:-8px; }
+      .door-left{ left:0; transform-origin:left center; border-right:2px solid var(--wood-grain); }
+      .door-right{ right:0; transform-origin:right center; border-left:2px solid var(--wood-grain); }
 
       #door-stage.opened .door-left{ transform:rotateY(-112deg); }
       #door-stage.opened .door-right{ transform:rotateY(112deg); }
-      #door-stage.opened .door-frame{ opacity:0; transition:opacity 0.6s 1.2s; }
-      #door-stage.opened .frame-pillar{ opacity:0; transition:opacity 0.6s 1.2s; }
-      #door-stage.opened .stage-vignette{ opacity:0; transition:opacity 0.6s 1.2s; }
-      #door-stage.opened .knock-wrap{ opacity:0; pointer-events:none; transition:opacity 0.5s; }
-      #door-stage.opened .toran{ opacity:0; transform:translateY(-40px); transition:all 0.8s ease; }
+      #door-stage.opened{ opacity:0; pointer-events:none; transition:opacity 0.6s 1.2s; }
 
       .toran{
-        position:absolute; top:0; left:0; right:0; height:150px;
-        z-index:5; pointer-events:none; width: 100%;
-        transition:all 0.5s;
+        position:absolute; top:0; left:0; width:100%; height:140px;
+        z-index:5; pointer-events:none;
         animation: toranSway 4.5s ease-in-out infinite;
         transform-origin: 50% 0%;
       }
@@ -305,50 +145,28 @@
         to{ stroke-dashoffset:-24; }
       }
 
-      .rangoli{
-        position:absolute; bottom:0; left:50%; transform:translateX(-50%);
-        width:340px; height:170px; z-index:4; pointer-events:none;
-        opacity:0.9;
-      }
-
       .knock-wrap{
         position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-        z-index:20; display:flex; flex-direction:column; align-items:center; gap:14px;
-        transition:opacity 0.5s;
+        z-index:20; display:flex; flex-direction:column; align-items:center;
       }
       .knock-btn{
-        width:96px; height:96px; border-radius:50%;
+        width:90px; height:90px; border-radius:50%;
         border:3px solid var(--brass-dark);
         background:radial-gradient(circle at 35% 30%, #f6e2a0, var(--brass) 55%, var(--brass-dark) 100%);
-        box-shadow:0 0 0 6px rgba(212,175,55,0.15), 0 6px 18px rgba(0,0,0,0.55), inset 0 2px 4px rgba(255,255,255,0.6);
+        box-shadow:0 6px 18px rgba(0,0,0,0.55);
         display:flex; align-items:center; justify-content:center;
-        cursor:pointer; position:relative;
-        animation:pulse-ring 2.4s ease-in-out infinite;
+        cursor:pointer;
       }
-      .knock-btn:active{ transform:scale(0.93); }
-      @keyframes pulse-ring{
-        0%,100%{ box-shadow:0 0 0 6px rgba(212,175,55,0.15), 0 6px 18px rgba(0,0,0,0.55), inset 0 2px 4px rgba(255,255,255,0.6); }
-        50%{ box-shadow:0 0 0 14px rgba(212,175,55,0.06), 0 6px 22px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.6); }
-      }
-      .icon-lights{
-        position:absolute; top:0; left:0; width:96px; height:96px; pointer-events:none;
-      }
-      .icon-lights .bulb{
-        position:absolute; top:50%; left:50%; width:8px; height:11px;
-        margin-top:-5.5px; margin-left:-4px;
-      }
-      .knock-btn svg{ width:46px; height:46px; animation: iconWiggle 2.6s ease-in-out infinite; transform-origin:50% 78%; }
+      .knock-btn svg{ animation: iconWiggle 2.6s ease-in-out infinite; transform-origin:50% 78%; }
       @keyframes iconWiggle{
-        0%,100%{ transform:rotate(0deg) translateY(0); }
-        25%{ transform:rotate(-9deg) translateY(-1px); }
-        75%{ transform:rotate(9deg) translateY(-1px); }
+        0%,100%{ transform:rotate(0deg); }
+        25%{ transform:rotate(-9deg); }
+        75%{ transform:rotate(9deg); }
       }
       .sway-outer{
         transform-box: fill-box;
         transform-origin: 50% 0%;
-        animation-name: leafSway;
-        animation-timing-function: ease-in-out;
-        animation-iteration-count: infinite;
+        animation: leafSway 2.6s ease-in-out infinite;
       }
       @keyframes leafSway{
         0%,100%{ transform:rotate(-6deg); }
@@ -358,67 +176,16 @@
   </head>
   <body class="locked">
 
-    <!-- Full Door Intro Animation Overlay -->
+    <!-- Door Intro Overlay -->
     <div id="door-stage">
       <div class="door-frame"></div>
       <div class="frame-pillar left"></div>
       <div class="frame-pillar right"></div>
-      
-      <div class="serial-lights left">
-        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
-        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
-      </div>
-      <div class="serial-lights right">
-        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
-        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
-      </div>
-      <div class="stage-vignette"></div>
 
-      <!-- Left Door -->
-      <div class="door door-left">
-        <svg class="wood-grain" xmlns="http://www.w3.org/2000/svg">
-          <filter id="woodNoiseL">
-            <feTurbulence type="fractalNoise" baseFrequency="0.010 0.28" numOctaves="5" seed="11" result="n"/>
-            <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.28  0 0 0 0 0.16  0 0 0 0 0.07  0 0 0 0.9 0"/>
-          </filter>
-          <rect width="100%" height="100%" filter="url(#woodNoiseL)"/>
-        </svg>
-        <div class="wood-sheen"></div>
-        <div class="door-edge-frame"></div>
-        <div class="door-panel panel-top">
-          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
-          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
-        </div>
-        <div class="door-panel panel-bottom">
-          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
-          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
-        </div>
-        <div class="door-handle"></div>
-      </div>
+      <div class="door door-left"></div>
+      <div class="door door-right"></div>
 
-      <!-- Right Door -->
-      <div class="door door-right">
-        <svg class="wood-grain" xmlns="http://www.w3.org/2000/svg">
-          <filter id="woodNoiseR">
-            <feTurbulence type="fractalNoise" baseFrequency="0.010 0.28" numOctaves="5" seed="47" result="n"/>
-            <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.28  0 0 0 0 0.16  0 0 0 0 0.07  0 0 0 0.9 0"/>
-          </filter>
-          <rect width="100%" height="100%" filter="url(#woodNoiseR)"/>
-        </svg>
-        <div class="wood-sheen"></div>
-        <div class="door-edge-frame"></div>
-        <div class="door-panel panel-top">
-          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
-          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
-        </div>
-        <div class="door-panel panel-bottom">
-          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
-          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
-        </div>
-        <div class="door-handle"></div>
-      </div>
-
-      <!-- Toran Garland (Full Width Extended) -->
+      <!-- Toran Garland (Full Screen Responsive Width) -->
       <svg class="toran" viewBox="0 0 1400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -431,40 +198,10 @@
         <g id="flowers"></g>
       </svg>
 
-      <!-- Rangoli -->
-      <svg class="rangoli" viewBox="0 0 340 180" xmlns="http://www.w3.org/2000/svg">
-        <g opacity="0.92">
-          <path d="M170,180 A140,140 0 0 1 30,180" fill="none" stroke="#D4AF37" stroke-width="2" stroke-dasharray="1 9" stroke-linecap="round"/>
-          <path d="M170,180 A140,140 0 0 0 310,180" fill="none" stroke="#D4AF37" stroke-width="2" stroke-dasharray="1 9" stroke-linecap="round"/>
-          <path d="M170,180 A104,104 0 0 1 66,180" fill="none" stroke="#E8871E" stroke-width="2.5"/>
-          <path d="M170,180 A104,104 0 0 0 274,180" fill="none" stroke="#E8871E" stroke-width="2.5"/>
-          <g id="rangoli-petals-l"></g>
-          <g id="rangoli-petals-r"></g>
-          <g transform="translate(170,180)">
-            <circle r="34" fill="none" stroke="#7A1F2B" stroke-width="2"/>
-            <g id="rangoli-center-petals"></g>
-            <circle r="10" fill="#E8871E" stroke="#7A1F2B" stroke-width="1.5"/>
-            <circle r="4" fill="#D4AF37"/>
-          </g>
-        </g>
-      </svg>
-
       <!-- Center Knob Button -->
       <div class="knock-wrap" id="knockWrap">
-        <div class="icon-lights">
-          <span class="bulb" style="transform:rotate(0deg) translateY(-58px)"></span>
-          <span class="bulb" style="transform:rotate(36deg) translateY(-58px)"></span>
-          <span class="bulb" style="transform:rotate(72deg) translateY(-58px)"></span>
-          <span class="bulb" style="transform:rotate(108deg) translateY(-58px)"></span>
-          <span class="bulb" style="transform:rotate(144deg) translateY(-58px)"></span>
-          <span class="bulb" style="transform:rotate(180deg) translateY(-58px)"></span>
-          <span class="bulb" style="transform:rotate(216deg) translateY(-58px)"></span>
-          <span class="bulb" style="transform:rotate(252deg) translateY(-58px)"></span>
-          <span class="bulb" style="transform:rotate(288deg) translateY(-58px)"></span>
-          <span class="bulb" style="transform:rotate(324deg) translateY(-58px)"></span>
-        </div>
         <div class="knock-btn" id="knockBtn" role="button" tabindex="0">
-          <svg viewBox="0 0 24 24" width="46" height="46" stroke="#4A2C1A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <svg viewBox="0 0 24 24" width="40" height="40" stroke="#4A2C1A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
             <path d="M3 11.5 12 4l9 7.5"/>
             <path d="M5 10v9.5a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/>
           </svg>
@@ -472,7 +209,7 @@
       </div>
     </div>
 
-    <!-- React App Root -->
+    <!-- React Root -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
@@ -480,7 +217,7 @@
     <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
     <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
-    <!-- Door Script (Toran & Rangoli Generator + Open Logic) -->
+    <!-- Dynamic Toran Generator Script -->
     <script>
       const SVGNS = 'http://www.w3.org/2000/svg';
       function el(tag, attrs){
@@ -504,27 +241,18 @@
           d:'M0,0 C-6,-9 -5,-22 0,-32 C5,-22 6,-9 0,0 Z',
           fill: `url(#${id})`, stroke:'#26401f', 'stroke-width':'0.5'
         }));
-        g.appendChild(el('path',{ d:'M0,-2 L0,-30', stroke:'#26401f', 'stroke-width':'0.5', opacity:'0.55' }));
         return g;
       }
 
       function marigold(x,y,scale,outer,inner){
         const g = el('g',{transform:`translate(${x},${y}) scale(${scale}) rotate(${rnd(-12,12)})`, filter:'url(#softShadow)'});
         for(let i=0;i<10;i++){
-          const a = (i/10)*Math.PI*2 + rnd(-0.05,0.05);
+          const a = (i/10)*Math.PI*2;
           const r = 6*rnd(0.9,1.1);
           g.appendChild(el('ellipse',{
             cx:Math.cos(a)*r, cy:Math.sin(a)*r, rx:4.2, ry:2.6,
             transform:`rotate(${a*180/Math.PI} ${Math.cos(a)*r} ${Math.sin(a)*r})`,
             fill: outer
-          }));
-        }
-        for(let i=0;i<8;i++){
-          const a = (i/8)*Math.PI*2 + 0.3;
-          g.appendChild(el('ellipse',{
-            cx:Math.cos(a)*3, cy:Math.sin(a)*3, rx:2.6, ry:1.6,
-            transform:`rotate(${a*180/Math.PI} ${Math.cos(a)*3} ${Math.sin(a)*3})`,
-            fill: inner
           }));
         }
         g.appendChild(el('circle',{ cx:0, cy:0, r:2, fill:'#7A4A0E' }));
@@ -534,7 +262,7 @@
       function swingWrap(innerG, phase){
         const wrap = el('g',{
           class:'sway-outer',
-          style:`animation-duration:2.6s; animation-delay:${(phase*0.12).toFixed(2)}s;`
+          style:`animation-delay:${(phase*0.12).toFixed(2)}s;`
         });
         wrap.appendChild(innerG);
         return wrap;
@@ -564,32 +292,6 @@
         }
       })();
 
-      (function(){
-        function petalRing(groupId, count, radius, len, fill, startAngle){
-          const g = document.getElementById(groupId);
-          if(!g) return;
-          const isCenter = groupId === 'rangoli-center-petals';
-          const cx = isCenter ? 0 : 170;
-          const cy = isCenter ? 0 : 180;
-          for(let i=0;i<count;i++){
-            const a = startAngle + (i/count) * (isCenter ? Math.PI*2 : Math.PI);
-            const x1 = cx + Math.cos(a)*radius*0.35;
-            const y1 = cy - Math.sin(a)*radius*0.35;
-            const x2 = cx + Math.cos(a)*radius;
-            const y2 = cy - Math.sin(a)*radius;
-            const petal = el('ellipse',{
-              cx:(x1+x2)/2, cy:(y1+y2)/2, rx:len, ry:len*0.42,
-              transform:`rotate(${-a*180/Math.PI} ${(x1+x2)/2} ${(y1+y2)/2})`,
-              fill:fill, opacity:'0.9'
-            });
-            g.appendChild(petal);
-          }
-        }
-        petalRing('rangoli-petals-l', 6, 60, 14, '#F4A93F', 0.15);
-        petalRing('rangoli-petals-r', 6, 60, 14, '#F4A93F', 0.15);
-        petalRing('rangoli-center-petals', 10, 34, 9, '#E8871E', 0);
-      })();
-
       const stage = document.getElementById('door-stage');
       const knockBtn = document.getElementById('knockBtn');
 
@@ -597,7 +299,7 @@
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
         document.body.classList.remove('locked');
-        setTimeout(()=>{ stage.classList.add('done'); }, 1700);
+        setTimeout(()=>{ stage.remove(); }, 1800);
       }
 
       if(knockBtn){
