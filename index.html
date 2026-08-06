@@ -83,7 +83,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Yatra+One&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Original Door Styles with Toran, Lights & Rangoli -->
+    <!-- Fixed Full-Width Toran & Original Door Styles -->
     <style>
       :root{
         --wood-dark:#4A2C1A;
@@ -288,7 +288,7 @@
 
       .toran{
         position:absolute; top:0; left:0; right:0; height:150px;
-        z-index:5; pointer-events:none;
+        z-index:5; pointer-events:none; width: 100%;
         transition:all 0.5s;
         animation: toranSway 4.5s ease-in-out infinite;
         transform-origin: 50% 0%;
@@ -418,15 +418,15 @@
         <div class="door-handle"></div>
       </div>
 
-      <!-- Toran Garland -->
-      <svg class="toran" viewBox="0 0 1000 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Toran Garland (Full Width Extended) -->
+      <svg class="toran" viewBox="0 0 1400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
             <feDropShadow dx="0" dy="2" stdDeviation="1.4" flood-color="#1a1006" flood-opacity="0.45"/>
           </filter>
         </defs>
-        <path d="M0,10 Q250,90 500,40 Q750,-10 1000,10" stroke="#5c3a1e" stroke-width="4" fill="none" opacity="0.55"/>
-        <path class="garland-line" d="M0,10 Q250,90 500,40 Q750,-10 1000,10" stroke="#D4AF37" stroke-width="3.5" fill="none" opacity="0.9"/>
+        <path d="M-50,15 Q350,110 700,50 Q1050,110 1450,15" stroke="#5c3a1e" stroke-width="4" fill="none" opacity="0.55"/>
+        <path class="garland-line" d="M-50,15 Q350,110 700,50 Q1050,110 1450,15" stroke="#D4AF37" stroke-width="3.5" fill="none" opacity="0.9"/>
         <g id="leaves"></g>
         <g id="flowers"></g>
       </svg>
@@ -534,7 +534,7 @@
       function swingWrap(innerG, phase){
         const wrap = el('g',{
           class:'sway-outer',
-          style:`animation-duration:2.6s; animation-delay:${(phase*0.15).toFixed(2)}s;`
+          style:`animation-duration:2.6s; animation-delay:${(phase*0.12).toFixed(2)}s;`
         });
         wrap.appendChild(innerG);
         return wrap;
@@ -544,27 +544,22 @@
         const leavesG = document.getElementById('leaves');
         const flowersG = document.getElementById('flowers');
         if(!leavesG || !flowersG) return;
-        const strandCount = 3;
-        const perStrand = 9;
-        const spanW = 1000;
-        for(let s=0;s<strandCount;s++){
-          const segStart = (s/strandCount)*spanW;
-          const segEnd = ((s+1)/strandCount)*spanW;
-          const dipDepth = 46 + (s===1 ? 14 : 0);
-          for(let i=0;i<perStrand;i++){
-            const t = i/(perStrand-1);
-            const x = segStart + t*(segEnd-segStart);
-            const localT = t*2-1;
-            const y = 12 + dipDepth*(1-localT*localT);
-            if(i % 2 === 0){
-              const rot = -35 + t*70 + (s%2===0?0:10) + rnd(-6,6);
-              const shade = (i % 4 === 0) ? '#4F7942' : '#3F6636';
-              leavesG.appendChild(swingWrap(mangoLeaf(x, y, rot, rnd(0.85,1.08), shade), s*perStrand+i));
-            } else {
-              const outer = (i % 3 === 1) ? '#E8871E' : '#F4A93F';
-              const inner = (i % 3 === 1) ? '#F4A93F' : '#FFD27A';
-              flowersG.appendChild(swingWrap(marigold(x, y+8, rnd(0.85,1.05), outer, inner), s*perStrand+i));
-            }
+        const spanW = 1400;
+        const totalItems = 32;
+        for(let i=0; i<totalItems; i++){
+          const t = i / (totalItems - 1);
+          const x = -20 + t * (spanW + 40);
+          const localT = t * 2 - 1;
+          const y = 18 + 55 * (1 - localT * localT);
+          
+          if(i % 2 === 0){
+            const rot = -40 + t * 80 + rnd(-5,5);
+            const shade = (i % 4 === 0) ? '#4F7942' : '#3F6636';
+            leavesG.appendChild(swingWrap(mangoLeaf(x, y, rot, rnd(0.85,1.1), shade), i));
+          } else {
+            const outer = (i % 3 === 1) ? '#E8871E' : '#F4A93F';
+            const inner = (i % 3 === 1) ? '#F4A93F' : '#FFD27A';
+            flowersG.appendChild(swingWrap(marigold(x, y + 8, rnd(0.85,1.05), outer, inner), i));
           }
         }
       })();
