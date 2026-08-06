@@ -16,14 +16,26 @@ export default function DoorIntro({ onEnter }: { onEnter: () => void }) {
   return (
     <div className={`door-container ${isOpen ? 'open' : ''} ${isFading ? 'fade-out' : ''}`}>
       <div className="door left-door" onClick={handleOpenDoors}>
-        <div className="door-content">
-          {/* Text box poyi direct ga Golden Key */}
-          <div className="golden-key-container" title="Tap to Open">
-            <div className="golden-key"></div>
-          </div>
+        <div className="door-panel-design"></div>
+        <div className="door-handle left-handle"></div>
+      </div>
+      
+      {/* Center Round Logo Badge */}
+      <div className="door-center-badge" onClick={handleOpenDoors}>
+        <div className="logo-circle">
+          {/* Replace this with your actual logo image path if hosted, or using public asset */}
+          <img src="/logo.png" alt="BookMyHomez" onError={(e)=>{
+            // Fallback if local logo.png is not found
+            (e.target as HTMLElement).style.display = 'none';
+          }} />
+          <div className="fallback-logo-text">BMH</div>
         </div>
       </div>
-      <div className="door right-door" onClick={handleOpenDoors}></div>
+
+      <div className="door right-door" onClick={handleOpenDoors}>
+        <div className="door-panel-design"></div>
+        <div className="door-handle right-handle"></div>
+      </div>
     </div>
   );
 }
