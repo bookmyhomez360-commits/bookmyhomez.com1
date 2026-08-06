@@ -10,63 +10,53 @@
     z-index: 9999;
     cursor: pointer;
     overflow: hidden;
-    background: #050201;
+    background: #000;
 }
 
-/* Rich Wood Double Door */
+/* Rich Realistic Wooden Door Background */
 .door {
     position: relative;
     width: 50%;
     height: 100%;
-    background: linear-gradient(135deg, #381d0c 0%, #170b04 100%);
-    border: 8px solid #0d0603;
-    box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.9);
+    background: linear-gradient(to right, rgba(0,0,0,0.4), rgba(0,0,0,0.1)), 
+                url('https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=1200&auto=format&fit=crop') repeat;
+    background-size: cover;
+    border: 8px solid #140904;
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.8);
     transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .left-door {
-    border-right: 4px solid #050201;
+    border-right: 4px solid #080402;
     transform-origin: left;
 }
 
 .right-door {
-    border-left: 4px solid #050201;
+    border-left: 4px solid #080402;
     transform-origin: right;
 }
 
-/* Artistic House & Floral/Decorative Carvings on Doors */
-.door-carving {
+/* Traditional Door Knockers / Rings */
+.door-knocker {
     position: absolute;
-    left: 30px;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    border: 6px solid #d4af37;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+}
+
+.left-knocker {
     right: 30px;
-    height: 38%;
-    border: 2px solid rgba(212, 175, 55, 0.25);
-    border-radius: 6px;
-    background: radial-gradient(circle, rgba(212,175,55,0.03) 0%, rgba(0,0,0,0.2) 100%);
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
 }
 
-.top-carving {
-    top: 35px;
+.right-knocker {
+    left: 30px;
 }
 
-.bottom-carving {
-    bottom: 35px;
-}
-
-/* Elegant Inner Floral / House Shape Motif inside carvings */
-.door-carving::before {
-    content: '';
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    right: 15px;
-    bottom: 15px;
-    border: 1px dashed rgba(212, 175, 55, 0.2);
-    border-radius: 4px;
-}
-
-/* Center Badge with House & Key motif */
+/* Center Official Logo Badge */
 .door-center-badge {
     position: absolute;
     left: 50%;
@@ -79,24 +69,31 @@
 }
 
 .logo-circle {
-    width: 95px;
-    height: 95px;
-    background: linear-gradient(135deg, #241207 0%, #0d0603 100%);
+    width: 110px;
+    height: 110px;
+    background: #ffffff;
     border-radius: 50%;
-    border: 3px solid #ffd700;
+    border: 4px solid #ffd700;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.9), 0 0 25px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 10px 35px rgba(0,0,0,0.9), 0 0 30px rgba(212, 175, 55, 0.6);
     animation: pulse 2s infinite;
+    overflow: hidden;
 }
 
-/* House Icon Graphic */
-.house-badge-icon {
-    width: 45px;
-    height: 45px;
-    background: url('https://cdn-icons-png.flaticon.com/512/619/619153.png') no-repeat center/contain;
-    filter: drop-shadow(0 0 3px #ffd700);
+.logo-circle img {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+}
+
+.fallback-text {
+    position: absolute;
+    color: #4b1682;
+    font-weight: bold;
+    font-size: 20px;
+    letter-spacing: 1px;
 }
 
 /* Open Animation */
@@ -115,7 +112,7 @@
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
-    50% { transform: scale(1.08); box-shadow: 0 0 30px rgba(212, 175, 55, 0.8); }
-    100% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+    0% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
+    50% { transform: scale(1.08); box-shadow: 0 0 35px rgba(212, 175, 55, 0.9); }
+    100% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
 }
