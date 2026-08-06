@@ -10,53 +10,93 @@
     z-index: 9999;
     cursor: pointer;
     overflow: hidden;
-    background: #000;
+    background: #050201;
 }
 
-/* Rich Realistic Wooden Door Background */
+/* Rich Solid Brown Wooden Double Doors (No background images) */
 .door {
     position: relative;
     width: 50%;
     height: 100%;
-    background: linear-gradient(to right, rgba(0,0,0,0.4), rgba(0,0,0,0.1)), 
-                url('https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=1200&auto=format&fit=crop') repeat;
-    background-size: cover;
-    border: 8px solid #140904;
-    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(135deg, #3d2010 0%, #221006 50%, #150903 100%);
+    border: 8px solid #0d0502;
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.9);
     transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .left-door {
-    border-right: 4px solid #080402;
+    border-right: 4px solid #080301;
     transform-origin: left;
 }
 
 .right-door {
-    border-left: 4px solid #080402;
+    border-left: 4px solid #080301;
     transform-origin: right;
 }
 
-/* Traditional Door Knockers / Rings */
-.door-knocker {
+/* Brown Carved Panels / Frames on Doors */
+.door-carving {
+    position: absolute;
+    left: 35px;
+    right: 35px;
+    height: 38%;
+    border: 3px solid #2a1409;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #2d170b 0%, #1c0d05 100%);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 2px 5px rgba(255,255,255,0.03);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.top-carving {
+    top: 40px;
+}
+
+.bottom-carving {
+    bottom: 40px;
+}
+
+/* House & Flower carvings inside door in darker/rich brown shades */
+.carving-house {
+    width: 45px;
+    height: 45px;
+    background: url('https://cdn-icons-png.flaticon.com/512/619/619153.png') no-repeat center/contain;
+    opacity: 0.6;
+    filter: sepia(100%) hue-rotate(300deg) saturate(300%) brightness(50%);
+    margin-bottom: 10px;
+}
+
+.carving-flower {
+    width: 35px;
+    height: 35px;
+    background: url('https://cdn-icons-png.flaticon.com/512/2917/2917995.png') no-repeat center/contain;
+    opacity: 0.5;
+    filter: sepia(100%) hue-rotate(300deg) saturate(300%) brightness(50%);
+}
+
+/* Door Handles (Golden/Brass style) */
+.door-handle {
     position: absolute;
     top: 50%;
-    width: 40px;
-    height: 40px;
-    border: 6px solid #d4af37;
-    border-radius: 50%;
+    width: 12px;
+    height: 80px;
+    background: linear-gradient(to right, #d4af37, #8b6508, #d4af37);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.8);
     transform: translateY(-50%);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.8);
 }
 
-.left-knocker {
-    right: 30px;
+.left-door .door-handle {
+    right: 20px;
 }
 
-.right-knocker {
-    left: 30px;
+.right-door .door-handle {
+    left: 20px;
 }
 
-/* Center Official Logo Badge */
+/* Center Logo Badge */
 .door-center-badge {
     position: absolute;
     left: 50%;
@@ -69,31 +109,23 @@
 }
 
 .logo-circle {
-    width: 110px;
-    height: 110px;
-    background: #ffffff;
+    width: 105px;
+    height: 105px;
+    background: linear-gradient(135deg, #2b1509 0%, #120602 100%);
     border-radius: 50%;
     border: 4px solid #ffd700;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 10px 35px rgba(0,0,0,0.9), 0 0 30px rgba(212, 175, 55, 0.6);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.9), 0 0 25px rgba(212, 175, 55, 0.6);
     animation: pulse 2s infinite;
-    overflow: hidden;
 }
 
-.logo-circle img {
-    width: 90%;
-    height: 90%;
-    object-fit: contain;
-}
-
-.fallback-text {
-    position: absolute;
-    color: #4b1682;
-    font-weight: bold;
-    font-size: 20px;
-    letter-spacing: 1px;
+.center-logo-icon {
+    width: 55px;
+    height: 55px;
+    background: url('https://cdn-icons-png.flaticon.com/512/3014/3014120.png') no-repeat center/contain;
+    filter: drop-shadow(0 0 5px #ffd700);
 }
 
 /* Open Animation */
@@ -113,6 +145,6 @@
 
 @keyframes pulse {
     0% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
-    50% { transform: scale(1.08); box-shadow: 0 0 35px rgba(212, 175, 55, 0.9); }
+    50% { transform: scale(1.08); box-shadow: 0 0 30px rgba(212, 175, 55, 0.9); }
     100% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
 }
