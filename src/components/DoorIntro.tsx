@@ -12,7 +12,7 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
   const handleDoorClick = () => {
     setIsOpen(true);
     
-    // డోర్ క్లిక్ చేయగానే 0.8 సెకన్లలో వీడియోకి మారుతుంది
+    // డోర్ క్లిక్ చేసాక 0.8 సెకన్లలో వీడియో లోడ్ అవుతుంది
     setTimeout(() => {
       setIsPlayingVideo(true);
     }, 800);
@@ -21,7 +21,7 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
   useEffect(() => {
     if (isPlayingVideo && videoRef.current) {
       videoRef.current.play().catch((err) => {
-        console.log("Autoplay handled:", err);
+        console.log("Autoplay error:", err);
       });
     }
   }, [isPlayingVideo]);
@@ -35,7 +35,7 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
           className="relative w-full h-full cursor-pointer flex items-center justify-center bg-black overflow-hidden select-none"
         >
           <img 
-            src="/door-cartoon.jpg" 
+            src="/door-background.jpg" 
             alt="Door Intro" 
             className={`w-full h-full object-contain transition-all duration-1000 ease-in-out ${
               isOpen ? 'scale-110 opacity-0' : 'scale-100 opacity-100'
@@ -55,17 +55,17 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
         <div className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
           <video
             ref={videoRef}
-            src="/intro-video.mp4"
+            src="/publicintro-video.mp4"
             autoPlay
             playsInline
             controls={false}
-            onEnded={onComplete} /* <-- వీడియో పూర్తయిన వెంటనే మెయిన్ వెబ్‌సైట్ ఓపెన్ అవుతుంది */
+            onEnded={onComplete} /* వీడియో పూర్తి కాగానే ఒరిజినల్ వెబ్‌సైట్‌కి వెళ్తుంది */
             className="w-full h-full object-contain max-w-full max-h-full"
           />
           
           {/* Skip Button */}
           <button
-            onClick={onComplete} /* <-- బటన్ క్లిక్ చేసినా వెంటనే మెయిన్ వెబ్‌సైట్‌కి వెళ్తుంది */
+            onClick={onComplete}
             className="absolute top-5 right-5 bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-xs sm:text-sm px-4 py-2 rounded-full z-20 shadow-lg transition active:scale-95"
           >
             Skip Intro ➔
