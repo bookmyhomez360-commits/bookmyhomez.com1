@@ -16,20 +16,23 @@ export default function DoorIntro({ onEnter }: { onEnter: () => void }) {
   return (
     <div className={`door-container ${isOpen ? 'open' : ''} ${isFading ? 'fade-out' : ''}`}>
       <div className="door left-door" onClick={handleOpenDoors}>
-        <div className="door-carving top-carving"></div>
-        <div className="door-carving bottom-carving"></div>
+        <div className="door-knocker left-knocker"></div>
       </div>
       
-      {/* Center House & Key Badge */}
+      {/* Center Circle with Your Official BookMyHomez Logo */}
       <div className="door-center-badge" onClick={handleOpenDoors}>
         <div className="logo-circle">
-          <div className="house-badge-icon"></div>
+          <img src="/logo.png" alt="BookMyHomez" onError={(e) => {
+            // Fallback to text if local logo image is not found
+            const target = e.target as HTMLElement;
+            target.style.display = 'none';
+          }} />
+          <div className="fallback-text">BMH</div>
         </div>
       </div>
 
       <div className="door right-door" onClick={handleOpenDoors}>
-        <div className="door-carving top-carving"></div>
-        <div className="door-carving bottom-carving"></div>
+        <div className="door-knocker right-knocker"></div>
       </div>
     </div>
   );
