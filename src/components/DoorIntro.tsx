@@ -28,7 +28,7 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onUnlock }) => {
       greeting: "ನಮಸ್ಕಾರ, ಇದು ಮಧು bookmyhomez ನಿಂದ ಪರಿಚಯಿಸಿಕೊಳ್ಳುತ್ತಿದ್ದೇನೆ.",
       desc: "ನಮ್ಮ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಬಾಡಿಗೆಗೆ ಮತ್ತು ಶಾರ್ಟ್ ಸ್ಟೇಗಾಗಿ ಪ್ರಾಪರ್ಟೀಸ್ ಲಭ್ಯವಿವೆ. ನಿಮ್ಮ ಪ್ರಾಪರ್ಟೀಸ್‌ಗಳನ್ನು ನೀವು ಉಚಿತವಾಗಿ ಲಿಸ್ಟ್ ಮಾಡಬಹುದು.",
       btnText: "ವೆಬ್‌ಸೈಟ್‌ಗೆ ಪ್ರವೇಶಿಸಿ",
-      skipText: "ಸ್ಕಿప్ (Skip)",
+      skipText: "ಸ್ಕಿಪ್ (Skip)",
       speechText: "ನಮಸ್ಕಾರ, ಇದು ಮಧು bookmyhomez ನಿಂದ ಪರಿಚಯಿಸಿಕೊಳ್ಳುತ್ತಿದ್ದೇನೆ. ನಮ್ಮ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಬಾಡಿಗೆಗೆ ಮತ್ತು ಶಾರ್ಟ್ ಸ್ಟೇಗಾಗಿ ಪ್ರಾಪರ್ಟೀಸ್ ಲಭ್ಯವಿವೆ. ನಿಮ್ಮ ಪ್ರಾಪರ್ಟೀಸ್‌ಗಳನ್ನು ನೀವು ಉಚಿತವಾಗಿ ಲಿಸ್ಟ್ ಮಾಡಬಹುದು."
     }
   };
@@ -169,69 +169,45 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onUnlock }) => {
 
         </div>
 
-        {/* ఎడమ వైపు మహోగని వుడెన్ డోర్ */}
+        {/* ఎడమ వైపు డోర్ (Left Door Leaf) */}
         <div 
-          className={`absolute top-0 left-0 w-1/2 h-full border-r-4 border-[#1a0c04] shadow-[inset_-60px_0_120px_rgba(0,0,0,0.95)] flex items-center justify-end origin-left transition-transform duration-[1800ms] ease-in-out z-20 ${
+          className={`absolute top-0 left-0 w-1/2 h-full border-r-4 border-black/60 shadow-[inset_-50px_0_100px_rgba(0,0,0,0.9)] flex items-center justify-end origin-left transition-transform duration-[1800ms] ease-in-out z-20 ${
             isOpen ? 'rotate-y-[-110deg]' : 'rotate-y-0'
           }`}
           style={{ 
-            background: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1546484475-7f7bd55792da?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat`,
+            background: `linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.45)), url('https://images.unsplash.com/photo-1546484475-7f7bd55792da?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat`,
             transformStyle: 'preserve-3d' 
           }}
-        >
-          {/* డోర్ మీద మెటల్ స్టడ్స్ (Rivets) & చిన్న ఐరన్-గ్రేటెడ్ విండో */}
-          <div className="absolute top-12 left-1/2 -translate-x-1/2 w-36 h-24 border-2 border-[#3d2314] bg-[#1a0c04]/90 shadow-inner flex items-center justify-center">
-            <div className="w-full h-full border border-amber-900/30 grid grid-cols-4 grid-rows-3 gap-1 p-1">
-              {[...Array(12)].map((_, i) => (
-                <div key={i} className="border border-black/80 bg-amber-950/50"></div>
-              ))}
-            </div>
-          </div>
-        </div>
+        ></div>
 
-        {/* కుడి వైపు మహోగని వుడెన్ డోర్ */}
+        {/* కుడి వైపు డోర్ (Right Door Leaf) */}
         <div 
-          className={`absolute top-0 right-0 w-1/2 h-full border-l-4 border-[#1a0c04] shadow-[inset_60px_0_120px_rgba(0,0,0,0.95)] flex items-center justify-start origin-right transition-transform duration-[1800ms] ease-in-out z-20 ${
+          className={`absolute top-0 right-0 w-1/2 h-full border-l-4 border-black/60 shadow-[inset_50px_0_100px_rgba(0,0,0,0.9)] flex items-center justify-start origin-right transition-transform duration-[1800ms] ease-in-out z-20 ${
             isOpen ? 'rotate-y-[110deg]' : 'rotate-y-0'
           }`}
           style={{ 
-            background: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1546484475-7f7bd55792da?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat`,
+            background: `linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.45)), url('https://images.unsplash.com/photo-1546484475-7f7bd55792da?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat`,
             transformStyle: 'preserve-3d' 
           }}
-        >
-          {/* డోర్ మీద ఐరన్-గ్రేటెడ్ విండో */}
-          <div className="absolute top-12 left-1/2 -translate-x-1/2 w-36 h-24 border-2 border-[#3d2314] bg-[#1a0c04]/90 shadow-inner flex items-center justify-center">
-            <div className="w-full h-full border border-amber-900/30 grid grid-cols-4 grid-rows-3 gap-1 p-1">
-              {[...Array(12)].map((_, i) => (
-                <div key={i} className="border border-black/80 bg-amber-950/50"></div>
-              ))}
-            </div>
-          </div>
-        </div>
+        ></div>
 
-        {/* మధ్యలో రెండు తలుపులను హారిజాంటల్ గా కలుపుతూ పెద్ద ఆంటిక్ బ్రాస్ కీ & 'TAP ON DOOR' టెక్స్ట్ */}
+        {/* మధ్యలో వింటేజ్ గోల్డెన్ కీ మరియు 'TAP ON DOOR' టెక్స్ట్ */}
         <div className={`absolute z-30 flex items-center justify-center transition-all duration-500 cursor-pointer group ${isOpen ? 'opacity-0 scale-90 pointer-events-none' : 'opacity-100 scale-100'}`}>
           <div 
             onClick={handleOpenDoors}
-            className="relative flex items-center bg-gradient-to-r from-[#b8860b] via-[#ffd700] to-[#b8860b] px-6 py-4 rounded-full shadow-[0_0_50px_rgba(255,215,0,0.7)] border-2 border-amber-100 hover:scale-105 transition-all"
+            className="relative flex items-center justify-center transition-transform duration-300 group-hover:scale-105"
           >
-            {/* లెఫ్ట్ సైడ్ కీ హెడ్ */}
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-4 border-[#3d2314] bg-gradient-to-br from-[#ffd700] via-[#daa520] to-[#8b6508] flex items-center justify-center shadow-inner relative mr-3">
-              <div className="w-6 h-6 rounded-full bg-[#1a0c04] border-2 border-amber-300"></div>
-            </div>
-
-            {/* మధ్యలో షాఫ్ట్ మరియు 3D మెటల్ 'TAP ON DOOR' టెక్స్ట్ */}
-            <div className="relative flex items-center px-4">
-              <span className="relative z-10 text-[#2a1505] font-black text-sm sm:text-xl tracking-[0.25em] uppercase font-serif drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
-                TAP ON DOOR
-              </span>
-            </div>
-
-            {/* రైట్ సైడ్ కీ టీత్ */}
-            <div className="ml-3 flex flex-col justify-between w-7 h-10 bg-gradient-to-b from-[#daa520] to-[#8b6508] border-2 border-[#3d2314] rounded-r p-0.5">
-              <div className="w-full h-2.5 bg-[#1a0c04]"></div>
-              <div className="w-1/2 h-2.5 bg-[#1a0c04] self-end"></div>
-            </div>
+            {/* గోల్డెన్ కీ PNG ఇమేజ్ */}
+            <img 
+              src="https://png.pngtree.com/png-vector/20240125/ourmid/pngtree-vintage-golden-key-png-image_11494883.png" 
+              alt="Golden Key" 
+              className="w-72 sm:w-96 h-auto filter drop-shadow-[0_5px_20px_rgba(0,0,0,0.8)]"
+            />
+            
+            {/* కీ మీద ఖచ్చితంగా సరిపోయేలా 'TAP ON DOOR' టెక్స్ట్ */}
+            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#ffd700] font-black text-sm sm:text-xl tracking-[3px] uppercase font-serif drop-shadow-[2px_2px_4px_rgba(0,0,0,0.95)] whitespace-nowrap">
+              TAP ON DOOR
+            </span>
           </div>
         </div>
 
