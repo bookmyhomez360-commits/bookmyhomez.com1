@@ -45,7 +45,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Complete Pure CSS Door, Serial Lights & Website Layout Styles -->
+    <!-- Complete Pure CSS Door, Serial Lights & Video Template Styles -->
     <style>
       :root{
         --wood-dark:#4A2C1A;
@@ -66,12 +66,119 @@
         min-height: 100vh;
         background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
         padding: 40px;
-        display: flex;
+        display: none;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         text-align: center;
       }
+
+      /* Video-style Template Box (Lip-sync & Talking actions) */
+      .template-player-container {
+        position: relative;
+        width: 100%;
+        max-width: 850px;
+        height: 480px;
+        background: radial-gradient(circle at center, #2c1810 0%, #120a06 100%);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(212,175,55,0.2);
+        border: 2px solid #5c3a1e;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 30px;
+        margin-bottom: 30px;
+      }
+
+      .speaker-container {
+        position: relative;
+        width: 110px;
+        height: 110px;
+        margin-bottom: 20px;
+      }
+      .speaker-avatar {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #E8871E, #6B3E22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 25px rgba(232,135,30,0.6);
+        border: 3px solid #D4AF37;
+        position: relative;
+        z-index: 2;
+      }
+      .speaker-avatar svg { width: 55px; height: 55px; fill: #fce8a2; }
+      
+      .speaker-container.speaking .speaker-avatar {
+        animation: speakPulse 0.35s infinite alternate;
+      }
+      @keyframes speakPulse {
+        0% { transform: scale(1); box-shadow: 0 0 15px rgba(232,135,30,0.4); }
+        100% { transform: scale(1.06); box-shadow: 0 0 35px rgba(255,215,0,0.9); }
+      }
+
+      .dialogue-box {
+        background: rgba(20, 12, 8, 0.9);
+        border: 1px solid rgba(212, 175, 55, 0.5);
+        padding: 18px 25px;
+        border-radius: 12px;
+        max-width: 700px;
+        box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+      }
+      .dialogue-text {
+        color: #fce8a2;
+        font-size: 1.15rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        line-height: 1.5;
+        min-height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sound-waves {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        height: 20px;
+        margin-top: 15px;
+      }
+      .wave-bar {
+        width: 4px;
+        background: #D4AF37;
+        border-radius: 2px;
+      }
+      .speaking .wave-bar {
+        animation: waveAnim 0.35s ease-in-out infinite alternate;
+      }
+      .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+      .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+      .wave-bar:nth-child(4) { animation-delay: 0.15s; }
+      .wave-bar:nth-child(5) { animation-delay: 0.05s; }
+      @keyframes waveAnim {
+        0% { height: 4px; }
+        100% { height: 22px; }
+      }
+
+      .template-sound-btn {
+        position: absolute;
+        top: 20px; right: 20px;
+        background: rgba(20,10,45,0.7);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255,255,255,0.4);
+        color: #fff; width: 40px; height: 40px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; z-index: 10;
+      }
+      .template-sound-btn svg { width: 18px; height: 18px; }
+
       .hero-box {
         background: #ffffff;
         padding: 50px;
@@ -258,8 +365,46 @@
   </head>
   <body class="locked" style="overflow: hidden;">
 
-    <!-- Main Website Content -->
+    <!-- Main Website Content & Video Template -->
     <main id="main-website">
+      
+      <!-- Video-style Template Box with Lip-Sync & Speaking Actions -->
+      <div class="template-player-container">
+        
+        <!-- Sound Toggle Button -->
+        <div class="template-sound-btn" id="soundToggle" title="Sound On/Off">
+          <svg id="soundIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+            <path d="M15.5 8.5a5 5 0 010 7"/>
+          </svg>
+        </div>
+
+        <!-- Speaking Person Avatar -->
+        <div class="speaker-container speaking" id="speakerContainer">
+          <div class="speaker-avatar">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Dialogue Box -->
+        <div class="dialogue-box">
+          <div class="dialogue-text" id="typingText"></div>
+        </div>
+
+        <!-- Audio Waves (Lip-sync / Action) -->
+        <div class="sound-waves">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+
+      </div>
+
+      <!-- Main Website Hero Box -->
       <div class="hero-box">
         <h1>Welcome to BookMyHomez</h1>
         <p>Find and book verified holiday homes, luxury beach villas, heritage havelis, and cozy apartments across India. Enjoy 100% verified hosts and best rate guarantees.</p>
@@ -431,10 +576,77 @@
 
       const stage = document.getElementById('door-stage');
       const knockBtn = document.getElementById('knockBtn');
+      const mainWebsite = document.getElementById('main-website');
+      const speakerElem = document.getElementById('speakerContainer');
+      const textElem = document.getElementById("typingText");
+      
+      const dialogueMessages = [
+        "Namaste! Welcome to BookMyHomez. I am your virtual host.",
+        "Here you can easily explore luxury villas, beach houses, and holiday homes.",
+        "Enjoy 100% verified hosts, best rates, and instant online bookings.",
+        "Scroll down to find your dream vacation stay today!"
+      ];
+
+      let msgIdx = 0;
+      let charIdx = 0;
+      let currentString = "";
+      let synth = window.speechSynthesis;
+      let isMuted = false;
+      let animationStarted = false;
+
+      function speakText(text) {
+        if (isMuted || !synth) return;
+        synth.cancel();
+        let utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.0; 
+        utterance.pitch = 1.1; 
+        
+        utterance.onstart = () => { speakerElem.classList.add('speaking'); };
+        utterance.onend = () => { speakerElem.classList.remove('speaking'); };
+        
+        synth.speak(utterance);
+      }
+
+      function typeWriter() {
+        if (msgIdx < dialogueMessages.length) {
+          let fullText = dialogueMessages[msgIdx];
+          if (charIdx === 0) {
+            speakText(fullText);
+          }
+          
+          if (charIdx < fullText.length) {
+            currentString += fullText.charAt(charIdx);
+            textElem.innerHTML = currentString;
+            charIdx++;
+            setTimeout(typeWriter, 50);
+          } else {
+            setTimeout(eraseText, 2500);
+          }
+        }
+      }
+
+      function eraseText() {
+        if (charIdx > 0) {
+          currentString = dialogueMessages[msgIdx].substring(0, charIdx - 1);
+          textElem.innerHTML = currentString;
+          charIdx--;
+          setTimeout(typeWriter, 30);
+        } else {
+          msgIdx = (msgIdx + 1) % dialogueMessages.length;
+          setTimeout(typeWriter, 500);
+        }
+      }
 
       function openDoors(){
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
+
+        mainWebsite.style.display = 'flex';
+        
+        if(!animationStarted) {
+          animationStarted = true;
+          typeWriter();
+        }
 
         setTimeout(() => {
           stage.classList.add('done');
@@ -453,6 +665,19 @@
           }
         });
       }
+
+      const soundToggle = document.getElementById('soundToggle');
+      soundToggle.addEventListener('click', () => {
+        isMuted = !isMuted;
+        if (isMuted) {
+          if (synth) synth.cancel();
+          speakerElem.classList.remove('speaking');
+          soundToggle.style.opacity = '0.5';
+        } else {
+          soundToggle.style.opacity = '1';
+          typeWriter();
+        }
+      });
     </script>
   </body>
 </html>
