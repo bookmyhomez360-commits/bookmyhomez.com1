@@ -156,7 +156,7 @@
       .brass-corner.bl{ bottom:-5px; left:-5px; border-radius:0 100% 0 0; }
       .brass-corner.br{ bottom:-5px; right:-5px; border-radius:100% 0 0 0; }
 
-      /* Animated Center Rosette Design inside panels */
+      /* Animated Center Rosette Design */
       .panel-rosette {
         width: 75px;
         height: 75px;
@@ -217,6 +217,38 @@
         position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
         z-index:20; display:flex; flex-direction:column; align-items:center;
       }
+
+      /* Center Serial Lights Ring around the button */
+      .serial-ring {
+        position: absolute;
+        width: 126px;
+        height: 126px;
+        border-radius: 50%;
+        animation: ringSpin 10s linear infinite;
+        pointer-events: none;
+      }
+      @keyframes ringSpin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .serial-bulb {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        box-shadow: 0 0 8px currentColor;
+        animation: bulbGlow 1.2s ease-in-out infinite alternate;
+      }
+      .serial-bulb:nth-child(4n+1) { background: #ff3333; color: #ff3333; animation-delay: 0s; }
+      .serial-bulb:nth-child(4n+2) { background: #33ff33; color: #33ff33; animation-delay: 0.3s; }
+      .serial-bulb:nth-child(4n+3) { background: #33ccff; color: #33ccff; animation-delay: 0.6s; }
+      .serial-bulb:nth-child(4n+4) { background: #ff33cc; color: #ff33cc; animation-delay: 0.9s; }
+
+      @keyframes bulbGlow {
+        0% { opacity: 0.3; transform: scale(0.8); }
+        100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 14px currentColor, 0 0 22px currentColor; }
+      }
+
       .knock-btn{
         width:90px; height:90px; border-radius:50%;
         border:3px solid var(--brass-dark);
@@ -224,6 +256,7 @@
         box-shadow:0 6px 18px rgba(0,0,0,0.55);
         display:flex; align-items:center; justify-content:center;
         cursor:pointer;
+        z-index: 2;
       }
       .knock-btn svg{ animation: iconWiggle 2.6s ease-in-out infinite; transform-origin:50% 78%; }
       @keyframes iconWiggle{
@@ -239,6 +272,25 @@
       @keyframes leafSway{
         0%,100%{ transform:rotate(-6deg); }
         50%{ transform:rotate(6deg); }
+      }
+
+      /* Door Bottom Traditional Kolam Rangoli */
+      .door-kolam {
+        position: absolute;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 180px;
+        height: 60px;
+        z-index: 15;
+        pointer-events: none;
+        opacity: 0.85;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+        animation: kolamGlow 3s ease-in-out infinite alternate;
+      }
+      @keyframes kolamGlow {
+        0% { opacity: 0.7; transform: translateX(-50%) scale(0.98); }
+        100% { opacity: 1; transform: translateX(-50%) scale(1.02); }
       }
     </style>
   </head>
@@ -293,8 +345,26 @@
         <g id="flowers"></g>
       </svg>
 
-      <!-- Center Knob Button -->
+      <!-- Traditional Door Kolam / Rangoli Graphic -->
+      <svg class="door-kolam" viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#f5d682" stroke-width="1.8" fill="none" stroke-linecap="round">
+          <path d="M100,55 C90,45 85,35 100,20 C115,35 110,45 100,55 Z" fill="rgba(232, 135, 30, 0.3)" />
+          <path d="M100,55 C90,50 80,45 85,30 C95,35 98,45 100,55 Z" fill="rgba(244, 169, 63, 0.2)" />
+          <path d="M100,55 C110,50 120,45 115,30 C105,35 102,45 100,55 Z" fill="rgba(244, 169, 63, 0.2)" />
+          <path d="M60,50 Q80,25 100,50 Q120,25 140,50" />
+          <path d="M40,55 Q70,15 100,55 Q130,15 160,55" />
+          <circle cx="100" cy="18" r="3" fill="#f5d682" />
+          <circle cx="75" cy="35" r="2" fill="#f5d682" />
+          <circle cx="125" cy="35" r="2" fill="#f5d682" />
+          <circle cx="55" cy="48" r="2" fill="#f5d682" />
+          <circle cx="145" cy="48" r="2" fill="#f5d682" />
+          <path d="M20,60 Q100,35 180,60" stroke-width="1.2" />
+        </g>
+      </svg>
+
+      <!-- Center Knob Button with Serial Lights Ring -->
       <div class="knock-wrap" id="knockWrap">
+        <div class="serial-ring" id="serialRing"></div>
         <div class="knock-btn" id="knockBtn" role="button" tabindex="0">
           <svg viewBox="0 0 24 24" width="40" height="40" stroke="#4A2C1A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
             <path d="M3 11.5 12 4l9 7.5"/>
@@ -312,7 +382,7 @@
     <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
     <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
-    <!-- Dynamic Toran Generator Script -->
+    <!-- Dynamic Toran & Serial Bulbs Generator Script -->
     <script>
       const SVGNS = 'http://www.w3.org/2000/svg';
       function el(tag, attrs){
@@ -383,6 +453,23 @@
             const outer = (i % 3 === 1) ? '#E8871E' : '#F4A93F';
             const inner = (i % 3 === 1) ? '#F4A93F' : '#FFD27A';
             flowersG.appendChild(swingWrap(marigold(x, y + 8, rnd(0.85,1.05), outer, inner), i));
+          }
+        }
+
+        // Generate Serial Bulbs around the Center Ring
+        const ring = document.getElementById('serialRing');
+        if(ring){
+          const bulbCount = 12;
+          const radius = 60;
+          for(let i=0; i<bulbCount; i++){
+            const angle = (i / bulbCount) * 2 * Math.PI;
+            const bx = 63 + radius * Math.cos(angle) - 5;
+            const by = 63 + radius * Math.sin(angle) - 5;
+            const bulb = document.createElement('div');
+            bulb.className = 'serial-bulb';
+            bulb.style.left = bx + 'px';
+            bulb.style.top = by + 'px';
+            ring.appendChild(bulb);
           }
         }
       })();
