@@ -5,76 +5,124 @@
     width: 100%;
     height: 100vh;
     display: flex;
+    justify-content: center;
+    align-items: center;
     z-index: 9999;
     cursor: pointer;
     overflow: hidden;
-    background: #110803;
+    background: #0b0502;
 }
 
-/* Rich Brown Wooden Double-Door Styling */
+/* Rich Wood Double Door */
 .door {
     position: relative;
     width: 50%;
     height: 100%;
-    background: linear-gradient(135deg, #3d2314 0%, #1f1108 100%);
-    border: 6px solid #28160a;
-    box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.9);
+    background: linear-gradient(135deg, #4a2810 0%, #221207 100%);
+    border: 8px solid #140803;
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
     transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-/* Door Inner Panels */
-.door::before {
-    content: '';
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    right: 30px;
-    bottom: 30px;
-    border: 2px solid rgba(255, 215, 0, 0.1);
-    box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.7);
-}
-
 .left-door {
-    border-right: 3px solid #0d0603;
+    border-right: 4px solid #080301;
     transform-origin: left;
 }
 
 .right-door {
-    border-left: 3px solid #0d0603;
+    border-left: 4px solid #080301;
     transform-origin: right;
 }
 
-/* Center Key Design (No Text Box) */
-.door-content {
+/* Wooden Door Panel Carvings/Decorations */
+.door-panel-design {
     position: absolute;
-    right: -40px;
+    top: 40px;
+    left: 40px;
+    right: 40px;
+    bottom: 40px;
+    border: 4px solid rgba(212, 175, 55, 0.2);
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6), 0 0 10px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+}
+
+.door-panel-design::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    height: 40%;
+    border: 2px solid rgba(212, 175, 55, 0.15);
+}
+
+.door-panel-design::after {
+    content: '';
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    height: 40%;
+    border: 2px solid rgba(212, 175, 55, 0.15);
+}
+
+/* Door Handles */
+.door-handle {
+    position: absolute;
     top: 50%;
+    width: 14px;
+    height: 90px;
+    background: linear-gradient(to right, #ffd700, #b8860b, #ffd700);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.8);
     transform: translateY(-50%);
-    width: 80px;
+}
+
+.left-handle {
+    right: 25px;
+}
+
+.right-handle {
+    left: 25px;
+}
+
+/* Center Round Logo Badge */
+.door-center-badge {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10;
 }
 
-.golden-key-container {
-    width: 70px;
-    height: 70px;
-    background: rgba(31, 17, 8, 0.9);
+.logo-circle {
+    width: 90px;
+    height: 90px;
+    background: #1a0d05;
     border-radius: 50%;
-    border: 2px solid #d4af37;
+    border: 3px solid #d4af37;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.9), 0 0 20px rgba(212, 175, 55, 0.4);
     animation: pulse 2s infinite;
+    overflow: hidden;
 }
 
-.golden-key {
-    width: 38px;
-    height: 38px;
-    background: url('https://cdn-icons-png.flaticon.com/512/934/934298.png') no-repeat center/contain;
-    filter: drop-shadow(0 0 4px #ffd700);
+.logo-circle img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+}
+
+.fallback-logo-text {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 16px;
+    letter-spacing: 1px;
 }
 
 /* Open Animation */
@@ -94,6 +142,6 @@
 
 @keyframes pulse {
     0% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
-    50% { transform: scale(1.1); box-shadow: 0 0 25px rgba(212, 175, 55, 0.8); }
+    50% { transform: scale(1.08); box-shadow: 0 0 25px rgba(212, 175, 55, 0.8); }
     100% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
 }
