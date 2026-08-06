@@ -80,8 +80,8 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
 
   return (
     <div 
-      className="fixed inset-0 z-[999999] overflow-hidden bg-[#0a0502] flex items-center justify-center select-none w-screen h-screen"
-      style={{ perspective: '2000px' }}
+      className="fixed inset-0 z-[999999] overflow-hidden bg-[#050201] flex items-center justify-center select-none w-screen h-screen"
+      style={{ perspective: '2500px' }}
     >
       
       {/* తలుపులు తెరుచుకున్నాక వెనుక వచ్చే లగ్జరీ బ్యానర్ వ్యూ */}
@@ -168,79 +168,81 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
 
       </div>
 
-      {/* 3D Left Wooden Door */}
+      {/* 3D Left Wooden Door Leaf */}
       <div
         onClick={handleDoorClick}
         className={`absolute top-0 left-0 w-1/2 h-full cursor-pointer transition-transform duration-1200 ease-in-out origin-left z-10 ${
-          isOpen ? '-rotate-y-100 opacity-90 pointer-events-none' : ''
+          isOpen ? '-rotate-y-100 opacity-80 pointer-events-none' : ''
         }`}
         style={{
           transformStyle: 'preserve-3d',
-          backgroundColor: '#3d2314',
+          backgroundColor: '#2b1408',
           backgroundImage: `
-            linear-gradient(90deg, rgba(0,0,0,0.6) 0%, transparent 15%),
-            radial-gradient(ellipse at center, rgba(120,66,35,0.8) 0%, rgba(35,18,8,0.95) 100%),
-            repeating-linear-gradient(0deg, rgba(20,10,4,0.3), rgba(20,10,4,0.3) 4px, transparent 4px, transparent 8px)
+            linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 20%, transparent 40%),
+            radial-gradient(circle at 100% 50%, rgba(90,45,20,0.9) 0%, rgba(20,9,3,0.98) 100%),
+            repeating-linear-gradient(0deg, rgba(15,7,2,0.4), rgba(15,7,2,0.4) 3px, transparent 3px, transparent 6px)
           `,
-          boxShadow: 'inset -30px 0 60px rgba(0,0,0,0.8)',
-          borderRight: '6px solid #1a0c04'
+          boxShadow: 'inset -40px 0 80px rgba(0,0,0,0.9)',
+          borderRight: '8px solid #0f0502'
         }}
       >
-        {/* డోర్ డిజైన్ ప్యానెల్స్ */}
-        <div className="absolute inset-8 border-4 border-[#221105] bg-[#2d190c]/40 flex flex-col justify-around p-6 shadow-inner">
-          <div className="h-1/3 border-2 border-[#1a0c04] bg-[#241308]/60 shadow-inner"></div>
-          <div className="h-1/3 border-2 border-[#1a0c04] bg-[#241308]/60 shadow-inner my-4"></div>
+        {/* డోర్ ప్యానెల్స్ మరియు కార్వింగ్స్ */}
+        <div className="absolute inset-10 border-8 border-[#140602] bg-[#1a0a03]/80 flex flex-col justify-between p-8 shadow-[inset_0_0_30px_rgba(0,0,0,0.9)]">
+          <div className="h-[45%] border-4 border-[#0f0502] bg-[#241005]/50 shadow-inner"></div>
+          <div className="h-[45%] border-4 border-[#0f0502] bg-[#241005]/50 shadow-inner"></div>
         </div>
       </div>
 
-      {/* 3D Right Wooden Door */}
+      {/* 3D Right Wooden Door Leaf */}
       <div
         onClick={handleDoorClick}
         className={`absolute top-0 right-0 w-1/2 h-full cursor-pointer transition-transform duration-1200 ease-in-out origin-right z-10 ${
-          isOpen ? 'rotate-y-100 opacity-90 pointer-events-none' : ''
+          isOpen ? 'rotate-y-100 opacity-80 pointer-events-none' : ''
         }`}
         style={{
           transformStyle: 'preserve-3d',
-          backgroundColor: '#3d2314',
+          backgroundColor: '#2b1408',
           backgroundImage: `
-            linear-gradient(-90deg, rgba(0,0,0,0.6) 0%, transparent 15%),
-            radial-gradient(ellipse at center, rgba(120,66,35,0.8) 0%, rgba(35,18,8,0.95) 100%),
-            repeating-linear-gradient(0deg, rgba(20,10,4,0.3), rgba(20,10,4,0.3) 4px, transparent 4px, transparent 8px)
+            linear-gradient(-90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 20%, transparent 40%),
+            radial-gradient(circle at 0% 50%, rgba(90,45,20,0.9) 0%, rgba(20,9,3,0.98) 100%),
+            repeating-linear-gradient(0deg, rgba(15,7,2,0.4), rgba(15,7,2,0.4) 3px, transparent 3px, transparent 6px)
           `,
-          boxShadow: 'inset 30px 0 60px rgba(0,0,0,0.8)',
-          borderLeft: '6px solid #1a0c04'
+          boxShadow: 'inset 40px 0 80px rgba(0,0,0,0.9)',
+          borderLeft: '8px solid #0f0502'
         }}
       >
-        {/* డోర్ డిజైన్ ప్యానెల్స్ */}
-        <div className="absolute inset-8 border-4 border-[#221105] bg-[#2d190c]/40 flex flex-col justify-around p-6 shadow-inner">
-          <div className="h-1/3 border-2 border-[#1a0c04] bg-[#241308]/60 shadow-inner"></div>
-          <div className="h-1/3 border-2 border-[#1a0c04] bg-[#241308]/60 shadow-inner my-4"></div>
+        {/* డోర్ ప్యానెల్స్ మరియు కార్వింగ్స్ */}
+        <div className="absolute inset-10 border-8 border-[#140602] bg-[#1a0a03]/80 flex flex-col justify-between p-8 shadow-[inset_0_0_30px_rgba(0,0,0,0.9)]">
+          <div className="h-[45%] border-4 border-[#0f0502] bg-[#241005]/50 shadow-inner"></div>
+          <div className="h-[45%] border-4 border-[#0f0502] bg-[#241005]/50 shadow-inner"></div>
         </div>
       </div>
 
-      {/* Center Golden Key & TAP ON DOOR Button */}
+      {/* Center Grand Golden Key & TAP ON DOOR Button */}
       <div
         onClick={handleDoorClick}
-        className={`absolute z-20 cursor-pointer transition-all duration-500 transform hover:scale-105 active:scale-95 flex items-center justify-center ${
+        className={`absolute z-25 cursor-pointer transition-all duration-500 transform hover:scale-105 active:scale-95 flex items-center justify-center ${
           isOpen ? 'scale-75 opacity-0 pointer-events-none' : 'opacity-100'
         }`}
       >
-        <div className="relative flex items-center bg-gradient-to-r from-[#b8860b] via-[#ffd700] to-[#b8860b] px-8 py-4 rounded-full shadow-[0_0_50px_rgba(255,215,0,0.6)] border-2 border-amber-200">
+        <div className="relative flex items-center bg-gradient-to-r from-[#996515] via-[#ffd700] to-[#996515] px-10 py-5 rounded-full shadow-[0_0_70px_rgba(255,215,0,0.8)] border-2 border-amber-100">
           
-          {/* కీ హెడ్ */}
-          <div className="w-16 h-16 rounded-full border-4 border-[#4a2e05] bg-gradient-to-br from-[#ffe259] via-[#d4af37] to-[#704214] flex items-center justify-center shadow-inner mr-4">
-            <div className="w-6 h-6 rounded-full bg-[#1a0c04] border-2 border-amber-300"></div>
+          {/* లెఫ్ట్ కీ హెడ్ (Antique Handle Circle) */}
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-[#3a2008] bg-gradient-to-br from-[#fff2a3] via-[#d4af37] to-[#59390c] flex items-center justify-center shadow-[inset_0_2px_5px_rgba(255,255,255,0.6)] mr-4">
+            <div className="w-7 h-7 rounded-full bg-[#140602] border-2 border-amber-300 shadow-inner"></div>
           </div>
 
-          {/* టెక్స్ట్ */}
-          <span className="font-serif text-[#1a0c04] font-black tracking-[0.25em] text-base sm:text-2xl uppercase drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
-            TAP ON DOOR
-          </span>
+          {/* మధ్యలో షాఫ్ట్ మరియు TAP ON DOOR టెక్స్ట్ */}
+          <div className="relative flex items-center px-2">
+            <span className="font-serif text-[#140602] font-black tracking-[0.3em] text-base sm:text-2xl uppercase drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]">
+              TAP ON DOOR
+            </span>
+          </div>
 
-          {/* కీ టీత్ */}
-          <div className="ml-4 flex flex-col justify-between w-6 h-10 bg-gradient-to-b from-[#d4af37] to-[#704214] border-2 border-[#4a2e05] rounded-r p-0.5">
-            <div className="w-full h-2 bg-[#1a0c04]"></div>
-            <div className="w-1/2 h-2 bg-[#1a0c04] self-end"></div>
+          {/* రైట్ కీ టీత్ (Key Bitting) */}
+          <div className="ml-4 flex flex-col justify-between w-8 h-12 bg-gradient-to-b from-[#d4af37] to-[#59390c] border-2 border-[#3a2008] rounded-r p-0.5 shadow-inner">
+            <div className="w-full h-3 bg-[#140602]"></div>
+            <div className="w-1/2 h-3 bg-[#140602] self-end"></div>
           </div>
 
         </div>
