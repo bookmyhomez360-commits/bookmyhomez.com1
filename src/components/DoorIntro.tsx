@@ -80,8 +80,8 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
 
   return (
     <div 
-      className="fixed inset-0 z-[999999] overflow-hidden bg-[#050201] flex items-center justify-center select-none w-screen h-screen"
-      style={{ perspective: '2500px' }}
+      className="fixed inset-0 z-[999999] overflow-hidden bg-[#0c0a09] flex items-center justify-center select-none w-screen h-screen"
+      style={{ perspective: '2000px' }}
     >
       
       {/* తలుపులు తెరుచుకున్నాక వెనుక వచ్చే లగ్జరీ బ్యానర్ వ్యూ */}
@@ -168,82 +168,58 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
 
       </div>
 
-      {/* 3D Left Wooden Door Leaf */}
+      {/* Left Wooden Door Leaf */}
       <div
         onClick={handleDoorClick}
         className={`absolute top-0 left-0 w-1/2 h-full cursor-pointer transition-transform duration-1200 ease-in-out origin-left z-10 ${
-          isOpen ? '-rotate-y-100 opacity-80 pointer-events-none' : ''
+          isOpen ? '-rotate-y-100 opacity-85 pointer-events-none' : ''
         }`}
         style={{
           transformStyle: 'preserve-3d',
-          backgroundColor: '#2b1408',
-          backgroundImage: `
-            linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 20%, transparent 40%),
-            radial-gradient(circle at 100% 50%, rgba(90,45,20,0.9) 0%, rgba(20,9,3,0.98) 100%),
-            repeating-linear-gradient(0deg, rgba(15,7,2,0.4), rgba(15,7,2,0.4) 3px, transparent 3px, transparent 6px)
-          `,
-          boxShadow: 'inset -40px 0 80px rgba(0,0,0,0.9)',
-          borderRight: '8px solid #0f0502'
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://images.unsplash.com/photo-1546484475-7f7bd55792da?q=80&w=2000&auto=format&fit=crop')`,
+          backgroundSize: '200% 100%',
+          backgroundPosition: 'left center',
+          boxShadow: 'inset -50px 0 100px rgba(0,0,0,0.85)',
+          borderRight: '6px solid #1a0a04'
         }}
-      >
-        {/* డోర్ ప్యానెల్స్ మరియు కార్వింగ్స్ */}
-        <div className="absolute inset-10 border-8 border-[#140602] bg-[#1a0a03]/80 flex flex-col justify-between p-8 shadow-[inset_0_0_30px_rgba(0,0,0,0.9)]">
-          <div className="h-[45%] border-4 border-[#0f0502] bg-[#241005]/50 shadow-inner"></div>
-          <div className="h-[45%] border-4 border-[#0f0502] bg-[#241005]/50 shadow-inner"></div>
-        </div>
-      </div>
+      ></div>
 
-      {/* 3D Right Wooden Door Leaf */}
+      {/* Right Wooden Door Leaf */}
       <div
         onClick={handleDoorClick}
         className={`absolute top-0 right-0 w-1/2 h-full cursor-pointer transition-transform duration-1200 ease-in-out origin-right z-10 ${
-          isOpen ? 'rotate-y-100 opacity-80 pointer-events-none' : ''
+          isOpen ? 'rotate-y-100 opacity-85 pointer-events-none' : ''
         }`}
         style={{
           transformStyle: 'preserve-3d',
-          backgroundColor: '#2b1408',
-          backgroundImage: `
-            linear-gradient(-90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 20%, transparent 40%),
-            radial-gradient(circle at 0% 50%, rgba(90,45,20,0.9) 0%, rgba(20,9,3,0.98) 100%),
-            repeating-linear-gradient(0deg, rgba(15,7,2,0.4), rgba(15,7,2,0.4) 3px, transparent 3px, transparent 6px)
-          `,
-          boxShadow: 'inset 40px 0 80px rgba(0,0,0,0.9)',
-          borderLeft: '8px solid #0f0502'
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://images.unsplash.com/photo-1546484475-7f7bd55792da?q=80&w=2000&auto=format&fit=crop')`,
+          backgroundSize: '200% 100%',
+          backgroundPosition: 'right center',
+          boxShadow: 'inset 50px 0 100px rgba(0,0,0,0.85)',
+          borderLeft: '6px solid #1a0a04'
         }}
-      >
-        {/* డోర్ ప్యానెల్స్ మరియు కార్వింగ్స్ */}
-        <div className="absolute inset-10 border-8 border-[#140602] bg-[#1a0a03]/80 flex flex-col justify-between p-8 shadow-[inset_0_0_30px_rgba(0,0,0,0.9)]">
-          <div className="h-[45%] border-4 border-[#0f0502] bg-[#241005]/50 shadow-inner"></div>
-          <div className="h-[45%] border-4 border-[#0f0502] bg-[#241005]/50 shadow-inner"></div>
-        </div>
-      </div>
+      ></div>
 
-      {/* Center Grand Golden Key & TAP ON DOOR Button */}
+      {/* Center Vintage Golden Key & TAP ON DOOR Text */}
       <div
         onClick={handleDoorClick}
-        className={`absolute z-25 cursor-pointer transition-all duration-500 transform hover:scale-105 active:scale-95 flex items-center justify-center ${
+        className={`absolute z-20 cursor-pointer transition-all duration-500 transform hover:scale-105 active:scale-95 flex items-center justify-center ${
           isOpen ? 'scale-75 opacity-0 pointer-events-none' : 'opacity-100'
         }`}
       >
-        <div className="relative flex items-center bg-gradient-to-r from-[#996515] via-[#ffd700] to-[#996515] px-10 py-5 rounded-full shadow-[0_0_70px_rgba(255,215,0,0.8)] border-2 border-amber-100">
+        <div className="relative flex items-center justify-center">
           
-          {/* లెఫ్ట్ కీ హెడ్ (Antique Handle Circle) */}
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-[#3a2008] bg-gradient-to-br from-[#fff2a3] via-[#d4af37] to-[#59390c] flex items-center justify-center shadow-[inset_0_2px_5px_rgba(255,255,255,0.6)] mr-4">
-            <div className="w-7 h-7 rounded-full bg-[#140602] border-2 border-amber-300 shadow-inner"></div>
-          </div>
+          {/* పెద్ద వింటేజ్ గోల్డెన్ కీ PNG */}
+          <img 
+            src="https://png.pngtree.com/png-vector/20240125/ourmid/pngtree-vintage-golden-key-png-image_11494883.png" 
+            alt="Vintage Golden Key" 
+            className="w-[320px] sm:w-[450px] md:w-[550px] h-auto filter drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)] select-none pointer-events-none"
+          />
 
-          {/* మధ్యలో షాఫ్ట్ మరియు TAP ON DOOR టెక్స్ట్ */}
-          <div className="relative flex items-center px-2">
-            <span className="font-serif text-[#140602] font-black tracking-[0.3em] text-base sm:text-2xl uppercase drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]">
-              TAP ON DOOR
-            </span>
-          </div>
-
-          {/* రైట్ కీ టీత్ (Key Bitting) */}
-          <div className="ml-4 flex flex-col justify-between w-8 h-12 bg-gradient-to-b from-[#d4af37] to-[#59390c] border-2 border-[#3a2008] rounded-r p-0.5 shadow-inner">
-            <div className="w-full h-3 bg-[#140602]"></div>
-            <div className="w-1/2 h-3 bg-[#140602] self-end"></div>
-          </div>
+          {/* కీ షాఫ్ట్ మీద పర్‌ఫెక్ట్‌గా సెట్ చేసిన TAP ON DOOR టెక్స్ట్ */}
+          <span className="absolute font-serif text-[#ffd700] font-bold tracking-[4px] text-xs sm:text-base md:text-xl uppercase drop-shadow-[2px_2px_5px_rgba(0,0,0,0.95)] whitespace-nowrap">
+            TAP ON DOOR
+          </span>
 
         </div>
       </div>
