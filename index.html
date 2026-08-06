@@ -78,12 +78,90 @@
   ]
 }
 </script>
+
+    <!-- Door Opening Animation Styles -->
+    <style>
+      :root{
+        --wood-dark:#4A2C1A; --wood-mid:#6B3E22; --wood-light:#8B5A34; --wood-grain:#3B2213;
+        --brass:#D4AF37; --brass-dark:#9C7A1E;
+      }
+      body.locked { overflow: hidden; height: 100vh; }
+      #door-stage {
+        position: fixed; inset: 0; z-index: 9999; perspective: 2200px;
+        background: linear-gradient(180deg,#2b1a10,#1c1009);
+      }
+      #door-stage.done { display: none; }
+      .door-frame { position: absolute; inset: 0; background: linear-gradient(180deg,#3a2415,#241407); }
+      .door {
+        position: absolute; top: 0; bottom: 0; width: 50%;
+        background: linear-gradient(90deg, var(--wood-dark), var(--wood-light) 12%, var(--wood-mid) 30%, var(--wood-light) 55%, var(--wood-mid) 78%, var(--wood-dark) 100%);
+        transition: transform 1.6s cubic-bezier(.72,-0.15,.24,1.05);
+      }
+      .door-left { left: 0; transform-origin: left center; }
+      .door-right { right: 0; transform-origin: right center; }
+      #door-stage.opened .door-left { transform: rotateY(-112deg); }
+      #door-stage.opened .door-right { transform: rotateY(112deg); }
+      #door-stage.opened .door-frame, #door-stage.opened .knock-wrap { opacity: 0; pointer-events: none; transition: opacity 0.6s; }
+      
+      .knock-wrap {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+        z-index: 20; display: flex; flex-direction: column; align-items: center;
+      }
+      .knock-btn {
+        width: 96px; height: 96px; border-radius: 50%; border: 3px solid var(--brass-dark);
+        background: radial-gradient(circle at 35% 30%, #f6e2a0, var(--brass) 55%, var(--brass-dark) 100%);
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
+      }
+    </style>
   </head>
-  <body>
+  <body class="locked">
+
+    <!-- Door Animation Overlay -->
+    <div id="door-stage">
+      <div class="door-frame"></div>
+      
+      <div class="door door-left">
+        <div class="door-handle" style="position:absolute; top:44%; right:6%; width:14px; height:110px; background:var(--brass);"></div>
+      </div>
+      
+      <div class="door door-right">
+        <div class="door-handle" style="position:absolute; top:44%; left:6%; width:14px; height:110px; background:var(--brass);"></div>
+      </div>
+
+      <!-- Center Click Button -->
+      <div class="knock-wrap" id="knockWrap">
+        <div class="knock-btn" id="knockBtn" role="button" tabindex="0">
+          <svg viewBox="0 0 24 24" width="40" height="40" stroke="#4A2C1A" stroke-width="2" fill="none">
+            <path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9.5a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Your Original Root Container -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
     <!-- ElevenLabs Voice Widget -->
     <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
     <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+    <!-- Door Opening Script -->
+    <script>
+      const stage = document.getElementById('door-stage');
+      const knockBtn = document.getElementById('knockBtn');
+
+      function openDoors(){
+        if(stage.classList.contains('opened')) return;
+        stage.classList.add('opened');
+        document.body.classList.remove('locked');
+        setTimeout(()=>{ stage.classList.add('done'); }, 1600);
+      }
+
+      knockBtn.addEventListener('click', openDoors);
+      knockBtn.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDoors(); }
+      });
+    </script>
   </body>
 </html>
