@@ -50,7 +50,7 @@ export default function Blog() {
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
         readTime: "4 min read",
         description: newDesc,
-        imageUrl: newImage || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800", // ఇమేజ్ ఇవ్వకపోతే డిఫాల్ట్ రియల్ ఎస్టేట్ ఇమేజ్ వస్తుంది
+        imageUrl: newImage || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800",
         fullContent: newContent,
         createdAt: Date.now()
       });
@@ -84,80 +84,80 @@ export default function Blog() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#090D16] py-12 px-4 sm:px-6 lg:px-8 text-slate-100">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-12">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+            <h1 className="text-3xl font-bold text-white sm:text-4xl">
               BookMyHomez Blog & Insights
             </h1>
-            <p className="mt-2 text-lg text-gray-500">
+            <p className="mt-2 text-lg text-slate-400">
               Get the latest updates on real estate trends, property buying tips, and home services.
             </p>
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition cursor-pointer"
+            className="bg-indigo-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-indigo-500 transition cursor-pointer shadow-lg shadow-indigo-600/30"
           >
             {showForm ? 'Cancel' : '+ Write New Blog'}
           </button>
         </div>
 
-        {/* బ్లాగ్ క్రియేట్ చేసే ఫారమ్ (టెక్స్ట్ కలర్ క్లియర్ గా కనిపించేలా మరియు ఇమేజ్ లింక్ తో) */}
+        {/* బ్లాగ్ క్రియేట్ చేసే ఫారమ్ (డార్క్ థీమ్ కార్డ్) */}
         {showForm && (
-          <form onSubmit={handleAddBlog} className="bg-white p-6 rounded-lg shadow-md mb-8 space-y-4 border border-indigo-100">
-            <h2 className="text-xl font-bold text-gray-800">Create a New Blog Post</h2>
+          <form onSubmit={handleAddBlog} className="bg-[#0B0F19] p-6 rounded-2xl shadow-2xl mb-8 space-y-4 border border-slate-800">
+            <h2 className="text-xl font-bold text-white">Create a New Blog Post</h2>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700">Blog Title</label>
+              <label className="block text-sm font-medium text-slate-300">Blog Title</label>
               <input
                 type="text"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="Enter blog title..."
                 required
-                className="mt-1 w-full p-2 border border-gray-300 rounded-md text-gray-900 focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 w-full p-3 bg-[#131B2E] border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Short Description</label>
+              <label className="block text-sm font-medium text-slate-300">Short Description</label>
               <input
                 type="text"
                 value={newDesc}
                 onChange={(e) => setNewDesc(e.target.value)}
                 placeholder="Short summary of the blog..."
                 required
-                className="mt-1 w-full p-2 border border-gray-300 rounded-md text-gray-900 focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 w-full p-3 bg-[#131B2E] border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Image URL (Optional)</label>
+              <label className="block text-sm font-medium text-slate-300">Image URL (Optional)</label>
               <input
                 type="url"
                 value={newImage}
                 onChange={(e) => setNewImage(e.target.value)}
                 placeholder="Paste image web link (URL) here..."
-                className="mt-1 w-full p-2 border border-gray-300 rounded-md text-gray-900 focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 w-full p-3 bg-[#131B2E] border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Full Content</label>
+              <label className="block text-sm font-medium text-slate-300">Full Content</label>
               <textarea
                 value={newContent}
                 onChange={(e) => setNewContent(e.target.value)}
                 placeholder="Write your complete article here..."
                 rows={5}
                 required
-                className="mt-1 w-full p-2 border border-gray-300 rounded-md text-gray-900 focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 w-full p-3 bg-[#131B2E] border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <button
               type="submit"
-              className="bg-green-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-green-700 transition cursor-pointer"
+              className="bg-green-600 text-white px-4 py-2.5 rounded-lg font-semibold hover:bg-green-500 transition cursor-pointer shadow-lg shadow-green-600/30"
             >
               Publish Blog
             </button>
@@ -165,14 +165,14 @@ export default function Blog() {
         )}
 
         {loading ? (
-          <p className="text-center text-gray-500">Loading blogs...</p>
+          <p className="text-center text-slate-400">Loading blogs...</p>
         ) : (
           <div className="space-y-8">
             {blogPosts.length === 0 ? (
-              <p className="text-center text-gray-500">No blogs found. Create your first blog!</p>
+              <p className="text-center text-slate-400">No blogs found. Create your first blog!</p>
             ) : (
               blogPosts.map((post) => (
-                <div key={post.id} className="bg-white shadow rounded-lg overflow-hidden transition hover:shadow-md relative">
+                <div key={post.id} className="bg-[#0B0F19] border border-slate-800 shadow-xl rounded-2xl overflow-hidden transition hover:border-slate-700 relative">
                   
                   {/* బ్లాగ్ ఇమేజ్ డిస్‌ప్లే */}
                   {post.imageUrl && (
@@ -187,34 +187,34 @@ export default function Blog() {
                     {/* అడ్మిన్ పాస్‌వర్డ్ అడిగే డిలీట్ బటన్ */}
                     <button
                       onClick={() => handleDeleteBlog(post.id)}
-                      className="absolute top-6 right-6 bg-white/90 text-red-500 hover:text-red-700 text-sm font-semibold cursor-pointer border border-red-200 px-3 py-1 rounded-md shadow-sm"
+                      className="absolute top-6 right-6 bg-[#090D16]/90 text-red-400 hover:text-red-300 text-sm font-semibold cursor-pointer border border-red-500/20 px-3 py-1 rounded-md shadow-sm backdrop-blur-md"
                     >
                       Delete Blog
                     </button>
 
-                    <div className="flex items-center text-sm text-gray-500 space-x-4 mb-2">
+                    <div className="flex items-center text-sm text-slate-400 space-x-4 mb-2">
                       <span>{post.date}</span>
                       <span>•</span>
                       <span>{post.readTime}</span>
                     </div>
 
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3 pr-24">
+                    <h2 className="text-2xl font-bold text-white mb-3 pr-24">
                       {post.title}
                     </h2>
 
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-slate-300 mb-4">
                       {post.description}
                     </p>
 
                     {expandedId === post.id && (
-                      <div className="mt-4 pt-4 border-t border-gray-100 text-gray-700 leading-relaxed space-y-3 whitespace-pre-line">
+                      <div className="mt-4 pt-4 border-t border-slate-800 text-slate-300 leading-relaxed space-y-3 whitespace-pre-line">
                         <p>{post.fullContent}</p>
                       </div>
                     )}
 
                     <button 
                       onClick={() => toggleReadMore(post.id)}
-                      className="mt-4 text-indigo-600 font-semibold hover:text-indigo-800 flex items-center gap-1 cursor-pointer"
+                      className="mt-4 text-indigo-400 font-semibold hover:text-indigo-300 flex items-center gap-1 cursor-pointer"
                     >
                       {expandedId === post.id ? 'Show Less ↑' : 'Read More →'}
                     </button>
