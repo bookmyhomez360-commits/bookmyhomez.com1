@@ -51,8 +51,9 @@ import {
 
 export default function App() {
   const [showSplashScreen, setShowSplashScreen] = useState(true);
+  const [isLocked, setIsLocked] = useState(true); // డోర్ ఇంట్రో లాక్ స్టేట్
   const [activeVillaIndex, setActiveVillaIndex] = useState(0);
-  const [currentTab, setCurrentTab] = useState<'explore' | 'listings' | 'favorites' | 'my_properties'>('explore');
+  const [currentTab, setCurrentTab] = useState<'explore' | 'listings' | 'favorites' | 'my_properties' | 'blog'>('explore');
   const [activeFilterCategory, setActiveFilterCategory] = useState<CategoryType>('All');
   const [selectedRentType, setSelectedRentType] = useState<'All' | 'Monthly' | 'Daily'>('All');
   const [filterCity, setFilterCity] = useState('All');
@@ -378,6 +379,10 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#090D16] text-slate-100 font-sans selection:bg-indigo-600 selection:text-white relative">
+      
+      {/* డోర్ ఇంట్రో యానిమేషన్ స్క్రీన్ */}
+      {isLocked && <DoorIntro onUnlock={() => setIsLocked(false)} />}
+
       <ThreeBackground
         activeVillaIndex={activeVillaIndex}
         onVillaChange={setActiveVillaIndex}
@@ -410,8 +415,8 @@ export default function App() {
 
         <main className="flex-1">
           {currentTab === 'blog' && (
-  <Blog />
-)}
+            <Blog />
+          )}
           {currentTab === 'explore' && (
             <div>
               <section className="relative min-h-[540px] lg:min-h-[620px] flex items-center justify-center px-4 py-16 overflow-hidden">
