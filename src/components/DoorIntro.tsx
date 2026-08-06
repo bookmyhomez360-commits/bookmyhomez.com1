@@ -16,32 +16,48 @@ export default function DoorIntro({ onEnter }: { onEnter: () => void }) {
   return (
     <div className={`door-container ${isOpen ? 'open' : ''} ${isFading ? 'fade-out' : ''}`}>
       <div className="door left-door" onClick={handleOpenDoors}>
-        {/* Door Carvings/Decorations in Brown */}
-        <div className="door-carving top-carving">
-          <div className="carving-house"></div>
-          <div className="carving-flower"></div>
+        {/* Gruhapravesam Toranam */}
+        <div className="toranam-container">
+          <div className="mango-leaf"></div>
+          <div className="marigold-bunch"></div>
+          <div className="mango-leaf"></div>
+          <div className="marigold-bunch"></div>
+          <div className="mango-leaf"></div>
         </div>
-        <div className="door-carving bottom-carving">
-          <div className="carving-flower"></div>
+        {/* Rich Carved Wooden Panels */}
+        <div className="door-panel p-top">
+          <div className="carving-pattern"></div>
+        </div>
+        <div className="door-panel p-bottom">
+          <div className="carving-pattern"></div>
         </div>
         <div className="door-handle"></div>
       </div>
       
-      {/* Center Logo/Badge */}
+      {/* Center 3D House Logo Badge */}
       <div className="door-center-badge" onClick={handleOpenDoors}>
-        <div className="logo-circle">
-          <div className="center-logo-icon"></div>
+        <div className="badge-3d-wrapper">
+          <div className="badge-3d-front">
+            <div className="badge-house-icon"></div>
+          </div>
         </div>
       </div>
 
       <div className="door right-door" onClick={handleOpenDoors}>
-        {/* Door Carvings/Decorations in Brown */}
-        <div className="door-carving top-carving">
-          <div className="carving-house"></div>
-          <div className="carving-flower"></div>
+        {/* Gruhapravesam Toranam */}
+        <div className="toranam-container">
+          <div className="mango-leaf"></div>
+          <div className="marigold-bunch"></div>
+          <div className="mango-leaf"></div>
+          <div className="marigold-bunch"></div>
+          <div className="mango-leaf"></div>
         </div>
-        <div className="door-carving bottom-carving">
-          <div className="carving-flower"></div>
+        {/* Rich Carved Wooden Panels */}
+        <div className="door-panel p-top">
+          <div className="carving-pattern"></div>
+        </div>
+        <div className="door-panel p-bottom">
+          <div className="carving-pattern"></div>
         </div>
         <div className="door-handle"></div>
       </div>
