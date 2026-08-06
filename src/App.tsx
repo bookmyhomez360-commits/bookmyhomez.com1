@@ -8,7 +8,6 @@ import WizardModal from './components/WizardModal';
 import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
 import Blog from './components/Blog';
-import DoorIntro from './components/DoorIntro'; // Kotha Door component import
 import {
   Property,
   User,
@@ -51,7 +50,6 @@ import {
 
 export default function App() {
   const [showSplashScreen, setShowSplashScreen] = useState(true);
-  const [isLocked, setIsLocked] = useState(true); // డోర్ ఇంట్రో & వీడియో లాక్ స్టేట్
   const [activeVillaIndex, setActiveVillaIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState<'explore' | 'listings' | 'favorites' | 'my_properties' | 'blog'>('explore');
   const [activeFilterCategory, setActiveFilterCategory] = useState<CategoryType>('All');
@@ -380,9 +378,6 @@ export default function App() {
   return (
     <div className="flex flex-col min-h-screen bg-[#090D16] text-slate-100 font-sans selection:bg-indigo-600 selection:text-white relative">
       
-      {/* Kotha Wooden Door Intro Component - User click cheyagane open avtundi */}
-      {isLocked && <DoorIntro onEnter={() => setIsLocked(false)} />}
-
       <ThreeBackground
         activeVillaIndex={activeVillaIndex}
         onVillaChange={setActiveVillaIndex}
@@ -991,3 +986,4 @@ export default function App() {
     </div>
   );
 }
+```[cite: 2]
