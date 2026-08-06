@@ -45,7 +45,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Complete Pure CSS Door, Serial Lights & Video Template Styles -->
+    <!-- Complete Door, Serial Lights & Video Player Styles -->
     <style>
       :root{
         --wood-dark:#4A2C1A;
@@ -59,143 +59,9 @@
         --mango-leaf:#4F7942;
       }
       *{box-sizing:border-box;margin:0;padding:0;}
-      html,body{height:100%; font-family: 'Poppins', sans-serif;}
+      html,body{height:100%;}
+      body.locked{overflow:hidden; height:100vh;}
 
-      /* Main Website Content (Revealed dynamically after door opens) */
-      #main-website {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-        padding: 40px;
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-      }
-
-      /* Video-style Template Box (Lip-sync & Talking actions) */
-      .template-player-container {
-        position: relative;
-        width: 100%;
-        max-width: 850px;
-        height: 480px;
-        background: radial-gradient(circle at center, #2c1810 0%, #120a06 100%);
-        border-radius: 18px;
-        overflow: hidden;
-        box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(212,175,55,0.2);
-        border: 2px solid #5c3a1e;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 30px;
-        margin-bottom: 30px;
-      }
-
-      .speaker-container {
-        position: relative;
-        width: 110px;
-        height: 110px;
-        margin-bottom: 20px;
-      }
-      .speaker-avatar {
-        width: 110px;
-        height: 110px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #E8871E, #6B3E22);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 0 25px rgba(232,135,30,0.6);
-        border: 3px solid #D4AF37;
-        position: relative;
-        z-index: 2;
-      }
-      .speaker-avatar svg { width: 55px; height: 55px; fill: #fce8a2; }
-      
-      .speaker-container.speaking .speaker-avatar {
-        animation: speakPulse 0.35s infinite alternate;
-      }
-      @keyframes speakPulse {
-        0% { transform: scale(1); box-shadow: 0 0 15px rgba(232,135,30,0.4); }
-        100% { transform: scale(1.06); box-shadow: 0 0 35px rgba(255,215,0,0.9); }
-      }
-
-      .dialogue-box {
-        background: rgba(20, 12, 8, 0.9);
-        border: 1px solid rgba(212, 175, 55, 0.5);
-        padding: 18px 25px;
-        border-radius: 12px;
-        max-width: 700px;
-        box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
-      }
-      .dialogue-text {
-        color: #fce8a2;
-        font-size: 1.15rem;
-        font-weight: 500;
-        letter-spacing: 0.5px;
-        line-height: 1.5;
-        min-height: 55px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .sound-waves {
-        display: flex;
-        gap: 4px;
-        align-items: center;
-        height: 20px;
-        margin-top: 15px;
-      }
-      .wave-bar {
-        width: 4px;
-        background: #D4AF37;
-        border-radius: 2px;
-      }
-      .speaking .wave-bar {
-        animation: waveAnim 0.35s ease-in-out infinite alternate;
-      }
-      .wave-bar:nth-child(2) { animation-delay: 0.1s; }
-      .wave-bar:nth-child(3) { animation-delay: 0.2s; }
-      .wave-bar:nth-child(4) { animation-delay: 0.15s; }
-      .wave-bar:nth-child(5) { animation-delay: 0.05s; }
-      @keyframes waveAnim {
-        0% { height: 4px; }
-        100% { height: 22px; }
-      }
-
-      .template-sound-btn {
-        position: absolute;
-        top: 20px; right: 20px;
-        background: rgba(20,10,45,0.7);
-        backdrop-filter: blur(4px);
-        border: 1px solid rgba(255,255,255,0.4);
-        color: #fff; width: 40px; height: 40px;
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        cursor: pointer; z-index: 10;
-      }
-      .template-sound-btn svg { width: 18px; height: 18px; }
-
-      .hero-box {
-        background: #ffffff;
-        padding: 50px;
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        max-width: 700px;
-        width: 100%;
-        animation: contentFadeIn 1s ease forwards;
-      }
-      @keyframes contentFadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      .hero-box h1 { font-size: 2.5rem; color: #2c3e50; margin-bottom: 15px; }
-      .hero-box p { font-size: 1.1rem; color: #7f8c8d; line-height: 1.6; }
-
-      /* Door Intro Overlay */
       #door-stage{
         position:fixed; inset:0; z-index:99999;
         perspective:2200px;
@@ -203,14 +69,38 @@
         width: 100vw;
         height: 100vh;
         overflow: hidden;
-        transition: opacity 0.8s ease;
       }
-      #door-stage.done{ opacity: 0; pointer-events: none; display: none; }
+      #door-stage.done{display:none;}
 
       .door-frame{
         position:absolute; inset:0;
         background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
       }
+
+      /* Inner Background Screen with Video */
+      .inner-screen-bg {
+        position: absolute; inset: 0; z-index: 1;
+        background: #2a150b;
+        display: flex; align-items: center; justify-content: center;
+        padding: 24px;
+      }
+      .poster {
+        position: relative; width: 100%; max-width: 900px; max-height: 85vh;
+        border-radius: 18px; overflow: hidden;
+        box-shadow: 0 25px 60px -15px rgba(61,30,145,0.5), 0 4px 18px rgba(0,0,0,0.15);
+        background: #000; line-height: 0; display: flex; align-items: center; justify-content: center;
+      }
+      .poster video {
+        width: 100%; height: auto; max-height: 85vh; object-fit: contain; display: block;
+      }
+      .sound-toggle {
+        position: absolute; top: 14px; right: 14px; z-index: 5;
+        background: rgba(20,10,45,0.6); backdrop-filter: blur(4px);
+        border: 1px solid rgba(255,255,255,0.5); color: #fff;
+        width: 42px; height: 42px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
+      }
+      .sound-toggle svg { width: 19px; height: 19px; }
 
       .frame-pillar{
         position:absolute; top:0; bottom:0; width:26px; z-index:6;
@@ -361,59 +251,33 @@
         0% { opacity: 0.8; filter: drop-shadow(0 2px 4px rgba(255,215,0,0.3)); }
         100% { opacity: 1; filter: drop-shadow(0 2px 10px rgba(255,215,0,0.8)); }
       }
+
+      /* Mobile & Laptop responsiveness fitting */
+      @media (max-width: 768px) {
+        .inner-screen-bg { padding: 12px; }
+        .poster { max-width: 100%; border-radius: 12px; }
+        .sound-toggle { width: 36px; height: 36px; top: 10px; right: 10px; }
+        .sound-toggle svg { width: 16px; height: 16px; }
+      }
     </style>
   </head>
-  <body class="locked" style="overflow: hidden;">
-
-    <!-- Main Website Content & Video Template -->
-    <main id="main-website">
-      
-      <!-- Video-style Template Box with Lip-Sync & Speaking Actions -->
-      <div class="template-player-container">
-        
-        <!-- Sound Toggle Button -->
-        <div class="template-sound-btn" id="soundToggle" title="Sound On/Off">
-          <svg id="soundIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-            <path d="M15.5 8.5a5 5 0 010 7"/>
-          </svg>
-        </div>
-
-        <!-- Speaking Person Avatar -->
-        <div class="speaker-container speaking" id="speakerContainer">
-          <div class="speaker-avatar">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
-          </div>
-        </div>
-
-        <!-- Dialogue Box -->
-        <div class="dialogue-box">
-          <div class="dialogue-text" id="typingText"></div>
-        </div>
-
-        <!-- Audio Waves (Lip-sync / Action) -->
-        <div class="sound-waves">
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-        </div>
-
-      </div>
-
-      <!-- Main Website Hero Box -->
-      <div class="hero-box">
-        <h1>Welcome to BookMyHomez</h1>
-        <p>Find and book verified holiday homes, luxury beach villas, heritage havelis, and cozy apartments across India. Enjoy 100% verified hosts and best rate guarantees.</p>
-      </div>
-    </main>
+  <body class="locked">
 
     <!-- Door Intro Overlay -->
     <div id="door-stage">
       <div class="door-frame"></div>
+
+      <!-- Inner Background Screen with Video -->
+      <div class="inner-screen-bg" id="innerScreenBg">
+        <div class="poster">
+          <video id="v" playsinline preload="auto" poster="poster.jpg">
+            <source src="video.mp4" type="video/mp4">
+          </video>
+          <div class="sound-toggle" id="soundToggle" title="Mute/Unmute">
+            <svg id="muteIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+          </div>
+        </div>
+      </div>
 
       <div class="frame-pillar left"></div>
       <div class="frame-pillar right"></div>
@@ -466,12 +330,15 @@
       <!-- Enhanced Traditional Animated Door Kolam / Rangoli -->
       <svg class="door-kolam" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
         <g stroke="#fce8a2" stroke-width="1.8" fill="none" stroke-linecap="round">
+          <!-- Central Lotus Motif -->
           <path d="M120,65 C105,50 95,35 120,15 C145,35 135,50 120,65 Z" fill="rgba(232, 135, 30, 0.35)" />
           <path d="M120,65 C105,55 90,45 100,30 C112,35 116,50 120,65 Z" fill="rgba(244, 169, 63, 0.25)" />
           <path d="M120,65 C135,55 150,45 140,30 C128,35 124,50 120,65 Z" fill="rgba(244, 169, 63, 0.25)" />
+          <!-- Symmetric Rangoli Curves -->
           <path d="M70,55 Q95,25 120,55 Q145,25 170,55" />
           <path d="M45,65 Q80,15 120,65 Q160,15 195,65" />
           <path d="M25,72 Q120,30 215,72" stroke-width="1.2" />
+          <!-- Dots / Accents -->
           <circle cx="120" cy="12" r="3.5" fill="#fce8a2" />
           <circle cx="92" cy="38" r="2.2" fill="#fce8a2" />
           <circle cx="148" cy="38" r="2.2" fill="#fce8a2" />
@@ -492,7 +359,15 @@
       </div>
     </div>
 
-    <!-- Dynamic Generator & Interaction Logic -->
+    <!-- React Root -->
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+    <!-- ElevenLabs Voice Widget -->
+    <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+    <!-- Dynamic JavaScript Generator for Toran, Side Bulbs, 4-Box Bulbs & Center Ring -->
     <script>
       const SVGNS = 'http://www.w3.org/2000/svg';
       function el(tag, attrs){
@@ -500,6 +375,7 @@
         for(const k in attrs) n.setAttribute(k, attrs[k]);
         return n;
       }
+      function rnd(min,max){ return min + Math.random()*(max-min); }
       
       function mangoLeaf(x,y,rot,scale,shade){
         const g = el('g',{transform:`translate(${x},${y}) rotate(${rot}) scale(${scale})`});
@@ -516,6 +392,7 @@
       }
 
       (function(){
+        // Toran Garland
         const leavesG = document.getElementById('leaves');
         const flowersG = document.getElementById('flowers');
         if(leavesG && flowersG){
@@ -527,6 +404,7 @@
           }
         }
 
+        // Side Door Vertical Serial Lights
         ['leftSideLights', 'rightSideLights'].forEach(id => {
           const container = document.getElementById(id);
           if(container){
@@ -538,6 +416,7 @@
           }
         });
 
+        // 4 Boxes Panel Border Serial Lights
         document.querySelectorAll('.door-panel').forEach(panel => {
           const count = 16;
           for(let i=0; i<count; i++){
@@ -557,6 +436,7 @@
           }
         });
 
+        // Center Knob Ring Serial Bulbs
         const ring = document.getElementById('serialRing');
         if(ring){
           const bulbCount = 12;
@@ -576,85 +456,43 @@
 
       const stage = document.getElementById('door-stage');
       const knockBtn = document.getElementById('knockBtn');
-      const mainWebsite = document.getElementById('main-website');
-      const speakerElem = document.getElementById('speakerContainer');
-      const textElem = document.getElementById("typingText");
-      
-      const dialogueMessages = [
-        "Namaste! Welcome to BookMyHomez. I am your virtual host.",
-        "Here you can easily explore luxury villas, beach houses, and holiday homes.",
-        "Enjoy 100% verified hosts, best rates, and instant online bookings.",
-        "Scroll down to find your dream vacation stay today!"
-      ];
+      const v = document.getElementById('v');
+      const toggle = document.getElementById('soundToggle');
+      const muteIcon = document.getElementById('muteIcon');
 
-      let msgIdx = 0;
-      let charIdx = 0;
-      let currentString = "";
-      let synth = window.speechSynthesis;
-      let isMuted = false;
-      let animationStarted = false;
-
-      function speakText(text) {
-        if (isMuted || !synth) return;
-        synth.cancel();
-        let utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1.0; 
-        utterance.pitch = 1.1; 
-        
-        utterance.onstart = () => { speakerElem.classList.add('speaking'); };
-        utterance.onend = () => { speakerElem.classList.remove('speaking'); };
-        
-        synth.speak(utterance);
-      }
-
-      function typeWriter() {
-        if (msgIdx < dialogueMessages.length) {
-          let fullText = dialogueMessages[msgIdx];
-          if (charIdx === 0) {
-            speakText(fullText);
-          }
-          
-          if (charIdx < fullText.length) {
-            currentString += fullText.charAt(charIdx);
-            textElem.innerHTML = currentString;
-            charIdx++;
-            setTimeout(typeWriter, 50);
-          } else {
-            setTimeout(eraseText, 2500);
-          }
-        }
-      }
-
-      function eraseText() {
-        if (charIdx > 0) {
-          currentString = dialogueMessages[msgIdx].substring(0, charIdx - 1);
-          textElem.innerHTML = currentString;
-          charIdx--;
-          setTimeout(typeWriter, 30);
-        } else {
-          msgIdx = (msgIdx + 1) % dialogueMessages.length;
-          setTimeout(typeWriter, 500);
-        }
-      }
+      const iconOn = '<path d="M15.5 8.5a5 5 0 010 7"/><path d="M18.5 5.5a9 9 0 010 13"/><path d="M11 5L6 9H2v6h4l5 4V5z"/>';
+      const iconMuted = '<path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
 
       function openDoors(){
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
 
-        mainWebsite.style.display = 'flex';
-        
-        if(!animationStarted) {
-          animationStarted = true;
-          typeWriter();
-        }
+        // Play video once doors open
+        setTimeout(() => {
+          v.play().catch(() => { 
+            v.muted = true; 
+            v.play(); 
+            muteIcon.innerHTML = iconMuted;
+          });
+        }, 800);
+      }
 
+      toggle.addEventListener('click', () => {
+        v.muted = !v.muted;
+        if (!v.muted) { v.play(); }
+        muteIcon.innerHTML = v.muted ? iconMuted : iconOn;
+      });
+
+      // When video ends, seamlessly remove stage and open website
+      v.addEventListener('ended', () => {
+        stage.style.transition = "opacity 0.6s ease";
+        stage.style.opacity = "0";
         setTimeout(() => {
           stage.classList.add('done');
           document.body.classList.remove('locked');
-          document.body.style.overflow = 'auto';
           stage.remove();
-        }, 1600);
-      }
+        }, 600);
+      });
 
       if(knockBtn){
         knockBtn.addEventListener('click', openDoors);
@@ -665,19 +503,6 @@
           }
         });
       }
-
-      const soundToggle = document.getElementById('soundToggle');
-      soundToggle.addEventListener('click', () => {
-        isMuted = !isMuted;
-        if (isMuted) {
-          if (synth) synth.cancel();
-          speakerElem.classList.remove('speaking');
-          soundToggle.style.opacity = '0.5';
-        } else {
-          soundToggle.style.opacity = '1';
-          typeWriter();
-        }
-      });
     </script>
   </body>
 </html>
