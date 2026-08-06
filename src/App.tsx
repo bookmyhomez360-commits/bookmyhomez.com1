@@ -1,993 +1,251 @@
-import { useState, useEffect, useMemo } from 'react';
-import { ThreeBackground, REAL_VILLA_LIST } from './components/ThreeBackground';
-import { SplashScreen } from './components/SplashScreen';
-import { Header } from './components/Header';
-import { PropertyCard } from './components/PropertyCard';
-import { PropertyDetailsModal } from './components/PropertyDetailsModal';
-import WizardModal from './components/WizardModal';
-import { AuthModal } from './components/AuthModal';
-import { Footer } from './components/Footer';
-import Blog from './components/Blog';
-import { DoorIntro } from './components/DoorIntro';
-import {
-  Property,
-  User,
-  CategoryType,
-  WizardData,
-} from './types';
-import {
-  INITIAL_PROPERTIES,
-  GOOGLE_ACCOUNTS,
-  REGISTERED_USERS,
-} from './data/initialProperties';
-import {
-  seedInitialPropertiesIfEmpty,
-  seedInitialUsersIfEmpty,
-  subscribeToProperties,
-  savePropertyToFirestore,
-  updatePropertyInFirestore,
-  deletePropertyFromFirestore,
-  saveUserToFirestore,
-} from './firebase';
-import { doc, updateDoc } from 'firebase/firestore';
-import { db } from './firebase';
-import {
-  ShieldCheck,
-  Sliders,
-  Search,
-  MapPin,
-  ChevronDown,
-  ArrowRight,
-  House,
-  Key,
-  Umbrella,
-  Grid3X3,
-  SearchX,
-  Heart,
-  PlusCircle,
-  ArrowLeft,
-  Clock,
-} from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
 
-export default function App() {
-  const [showSplashScreen, setShowSplashScreen] = useState(true);
-  const [isLocked, setIsLocked] = useState(true); // డోర్ ఇంట్రో లాక్ స్టేట్
-  const [activeVillaIndex, setActiveVillaIndex] = useState(0);
-  const [currentTab, setCurrentTab] = useState<'explore' | 'listings' | 'favorites' | 'my_properties' | 'blog'>('explore');
-  const [activeFilterCategory, setActiveFilterCategory] = useState<CategoryType>('All');
-  const [selectedRentType, setSelectedRentType] = useState<'All' | 'Monthly' | 'Daily'>('All');
-  const [filterCity, setFilterCity] = useState('All');
-  const [filterBhk, setFilterBhk] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'newest' | 'price_low' | 'price_high'>('newest');
+interface DoorIntroProps {
+  onComplete?: () => void;
+}
 
-  const [isUrlLoading, setIsUrlLoading] = useState(false);
+export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState<'te' | 'en' | 'kn'>('te');
+  const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('bmh_current_user');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        localStorage.removeItem('bmh_current_user');
-      }
-    }
-    return null;
-  });
-
-  const [savedProperties, setSavedProperties] = useState<number[]>(() => {
-    const saved = localStorage.getItem('bmh_saved_properties');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // fallback
-      }
-    }
-    return [1, 3];
-  });
-
-  const [properties, setProperties] = useState<Property[]>(INITIAL_PROPERTIES);
-
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
-  const [showWizardModal, setShowWizardModal] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-
-  const handleToggleStatus = async (property: Property) => {
-    const propertyId = String((property as any).id || (property as any)._id);
-    const newStatus = property.status === 'Booked' ? 'Available' : 'Booked';
-
-    try {
-      const propertyRef = doc(db, "properties", propertyId);
-      await updateDoc(propertyRef, { status: newStatus });
-
-      setProperties((prev) =>
-        prev.map((p) =>
-          (String((p as any).id || (p as any)._id) === propertyId)
-            ? { ...p, status: newStatus }
-            : p
-        )
-      );
-
-      if (selectedProperty && (String((selectedProperty as any).id || (selectedProperty as any)._id) === propertyId)) {
-        setSelectedProperty({ ...selectedProperty, status: newStatus });
-      }
-
-      await updatePropertyInFirestore(propertyId, { status: newStatus });
-    } catch (error) {
-      console.error("Error toggling status in Firebase:", error);
-      alert("Failed to update status in database. Check console for details.");
+  const introContent = {
+    te: {
+      greeting: "నమస్కారం, ఇది మధు bookmyhomez నుండి పరిచయం చేసుకుంటున్నాను.",
+      desc: "మన వెబ్‌సైట్‌లో ప్రాపర్టీస్ రెంట్ కోసం మరియు షార్ట్ స్టే కోసం అందుబాటులో ఉన్నాయి. మీ ప్రాపర్టీస్‌ని మీరు ఉచితంగా లిస్ట్ చేసుకోవచ్చు.",
+      btnText: "వెబ్‌సైట్‌లోకి ప్రవేశించండి",
+      skipText: "స్కిప్ (Skip)",
+      speechText: "నమస్కారం, ఇది మధు, bookmyhomez నుండి పరిచయం చేసుకుంటున్నాను. మన వెబ్‌సైట్‌లో ప్రాపర్టీస్ రెంట్ కోసం మరియు షార్ట్ స్టే కోసం అందుబాటులో ఉన్నాయి. మీ ప్రాపర్టీస్‌ని మీరు ఉచితంగా లిస్ట్ చేసుకోవచ్చు."
+    },
+    en: {
+      greeting: "Hello, this is Madhu from bookmyhomez.",
+      desc: "Properties for rent and short stay are available on our website. You can also list your properties for free.",
+      btnText: "Enter Website",
+      skipText: "Skip",
+      speechText: "Hello, this is Madhu from bookmyhomez. Properties for rent and short stay are available on our website. You can also list your properties for free."
+    },
+    kn: {
+      greeting: "ನಮಸ್ಕಾರ, ಇದು ಮಧು bookmyhomez ನಿಂದ ಪರಿಚಯಿಸಿಕೊಳ್ಳುತ್ತಿದ್ದೇನೆ.",
+      desc: "ನಮ್ಮ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಬಾಡಿಗೆಗೆ ಮತ್ತು ಶಾರ್ಟ್ ಸ್ಟೇಗಾಗಿ ಪ್ರಾಪರ್ಟೀಸ್ ಲಭ್ಯವಿವೆ. ನಿಮ್ಮ ಪ್ರಾಪರ್ಟೀಸ್‌ಗಳನ್ನು ನೀವು ಉಚಿತವಾಗಿ ಲಿಸ್ಟ್ ಮಾಡಬಹುದು.",
+      btnText: "ವೆಬ್‌ಸೈಟ್‌ಗೆ ಪ್ರವೇಶಿಸಿ",
+      skipText: "ಸ್ಕಿಪ್ (Skip)",
+      speechText: "ನಮಸ್ಕಾರ, ಇದು ಮಧು bookmyhomez ನಿಂದ ಪರಿಚಯಿಸಿಕೊಳ್ಳುತ್ತಿದ್ದೇನೆ. ನಮ್ಮ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಬಾಡಿಗೆಗೆ ಮತ್ತು ಶಾರ್ಟ್ ಸ್ಟೇಗಾಗಿ ಪ್ರಾಪರ್ಟೀಸ್ ಲಭ್ಯವಿವೆ. ನಿಮ್ಮ ಪ್ರಾಪರ್ಟೀಸ್‌ಗಳನ್ನು ನೀವು ಉಚಿತವಾಗಿ ಲಿಸ್ಟ್ ಮಾಡಬಹುದು."
     }
   };
 
-  useEffect(() => {
-    const checkUrlProperty = () => {
-      const params = new URLSearchParams(window.location.search);
-      const propIdParam = params.get('propertyId');
-      if (propIdParam) {
-        setIsUrlLoading(true);
-        const timer = setTimeout(() => {
-          const found = properties.find((p) => String(p.id) === propIdParam) || 
-                        INITIAL_PROPERTIES.find((p) => String(p.id) === propIdParam);
-          if (found) {
-            setSelectedProperty(found);
-          }
-          setIsUrlLoading(false);
-        }, 1500);
+  const speakIntro = (lang: 'te' | 'en' | 'kn') => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(introContent[lang].speechText);
+      if (lang === 'te') utterance.lang = 'te-IN';
+      else if (lang === 'kn') utterance.lang = 'kn-IN';
+      else utterance.lang = 'en-US';
 
-        return () => clearTimeout(timer);
-      } else {
-        setSelectedProperty(null);
-        setIsUrlLoading(false);
+      utterance.rate = 0.95;
+      speechRef.current = utterance;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const handleDoorClick = () => {
+    if (isOpen) return;
+    setIsOpen(true);
+    speakIntro(currentLanguage);
+  };
+
+  const handleLanguageChange = (lang: 'te' | 'en' | 'kn', e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentLanguage(lang);
+    if (isOpen) {
+      speakIntro(lang);
+    }
+  };
+
+  const handleFinalUnlock = () => {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    setIsHidden(true);
+    if (onComplete) onComplete();
+  };
+
+  useEffect(() => {
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
       }
     };
-
-    checkUrlProperty();
-    window.addEventListener('popstate', checkUrlProperty);
-    return () => window.removeEventListener('popstate', checkUrlProperty);
-  }, [properties]);
-
-  const [registeredUsers, setRegisteredUsers] = useState<(User & { password?: string })[]>(() => {
-    const saved = localStorage.getItem('bmh_registered_users');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      } catch {
-        // fallback
-      }
-    }
-    return REGISTERED_USERS;
-  });
-
-  useEffect(() => {
-    localStorage.setItem('bmh_registered_users', JSON.stringify(registeredUsers));
-  }, [registeredUsers]);
-
-  const handleRegisterUser = (newUser: User & { password?: string }) => {
-    setRegisteredUsers((prev) => {
-      const exists = prev.some((u) => u.email.toLowerCase() === newUser.email.toLowerCase());
-      if (exists) return prev;
-      return [...prev, newUser];
-    });
-    saveUserToFirestore(newUser).catch(() => {});
-  };
-
-  useEffect(() => {
-    localStorage.setItem('bmh_saved_properties', JSON.stringify(savedProperties));
-  }, [savedProperties]);
-
-  useEffect(() => {
-    seedInitialPropertiesIfEmpty();
-    seedInitialUsersIfEmpty();
-
-    const unsubscribe = subscribeToProperties((liveProperties) => {
-      if (liveProperties && liveProperties.length > 0) {
-        setProperties(liveProperties);
-      }
-    });
-
-    return () => unsubscribe();
   }, []);
 
-  const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-IN').format(val || 0);
-  };
-
-  const navigateTo = (tab: any) => {
-    setCurrentTab(tab);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const navigateToCategory = (cat: CategoryType) => {
-    setActiveFilterCategory(cat);
-    setSelectedRentType('All');
-    setCurrentTab('listings');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const filterByLocation = (city: string) => {
-    setFilterCity(city);
-    setCurrentTab('listings');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const countByCategory = (cat: CategoryType) => {
-    return properties.filter((p) => p.category === cat).length;
-  };
-
-  const isSaved = (id: number) => savedProperties.includes(id);
-
-  const toggleSave = (id: number) => {
-    setSavedProperties((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
-
-  const handleDeleteProperty = async (id: number | string) => {
-    if (confirm('Are you sure you want to delete this property?')) {
-      setProperties((prev) => prev.filter((p) => (p.id || (p as any)._id) !== id));
-      if (selectedProperty && ((selectedProperty as any).id || (selectedProperty as any)._id) === id) {
-        setSelectedProperty(null);
-      }
-      try {
-        await deletePropertyFromFirestore(id);
-      } catch (error) {
-        console.error("Error deleting property from Firebase:", error);
-      }
-    }
-  };
-
-  const openWizard = () => {
-    if (!currentUser) {
-      setShowAuthModal(true);
-    } else {
-      setIsEditing(false);
-      setEditingId(null);
-      setShowWizardModal(true);
-    }
-  };
-
-  const handleEditProperty = async (updatedProperty: Property) => {
-    const targetId = (updatedProperty as any).id || (updatedProperty as any)._id;
-    
-    setProperties((prev) =>
-      prev.map((p) => ((p.id || (p as any)._id) === targetId ? updatedProperty : p))
-    );
-    if (selectedProperty && ((selectedProperty as any).id || (selectedProperty as any)._id) === targetId) {
-      setSelectedProperty(updatedProperty);
-    }
-
-    try {
-      await updatePropertyInFirestore(targetId, updatedProperty);
-    } catch (error) {
-      console.error("Error updating property in Firebase:", error);
-    }
-  };
-
-  const handlePublishListing = async (
-    wizardData: WizardData,
-    editingFlag: boolean,
-    editId: number | null
-  ) => {
-    const payload: Property = {
-      id: editingFlag && editId ? editId : Date.now(),
-      title: wizardData.title || 'New Verified Property',
-      category: wizardData.category,
-      status: wizardData.status || 'Available',
-      city: wizardData.city,
-      locality: wizardData.locality,
-      bhk: wizardData.bhk,
-      area: wizardData.area,
-      price: wizardData.price,
-      deposit: wizardData.deposit,
-      availDate: wizardData.availDate,
-      propertyAge: wizardData.propertyAge,
-      bathrooms: wizardData.bathrooms,
-      balconies: wizardData.balconies,
-      furnishing: wizardData.furnishing,
-      furnishings: wizardData.furnishings,
-      amenities: wizardData.amenities,
-      propType: wizardData.propType,
-      subType: wizardData.subType,
-      ownerId: currentUser ? currentUser.id : 'usr_guest',
-      ownerName: currentUser ? currentUser.name : 'Owner',
-      description: 'Verified real estate property posted via BookMyHomez multi-step listing wizard.',
-      images: wizardData.images,
-    };
-
-    if (editingFlag && editId) {
-      setProperties((prev) =>
-        prev.map((p) => ((p.id || (p as any)._id) === editId ? payload : p))
-      );
-    } else {
-      setProperties((prev) => [payload, ...prev]);
-    }
-
-    setShowWizardModal(false);
-    navigateTo('my_properties');
-
-    try {
-      if (editingFlag && editId) {
-        await updatePropertyInFirestore(editId, payload);
-      } else {
-        await savePropertyToFirestore(payload);
-      }
-    } catch (error) {
-      console.error("Error saving/updating property in Firebase:", error);
-    }
-  };
-
-  const filteredProperties = useMemo(() => {
-    let result = properties.filter((item) => {
-      const matchCat =
-        activeFilterCategory === 'All' || item.category === activeFilterCategory;
-      
-      let matchRentType = true;
-      if (activeFilterCategory === 'Rent' && selectedRentType !== 'All') {
-        matchRentType = item.rentType === selectedRentType;
-      }
-
-      const matchCity =
-        filterCity === 'All' ||
-        item.city.toLowerCase() === filterCity.toLowerCase();
-      const matchBhk = filterBhk === 'All' || item.bhk === filterBhk;
-
-      const q = searchQuery.toLowerCase().trim();
-      const matchQuery =
-        !q ||
-        item.title.toLowerCase().includes(q) ||
-        item.locality.toLowerCase().includes(q) ||
-        item.city.toLowerCase().includes(q) ||
-        item.category.toLowerCase().includes(q);
-
-      return matchCat && matchRentType && matchCity && matchBhk && matchQuery;
-    });
-
-    if (sortBy === 'price_low') {
-      result.sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'price_high') {
-      result.sort((a, b) => b.price - a.price);
-    } else {
-      result.sort((a, b) => Number((b as any).id || (b as any)._id) - Number((a as any).id || (a as any)._id));
-    }
-
-    return result;
-  }, [properties, activeFilterCategory, selectedRentType, filterCity, filterBhk, searchQuery, sortBy]);
-
-  const savedListings = useMemo(() => {
-    return properties.filter((p) => savedProperties.includes(Number((p as any).id || (p as any)._id)));
-  }, [properties, savedProperties]);
-
-  const userProperties = useMemo(() => {
-    return currentUser
-      ? properties.filter(
-          (p) => p.ownerId === currentUser.id || currentUser.role === 'Administrator'
-        )
-      : [];
-  }, [properties, currentUser]);
-
-  const resetFilters = () => {
-    setFilterCity('All');
-    setFilterBhk('All');
-    setActiveFilterCategory('All');
-    setSelectedRentType('All');
-    setSearchQuery('');
-  };
+  if (isHidden) return null;
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#090D16] text-slate-100 font-sans selection:bg-indigo-600 selection:text-white relative">
+    <div 
+      className="fixed inset-0 z-[999999] overflow-hidden bg-[#0f0d0c] flex items-center justify-center select-none w-screen h-screen"
+      style={{ perspective: '2000px' }}
+    >
       
-      {/* డోర్ ఇంట్రో యానిమేషన్ స్క్రీన్ */}
-      {isLocked && <DoorIntro onUnlock={() => setIsLocked(false)} />}
+      {/* తలుపులు తెరుచుకున్నాక వెనుక వచ్చే లగ్జరీ బ్యానర్ వ్యూ */}
+      <div className={`absolute inset-0 z-0 flex items-center justify-center bg-gradient-to-br from-[#0c0a09] via-[#1c1917] to-[#292524] p-4 sm:p-8 transition-opacity duration-1000 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        
+        {/* టాప్-రైట్ కార్నర్‌లో 'Skip' బటన్ */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleFinalUnlock();
+          }}
+          className="absolute top-6 right-6 z-50 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs sm:text-sm font-bold px-5 py-2 rounded-full backdrop-blur-md border border-amber-500/40 transition-all cursor-pointer shadow-lg font-sans"
+        >
+          {introContent[currentLanguage].skipText} ⏭
+        </button>
 
-      <ThreeBackground
-        activeVillaIndex={activeVillaIndex}
-        onVillaChange={setActiveVillaIndex}
-      />
-
-      <div className="flex flex-col flex-1 min-h-screen relative z-10">
-        {showSplashScreen && (
-          <SplashScreen onDismiss={() => setShowSplashScreen(false)} />
-        )}
-
-        {isUrlLoading && (
-          <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-3 text-center text-amber-300 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 sticky top-0 z-50 backdrop-blur-md">
-            <Clock className="w-4 h-4 animate-spin text-amber-400" />
-            <span>Property details is loding please wait a minute.</span>
-          </div>
-        )}
-
-        <Header
-          currentTab={currentTab}
-          activeFilterCategory={activeFilterCategory}
-          navigateTo={navigateTo}
-          navigateToCategory={navigateToCategory}
-          openWizard={openWizard}
-          openAuthModal={() => setShowAuthModal(true)}
-          savedCount={savedProperties.length}
-          currentUser={currentUser}
-          myPropertiesCount={userProperties.length}
-          logout={() => setCurrentUser(null)}
-        />
-
-        <main className="flex-1">
-          {currentTab === 'blog' && (
-            <Blog />
-          )}
-          {currentTab === 'explore' && (
-            <div>
-              <section className="relative min-h-[540px] lg:min-h-[620px] flex items-center justify-center px-4 py-16 overflow-hidden">
-                <div className="absolute inset-0 z-0 pointer-events-none">
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#090D16] via-transparent to-transparent"></div>
+        {/* మెయిన్ లగ్జరీ బ్యానర్ కార్డ్ */}
+        <div className="w-full max-w-5xl bg-gradient-to-r from-slate-950/90 to-zinc-900/90 border-2 border-amber-500/40 rounded-3xl p-6 sm:p-10 shadow-[0_0_60px_rgba(245,158,11,0.2)] flex flex-col lg:flex-row items-center justify-between gap-8 backdrop-blur-2xl">
+          
+          {/* లెఫ్ట్ సైడ్: లోగో, భాషల బటన్లు, టెక్స్ట్ */}
+          <div className="flex-1 text-white flex flex-col space-y-5 text-center lg:text-left z-10 font-sans">
+            
+            {/* లోగో */}
+            <div className="flex justify-center lg:justify-start">
+              <div className="bg-white p-3 rounded-2xl shadow-xl border-2 border-amber-500/50 inline-block">
+                <div className="text-slate-950 font-black tracking-wider text-lg sm:text-xl flex items-center gap-2">
+                  <span className="bg-amber-500 text-slate-950 px-2 py-0.5 rounded">BMH</span> BOOK MY HOMEZ
                 </div>
-
-                <div className="relative z-10 max-w-4xl mx-auto text-center">
-                  {(() => {
-                    const currentVilla = REAL_VILLA_LIST[activeVillaIndex] || REAL_VILLA_LIST[0];
-                    return (
-                      <div key={activeVillaIndex} className="animate-hero-text-stagger">
-                        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-6 shadow-lg">
-                          <ShieldCheck className="w-4 h-4 text-amber-400" />
-                          {currentVilla.badgeText}
-                        </span>
-
-                        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight sm:leading-none mb-6">
-                          {currentVilla.heroHeadline}{' '}
-                          <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-amber-300 bg-clip-text text-transparent">
-                            {currentVilla.heroHighlight}
-                          </span>
-                        </h1>
-
-                        <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-medium mb-10 leading-relaxed">
-                          {currentVilla.heroSubtext}
-                        </p>
-                      </div>
-                    );
-                  })()}
-
-                  <div className="bg-slate-900/80 backdrop-blur-xl p-3 sm:p-5 rounded-3xl shadow-2xl border border-slate-700/60 max-w-3xl mx-auto text-left">
-                    <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800/80 overflow-x-auto no-scrollbar">
-                      {(
-                        ['All', 'Buy', 'Rent', 'Short Stay', 'Plots'] as CategoryType[]
-                      ).map((cat) => (
-                        <button
-                          key={cat}
-                          onClick={() => navigateToCategory(cat)}
-                          className={`px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition cursor-pointer ${
-                            activeFilterCategory === cat && currentTab === 'listings'
-                              ? 'bg-indigo-600 text-white shadow-md'
-                              : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
-                          }`}
-                        >
-                          {cat === 'All' ? 'All Categories' : cat}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div>
-                        <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1 ml-1">
-                          Location / City
-                        </label>
-                        <div className="relative">
-                          <MapPin className="w-3.5 h-3.5 absolute left-3.5 top-3.5 text-indigo-400" />
-                          <select
-                            value={filterCity}
-                            onChange={(e) => setFilterCity(e.target.value)}
-                            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-8 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-indigo-500 appearance-none"
-                          >
-                            <option value="All">All Cities (India)</option>
-                            <option value="Bengaluru">Bengaluru</option>
-                            <option value="Mumbai">Mumbai</option>
-                            <option value="Pune">Pune</option>
-                            <option value="Jaipur">Jaipur</option>
-                            <option value="Delhi NCR">Delhi NCR</option>
-                            <option value="Hyderabad">Hyderabad</option>
-                          </select>
-                          <ChevronDown className="w-3.5 h-3.5 absolute right-3.5 top-3.5 text-slate-500 pointer-events-none" />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1 ml-1">
-                          Search Keywords
-                        </label>
-                        <div className="relative">
-                          <Search className="w-3.5 h-3.5 absolute left-3.5 top-3.5 text-slate-500" />
-                          <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Society, locality, BHK..."
-                            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2.5 text-xs font-semibold text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex items-end gap-2">
-                        <div className="flex-1">
-                          <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1 ml-1">
-                            BHK Config
-                          </label>
-                          <select
-                            value={filterBhk}
-                            onChange={(e) => setFilterBhk(e.target.value)}
-                            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-indigo-500"
-                          >
-                            <option value="All">Any BHK</option>
-                            <option value="1 BHK">1 BHK</option>
-                            <option value="2 BHK">2 BHK</option>
-                            <option value="3 BHK">3 BHK</option>
-                            <option value="4+ BHK">4+ BHK / Villa</option>
-                          </select>
-                        </div>
-                        <button
-                          onClick={() => navigateToCategory(activeFilterCategory)}
-                          className="bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-indigo-600/30 cursor-pointer"
-                        >
-                          <Sliders className="w-3.5 h-3.5" /> Search
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <section className="max-w-7xl mx-auto px-4 py-12">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-xl sm:text-2xl font-black text-white">
-                      Explore Categories
-                    </h2>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Select a category to view dedicated property listings on a new page
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                  <div
-                    onClick={() => navigateToCategory('Buy')}
-                    className="group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-900/90 transition duration-300"
-                  >
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                      <House className="w-6 h-6" />
-                    </div>
-                    <h2 className="text-base font-bold text-white group-hover:text-indigo-400 transition">
-                      Homes to Buy
-                    </h2>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Luxury flats, apartments & villas
-                    </p>
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-indigo-400 mt-4">
-                      Browse {countByCategory('Buy')} listings{' '}
-                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition transform" />
-                    </span>
-                  </div>
-
-                  <div
-                    onClick={() => navigateToCategory('Rent')}
-                    className="group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900/90 transition duration-300"
-                  >
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                      <Key className="w-6 h-6" />
-                    </div>
-                    <h2 className="text-base font-bold text-white group-hover:text-emerald-400 transition">
-                      Rentals & PGs
-                    </h2>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Furnished flats & coliving spaces
-                    </p>
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-emerald-400 mt-4">
-                      Browse {countByCategory('Rent')} listings{' '}
-                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition transform" />
-                    </span>
-                  </div>
-
-                  <div
-                    onClick={() => navigateToCategory('Short Stay')}
-                    className="group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-amber-500/50 hover:bg-slate-900/90 transition duration-300"
-                  >
-                    <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                      <Umbrella className="w-6 h-6" />
-                    </div>
-                    <h2 className="text-base font-bold text-white group-hover:text-amber-400 transition">
-                      Short Stays
-                    </h2>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Serviced homes & vacation retreats
-                    </p>
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-amber-400 mt-4">
-                      Browse {countByCategory('Short Stay')} listings{' '}
-                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition transform" />
-                    </span>
-                  </div>
-
-                  <div
-                    onClick={() => navigateToCategory('Plots')}
-                    className="group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-violet-500/50 hover:bg-slate-900/90 transition duration-300"
-                  >
-                    <div className="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                      <Grid3X3 className="w-6 h-6" />
-                    </div>
-                    <h2 className="text-base font-bold text-white group-hover:text-violet-400 transition">
-                      Land & Plots
-                    </h2>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Residential & commercial land
-                    </p>
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-violet-400 mt-4">
-                      Browse {countByCategory('Plots')} listings{' '}
-                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition transform" />
-                    </span>
-                  </div>
-                </div>
-              </section>
+              </div>
             </div>
-          )}
 
-          {currentTab === 'listings' && (
-            <section className="max-w-7xl mx-auto px-4 py-8">
-              <div className="bg-gradient-to-r from-slate-900 via-slate-900/90 to-indigo-950/30 p-6 sm:p-8 rounded-3xl border border-slate-800 mb-8">
-                <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
-                  <button
-                    onClick={() => navigateTo('explore')}
-                    className="hover:text-indigo-400 flex items-center gap-1 transition cursor-pointer"
-                  >
-                    <House className="w-3.5 h-3.5" /> Home
-                  </button>
-                  <span>/</span>
-                  <span className="text-indigo-400 font-bold uppercase tracking-wider">
-                    {activeFilterCategory === 'All' ? 'All Properties' : activeFilterCategory}
-                  </span>
-                </div>
-
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div>
-                    <h2 className="text-2xl sm:text-3xl font-black text-white">
-                      {activeFilterCategory === 'All'
-                        ? 'Browse All Real Estate'
-                        : activeFilterCategory === 'Buy'
-                        ? 'Homes for Sale'
-                        : activeFilterCategory === 'Rent'
-                        ? 'Rental Homes & PGs'
-                        : activeFilterCategory === 'Short Stay'
-                        ? 'Short Stay & Vacation Rentals'
-                        : 'Land & Residential Plots'}
-                    </h2>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Displaying {filteredProperties.length} verified listings matching your preferences
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() => navigateTo('explore')}
-                    className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2.5 rounded-xl border border-slate-700 transition flex items-center gap-2 self-start md:self-auto cursor-pointer"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-2 mt-6 overflow-x-auto no-scrollbar pt-4 border-t border-slate-800/80">
-                  {(
-                    ['All', 'Buy', 'Rent', 'Short Stay', 'Plots'] as CategoryType[]
-                  ).map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => {
-                        setActiveFilterCategory(cat);
-                        setSelectedRentType('All');
-                      }}
-                      className={`px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition cursor-pointer ${
-                        activeFilterCategory === cat
-                          ? 'bg-indigo-600 text-white shadow-lg'
-                          : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
-                      }`}
-                    >
-                      {cat === 'All' ? 'All Types' : cat}
-                    </button>
-                  ))}
-                </div>
-
-                {activeFilterCategory === 'Rent' && (
-                  <div className="flex items-center gap-2 my-3 overflow-x-auto pb-1">
-                    <button
-                      onClick={() => setSelectedRentType('All')}
-                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${
-                        selectedRentType === 'All'
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-slate-900 text-slate-400 border border-slate-800'
-                      }`}
-                    >
-                      All Rentals
-                    </button>
-                    <button
-                      onClick={() => setSelectedRentType('Monthly')}
-                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${
-                        selectedRentType === 'Monthly'
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-slate-900 text-slate-400 border border-slate-800'
-                      }`}
-                    >
-                      Monthly Rent
-                    </button>
-                    <button
-                      onClick={() => setSelectedRentType('Daily')}
-                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${
-                        selectedRentType === 'Daily'
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-slate-900 text-slate-400 border border-slate-800'
-                      }`}
-                    >
-                      Daily Rent
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 mb-8 grid grid-cols-1 sm:grid-cols-4 gap-3">
-                <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1 ml-1">
-                    City
-                  </label>
-                  <select
-                    value={filterCity}
-                    onChange={(e) => setFilterCity(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none font-semibold"
-                  >
-                    <option value="All">All Cities</option>
-                    <option value="Bengaluru">Bengaluru</option>
-                    <option value="Mumbai">Mumbai</option>
-                    <option value="Pune">Pune</option>
-                    <option value="Jaipur">Jaipur</option>
-                    <option value="Delhi NCR">Delhi NCR</option>
-                    <option value="Hyderabad">Hyderabad</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1 ml-1">
-                    BHK Config
-                  </label>
-                  <select
-                    value={filterBhk}
-                    onChange={(e) => setFilterBhk(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none font-semibold"
-                  >
-                    <option value="All">Any BHK</option>
-                    <option value="1 BHK">1 BHK</option>
-                    <option value="2 BHK">2 BHK</option>
-                    <option value="3 BHK">3 BHK</option>
-                    <option value="4+ BHK">4+ BHK / Villa</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1 ml-1">
-                    Search Keywords
-                  </label>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search locality..."
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1 ml-1">
-                    Sort Order
-                  </label>
-                  <select
-                    value={sortBy}
-                    onChange={(e: any) => setSortBy(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none font-semibold"
-                  >
-                    <option value="newest">Newest First</option>
-                    <option value="price_low">Price: Low to High</option>
-                    <option value="price_high">Price: High to Low</option>
-                  </select>
-                </div>
-              </div>
-
-              {filteredProperties.length === 0 ? (
-                <div className="text-center py-20 bg-slate-900/40 rounded-3xl border border-slate-800">
-                  <SearchX className="w-12 h-12 text-slate-700 mx-auto mb-4" />
-                  <h3 className="text-lg font-bold text-white mb-1">No properties found</h3>
-                  <p className="text-xs text-slate-500">
-                    Try adjusting your filters or resetting your search criteria
-                  </p>
-                  <button
-                    onClick={resetFilters}
-                    className="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-6 py-2.5 rounded-xl transition cursor-pointer"
-                  >
-                    Reset Filters
-                  </button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProperties.map((item) => (
-                    <PropertyCard
-                      key={(item as any).id || (item as any)._id}
-                      property={item}
-                      currentUser={currentUser}
-                      isSaved={isSaved(Number((item as any).id || (item as any)._id))}
-                      onToggleSave={(id) => toggleSave(Number(id))}
-                      onViewDetails={(prop) => setSelectedProperty(prop)}
-                      onToggleStatus={handleToggleStatus}
-                      onEdit={handleEditProperty}
-                      onDelete={handleDeleteProperty}
-                      formatCurrency={formatCurrency}
-                    />
-                  ))}
-                </div>
-              )}
-            </section>
-          )}
-
-          {currentTab === 'favorites' && (
-            <section className="max-w-7xl mx-auto px-4 py-10">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h2 className="text-2xl font-black text-white flex items-center gap-3">
-                    <Heart className="w-6 h-6 text-rose-500 fill-rose-500" /> Saved Properties
-                  </h2>
-                </div>
+            {/* లాంగ్వేజ్ సెలెక్షన్ */}
+            <div className="flex items-center justify-center lg:justify-start gap-2 bg-black/60 p-2.5 rounded-2xl border border-amber-500/30 w-fit mx-auto lg:mx-0">
+              <span className="text-xs text-amber-300 font-bold px-1">Language:</span>
+              {(['te', 'en', 'kn'] as const).map((lang) => (
                 <button
-                  onClick={() => navigateTo('explore')}
-                  className="text-xs bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl text-slate-300 hover:text-white cursor-pointer flex items-center gap-1.5"
+                  key={lang}
+                  onClick={(e) => handleLanguageChange(lang, e)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold uppercase transition-all cursor-pointer ${currentLanguage === lang ? 'bg-amber-500 text-slate-950 shadow-lg scale-105' : 'bg-slate-800 text-gray-300 hover:bg-slate-700'}`}
                 >
-                  <ArrowLeft className="w-3.5 h-3.5" /> Back
+                  {lang === 'te' ? 'తెలుగు' : lang === 'en' ? 'English' : 'ಕನ್ನಡ'}
                 </button>
+              ))}
+            </div>
+
+            <h1 className="text-lg sm:text-2xl font-black text-amber-300 leading-snug tracking-wide">
+              {introContent[currentLanguage].greeting}
+            </h1>
+
+            <p className="text-gray-300 text-xs sm:text-sm leading-relaxed max-w-xl">
+              {introContent[currentLanguage].desc}
+            </p>
+
+            {/* వెబ్‌సైట్‌లోకి ప్రవేశించే బటన్ */}
+            <div className="pt-2 flex justify-center lg:justify-start">
+              <button
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  handleFinalUnlock(); 
+                }}
+                className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold px-8 py-3.5 rounded-xl shadow-[0_0_25px_rgba(245,158,11,0.6)] transition-all hover:scale-105 active:scale-95 uppercase text-xs sm:text-sm tracking-wider cursor-pointer border border-amber-200"
+              >
+                {introContent[currentLanguage].btnText} →
+              </button>
+            </div>
+          </div>
+
+          {/* రైట్ సైడ్: ప్రొఫెషనల్ ఫోటో */}
+          <div className="flex-shrink-0 flex items-center justify-center relative font-sans">
+            <div className="relative w-52 h-68 sm:w-64 sm:h-84 rounded-2xl overflow-hidden border-2 border-amber-500/60 shadow-[0_0_40px_rgba(245,158,11,0.4)] bg-slate-900">
+              <img 
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80" 
+                alt="Madhu - BookMyHomez" 
+                className="w-full h-full object-cover object-top"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-4">
+                <span className="text-white font-black text-base sm:text-lg">Madhu</span>
+                <span className="text-amber-400 text-xs font-semibold tracking-wider">Founder, BookMyHomez</span>
               </div>
+            </div>
+          </div>
 
-              {savedListings.length === 0 ? (
-                <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-slate-800">
-                  <Heart className="w-12 h-12 text-slate-700 mx-auto mb-4" />
-                  <h3 className="text-lg font-bold text-white mb-1">No Saved Properties</h3>
-                  <p className="text-xs text-slate-500">
-                    Click the heart icon on any property to bookmark it here
-                  </p>
-                  <button
-                    onClick={() => navigateTo('explore')}
-                    className="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-6 py-3 rounded-xl cursor-pointer transition"
-                  >
-                    Explore Homes
-                  </button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {savedListings.map((item) => (
-                    <PropertyCard
-                      key={(item as any).id || (item as any)._id}
-                      property={item}
-                      currentUser={currentUser}
-                      isSaved={true}
-                      onToggleSave={(id) => toggleSave(Number(id))}
-                      onViewDetails={(prop) => setSelectedProperty(prop)}
-                      onToggleStatus={handleToggleStatus}
-                      onEdit={handleEditProperty}
-                      onDelete={handleDeleteProperty}
-                      formatCurrency={formatCurrency}
-                    />
-                  ))}
-                </div>
-              )}
-            </section>
-          )}
+        </div>
 
-          {currentTab === 'my_properties' && (
-            <section className="max-w-7xl mx-auto px-4 py-10">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h2 className="text-2xl font-black text-white">
-                    My Listed Properties ({currentUser ? currentUser.name : ''})
-                  </h2>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Manage and update properties you have published
-                  </p>
-                </div>
-                <button
-                  onClick={openWizard}
-                  className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs cursor-pointer shadow-lg shadow-blue-600/30 flex items-center gap-2 transition"
-                >
-                  <PlusCircle className="w-4 h-4" /> Post Property
-                </button>
-              </div>
-
-              {userProperties.length === 0 ? (
-                <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-slate-800">
-                  <h3 className="text-lg font-bold text-white mb-1">
-                    No Properties Posted by You
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    You haven't published any property listings yet
-                  </p>
-                  <button
-                    onClick={openWizard}
-                    className="mt-4 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-6 py-3 rounded-xl cursor-pointer shadow-lg shadow-blue-600/30 transition"
-                  >
-                    Post Property Now
-                  </button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {userProperties.map((item) => (
-                    <PropertyCard
-                      key={(item as any).id || (item as any)._id}
-                      property={item}
-                      currentUser={currentUser}
-                      isSaved={isSaved(Number((item as any).id || (item as any)._id))}
-                      onToggleSave={(id) => toggleSave(Number(id))}
-                      onViewDetails={(prop) => setSelectedProperty(prop)}
-                      onToggleStatus={handleToggleStatus}
-                      onEdit={handleEditProperty}
-                      onDelete={handleDeleteProperty}
-                      formatCurrency={formatCurrency}
-                    />
-                  ))}
-                </div>
-              )}
-            </section>
-          )}
-        </main>
-
-        <PropertyDetailsModal
-          property={selectedProperty}
-          currentUser={currentUser}
-          onClose={() => {
-            setSelectedProperty(null);
-            const url = new URL(window.location.href);
-            url.searchParams.delete('propertyId');
-            window.history.pushState({}, '', url);
-          }}
-          onToggleStatus={handleToggleStatus}
-          formatCurrency={formatCurrency}
-        />
-
-        <WizardModal
-          isOpen={showWizardModal}
-          isEditing={isEditing}
-          editingId={editingId}
-          currentUser={currentUser}
-          onClose={() => setShowWizardModal(false)}
-          onPublish={handlePublishListing}
-          formatCurrency={formatCurrency}
-        />
-
-        <AuthModal
-          isOpen={showAuthModal}
-          googleAccounts={GOOGLE_ACCOUNTS}
-          registeredUsers={registeredUsers}
-          onClose={() => setShowAuthModal(false)}
-          onRegisterUser={handleRegisterUser}
-          onSelectGoogleAccount={(acc) => {
-            const userObj: User = {
-              name: acc.name,
-              email: acc.email,
-              role: 'Verified Owner',
-              avatar: acc.avatar,
-              id: 'usr_' + acc.email.replace(/[^a-zA-Z0-9]/g, '_'),
-            };
-            setCurrentUser(userObj);
-            setShowAuthModal(false);
-            openWizard();
-          }}
-          onLoginSuccess={(user) => {
-            setCurrentUser(user);
-            setShowAuthModal(false);
-          }}
-        />
-
-        <Footer
-          navigateToCategory={navigateToCategory}
-          filterByLocation={filterByLocation}
-        />
       </div>
+
+      {/* 3D Left House Door */}
+      <div
+        onClick={handleDoorClick}
+        className={`absolute top-0 left-0 w-1/2 h-full cursor-pointer transition-transform duration-1000 ease-in-out origin-left z-10 ${
+          isOpen ? '-rotate-y-90 opacity-70 pointer-events-none' : ''
+        }`}
+        style={{
+          transformStyle: 'preserve-3d',
+          backgroundColor: '#382211',
+          backgroundImage: `
+            linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.4) 100%),
+            radial-gradient(ellipse at center, rgba(139,94,60,0.4) 0%, rgba(30,18,10,0.9) 100%)
+          `,
+          boxShadow: 'inset -30px 0 60px rgba(0,0,0,0.8)',
+          borderRight: '5px solid #1a1008'
+        }}
+      >
+        {/* మోడరన్ హౌస్ డోర్ ప్యానెల్స్ */}
+        <div className="absolute inset-10 border-4 border-[#22140a] bg-[#2a1a0e] flex flex-col justify-around p-6 shadow-inner">
+          <div className="h-[42%] border-2 border-[#160d06] bg-[#1f1208] shadow-[inset_0_2px_8px_rgba(0,0,0,0.9)] rounded"></div>
+          <div className="h-[42%] border-2 border-[#160d06] bg-[#1f1208] shadow-[inset_0_2px_8px_rgba(0,0,0,0.9)] rounded"></div>
+        </div>
+      </div>
+
+      {/* 3D Right House Door */}
+      <div
+        onClick={handleDoorClick}
+        className={`absolute top-0 right-0 w-1/2 h-full cursor-pointer transition-transform duration-1000 ease-in-out origin-right z-10 ${
+          isOpen ? 'rotate-y-90 opacity-70 pointer-events-none' : ''
+        }`}
+        style={{
+          transformStyle: 'preserve-3d',
+          backgroundColor: '#382211',
+          backgroundImage: `
+            linear-gradient(-90deg, rgba(0,0,0,0.6) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.4) 100%),
+            radial-gradient(ellipse at center, rgba(139,94,60,0.4) 0%, rgba(30,18,10,0.9) 100%)
+          `,
+          boxShadow: 'inset 30px 0 60px rgba(0,0,0,0.8)',
+          borderLeft: '5px solid #1a1008'
+        }}
+      >
+        {/* మోడరన్ హౌస్ డోర్ ప్యానెల్స్ */}
+        <div className="absolute inset-10 border-4 border-[#22140a] bg-[#2a1a0e] flex flex-col justify-around p-6 shadow-inner">
+          <div className="h-[42%] border-2 border-[#160d06] bg-[#1f1208] shadow-[inset_0_2px_8px_rgba(0,0,0,0.9)] rounded"></div>
+          <div className="h-[42%] border-2 border-[#160d06] bg-[#1f1208] shadow-[inset_0_2px_8px_rgba(0,0,0,0.9)] rounded"></div>
+        </div>
+      </div>
+
+      {/* Center Golden Key & TAP ON DOOR Button */}
+      <div
+        onClick={handleDoorClick}
+        className={`absolute z-20 cursor-pointer transition-all duration-500 transform hover:scale-105 active:scale-95 flex items-center justify-center ${
+          isOpen ? 'scale-75 opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+      >
+        <div className="relative flex items-center bg-gradient-to-r from-[#b8860b] via-[#ffd700] to-[#b8860b] px-8 py-4 rounded-full shadow-[0_0_50px_rgba(255,215,0,0.7)] border-2 border-amber-200">
+          
+          {/* కీ హెడ్ సర్కిల్ */}
+          <div className="w-14 h-14 rounded-full border-4 border-[#4a2e05] bg-gradient-to-br from-[#ffe259] via-[#d4af37] to-[#704214] flex items-center justify-center shadow-inner mr-4">
+            <div className="w-5 h-5 rounded-full bg-[#1a0c04] border-2 border-amber-300"></div>
+          </div>
+
+          {/* టెక్స్ట్ */}
+          <span className="font-sans text-[#1a0c04] font-black tracking-[0.2em] text-sm sm:text-xl uppercase drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
+            TAP ON DOOR
+          </span>
+
+          {/* కీ టీత్ */}
+          <div className="ml-4 flex flex-col justify-between w-5 h-8 bg-gradient-to-b from-[#d4af37] to-[#704214] border-2 border-[#4a2e05] rounded-r p-0.5">
+            <div className="w-full h-1.5 bg-[#1a0c04]"></div>
+            <div className="w-1/2 h-1.5 bg-[#1a0c04] self-end"></div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   );
-}
+};
+
+export default DoorIntro;
