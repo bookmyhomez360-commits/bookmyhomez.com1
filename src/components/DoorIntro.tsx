@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-// శ్రద్ధ వహించండి: ఇక్కడ ఎలాంటి import doorImg / import introVid ఉండకూడదు!
-
 interface DoorIntroProps {
   onComplete: () => void;
 }
@@ -11,13 +9,10 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
   const [isPlayingVideo, setIsPlayingVideo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // public/ ఫోల్డర్ లో ఉన్న ఫైల్ పాత్‌లు
-  const doorImgPath = '/door-cartoon.jpg';
-  const introVidPath = '/intro-video.mp4';
-
   const handleDoorClick = () => {
     setIsOpen(true);
     
+    // డోర్ క్లిక్ చేయగానే 0.8 సెకన్లలో వీడియోకి మారుతుంది
     setTimeout(() => {
       setIsPlayingVideo(true);
     }, 800);
@@ -25,37 +20,26 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
 
   useEffect(() => {
     if (isPlayingVideo && videoRef.current) {
-      const video = videoRef.current;
-      
-      const handleLoadedMetadata = () => {
-        const videoDuration = video.duration * 1000;
-        setTimeout(() => {
-          onComplete();
-        }, videoDuration + 300);
-      };
-
-      video.addEventListener('loadedmetadata', handleLoadedMetadata);
-      video.play().catch((err) => console.log("Autoplay error:", err));
-
-      return () => {
-        video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      };
+      videoRef.current.play().catch((err) => {
+        console.log("Autoplay handled:", err);
+      });
     }
-  }, [isPlayingVideo, onComplete]);
+  }, [isPlayingVideo]);
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center overflow-hidden w-screen h-screen">
       {!isPlayingVideo ? (
-        /* --- Door Intro Screen --- */
+        /* --- 1. Door Intro Screen --- */
         <div 
           onClick={handleDoorClick} 
-          className={`relative w-full h-full cursor-pointer flex items-center justify-center bg-black transition-all duration-1000 ease-in-out ${
-            isOpen ? 'scale-105 opacity-0' : 'scale-100 opacity-100'
-          }`}
+          className="relative w-full h-full cursor-pointer flex items-center justify-center bg-black overflow-hidden select-none"
         >
-          <div 
-            className="w-full h-full bg-center bg-no-repeat bg-contain"
-            style={{ backgroundImage: `url(${doorImgPath})` }}
+          <img 
+            src="/door-cartoon.jpg" 
+            alt="Door Intro" 
+            className={`w-full h-full object-contain transition-all duration-1000 ease-in-out ${
+              isOpen ? 'scale-110 opacity-0' : 'scale-100 opacity-100'
+            }`}
           />
 
           {!isOpen && (
@@ -67,19 +51,21 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
           )}
         </div>
       ) : (
-        /* --- Intro Video Screen --- */
+        /* --- 2. Intro Video Screen --- */
         <div className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
           <video
             ref={videoRef}
-            src={introVidPath}
+            src="/intro-video.mp4"
             autoPlay
             playsInline
-            onEnded={onComplete}
+            controls={false}
+            onEnded={onComplete} /* <-- వీడియో పూర్తయిన వెంటనే మెయిన్ వెబ్‌సైట్ ఓపెన్ అవుతుంది */
             className="w-full h-full object-contain max-w-full max-h-full"
           />
           
+          {/* Skip Button */}
           <button
-            onClick={onComplete}
+            onClick={onComplete} /* <-- బటన్ క్లిక్ చేసినా వెంటనే మెయిన్ వెబ్‌సైట్‌కి వెళ్తుంది */
             className="absolute top-5 right-5 bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-xs sm:text-sm px-4 py-2 rounded-full z-20 shadow-lg transition active:scale-95"
           >
             Skip Intro ➔
