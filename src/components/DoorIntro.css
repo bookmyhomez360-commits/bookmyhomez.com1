@@ -8,32 +8,43 @@
     z-index: 9999;
     cursor: pointer;
     overflow: hidden;
-    background: #0b0603;
+    background: #000;
 }
 
+/* Modern Door Styling using CSS Gradients & Panels */
 .door {
     position: relative;
     width: 50%;
     height: 100%;
-    /* Pure wooden door texture (Repeated cleanly) */
-    background: url('https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=800&auto=format&fit=crop') repeat;
-    background-size: 500px 100%;
-    border: 10px solid #140a05;
-    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(135deg, #1e2530 0%, #0d1117 100%);
+    border: 6px solid #2d3748;
+    box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.9);
     transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
+/* Door panels design */
+.door::before {
+    content: '';
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    right: 30px;
+    bottom: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
 .left-door {
-    border-right: 5px solid #050201;
+    border-right: 3px solid #000;
     transform-origin: left;
 }
 
 .right-door {
-    border-left: 5px solid #050201;
+    border-left: 3px solid #000;
     transform-origin: right;
 }
 
-/* Center Button */
+/* Center Button & Handle */
 .door-content {
     position: absolute;
     right: -130px;
@@ -50,27 +61,28 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(20, 10, 5, 0.95);
-    padding: 12px 24px;
+    background: rgba(15, 23, 42, 0.95);
+    padding: 14px 28px;
     border-radius: 50px;
-    border: 2px solid #d4af37;
-    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.9);
+    border: 2px solid #38bdf8; /* Modern blue glowing border */
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.8);
     animation: pulse 2s infinite;
 }
 
 .tap-text {
-    color: #ffd700;
+    color: #38bdf8;
     font-weight: bold;
     font-size: 16px;
     letter-spacing: 2px;
     margin-left: 10px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
 }
 
 .golden-key {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     background: url('https://cdn-icons-png.flaticon.com/512/934/934298.png') no-repeat center/contain;
+    filter: drop-shadow(0 0 5px #38bdf8);
 }
 
 /* Open Animation */
@@ -89,7 +101,7 @@
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+    0% { transform: scale(1); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(56, 189, 248, 0.6); }
+    100% { transform: scale(1); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
 }
