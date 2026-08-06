@@ -8,33 +8,32 @@
     z-index: 9999;
     cursor: pointer;
     overflow: hidden;
-    background: #000;
+    background: #0b0603;
 }
 
 .door {
     position: relative;
     width: 50%;
     height: 100%;
-    /* Rich wooden texture door image */
-    background: linear-gradient(to right, rgba(0,0,0,0.3), rgba(0,0,0,0.1)), 
-                url('https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=1200&auto=format&fit=crop') repeat;
-    background-size: cover;
-    border: 8px solid #1a0f07; /* Door frame border */
-    box-shadow: inset 0 0 40px rgba(0,0,0,0.7);
+    /* Pure wooden door texture (Repeated cleanly) */
+    background: url('https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=800&auto=format&fit=crop') repeat;
+    background-size: 500px 100%;
+    border: 10px solid #140a05;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8);
     transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .left-door {
-    border-right: 4px solid #0b0603;
+    border-right: 5px solid #050201;
     transform-origin: left;
 }
 
 .right-door {
-    border-left: 4px solid #0b0603;
+    border-left: 5px solid #050201;
     transform-origin: right;
 }
 
-/* Center "TAP ON DOOR" Button with Key */
+/* Center Button */
 .door-content {
     position: absolute;
     right: -130px;
@@ -51,11 +50,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(30, 15, 5, 0.9);
+    background: rgba(20, 10, 5, 0.95);
     padding: 12px 24px;
     border-radius: 50px;
-    border: 2px solid #d4af37; /* Golden border */
-    box-shadow: 0px 8px 25px rgba(0,0,0,0.8);
+    border: 2px solid #d4af37;
+    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.9);
     animation: pulse 2s infinite;
 }
 
@@ -65,7 +64,7 @@
     font-size: 16px;
     letter-spacing: 2px;
     margin-left: 10px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
 }
 
 .golden-key {
@@ -74,7 +73,7 @@
     background: url('https://cdn-icons-png.flaticon.com/512/934/934298.png') no-repeat center/contain;
 }
 
-/* Door Opening Animation */
+/* Open Animation */
 .door-container.open .left-door {
     transform: perspective(1500px) rotateY(-90deg);
 }
