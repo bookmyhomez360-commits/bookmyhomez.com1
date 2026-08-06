@@ -8,7 +8,7 @@ import WizardModal from './components/WizardModal';
 import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
 import Blog from './components/Blog';
-import { DoorIntro } from './components/DoorIntro';
+import DoorIntro from './components/DoorIntro'; // Kotha Door component import
 import {
   Property,
   User,
@@ -380,8 +380,8 @@ export default function App() {
   return (
     <div className="flex flex-col min-h-screen bg-[#090D16] text-slate-100 font-sans selection:bg-indigo-600 selection:text-white relative">
       
-      {/* డోర్ ఇంట్రో అండ్ వీడియో యానిమేషన్ స్క్రీన్ */}
-      {isLocked && <DoorIntro onComplete={() => setIsLocked(false)} />}
+      {/* Kotha Wooden Door Intro Component - User click cheyagane open avtundi */}
+      {isLocked && <DoorIntro onEnter={() => setIsLocked(false)} />}
 
       <ThreeBackground
         activeVillaIndex={activeVillaIndex}
