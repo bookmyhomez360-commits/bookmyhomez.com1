@@ -136,12 +136,11 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-3">
           
           {/* న్యూ: Fill Details Button */}
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-1.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow-[0_0_12px_rgba(34,197,94,0.4)] transition-all duration-300 border border-green-400 cursor-pointer"
-          >
-            <span className="text-sm">🤖</span>
-            <span className="whitespace-nowrap hidden sm:inline">Fill Details</span>
+         <button
+           onClick={() => setIsModalOpen(true)}
+           className="flex items-center gap-1.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-xl transition-all shadow-lg shadow-green-500/30 hover:scale-[1.02] active:scale-95"
+>
+           <span className="whitespace-nowrap hidden sm:inline">Fill Details</span>
           </button>
 
           {/* అప్‌డేటెడ్: List Property + Sign In కంబైన్డ్ బటన్ */}
