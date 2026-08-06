@@ -10,125 +10,171 @@
     z-index: 9999;
     cursor: pointer;
     overflow: hidden;
-    background: #050201;
+    background: #020100;
 }
 
-/* Rich Solid Brown Wooden Double Doors (No background images) */
+/* Grand Wooden Double Doors */
 .door {
     position: relative;
     width: 50%;
     height: 100%;
-    background: linear-gradient(135deg, #3d2010 0%, #221006 50%, #150903 100%);
-    border: 8px solid #0d0502;
-    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.9);
+    background: linear-gradient(135deg, #2c1407 0%, #150803 50%, #0a0401 100%);
+    border: 10px solid #080301;
+    box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.95);
     transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .left-door {
-    border-right: 4px solid #080301;
+    border-right: 5px solid #030100;
     transform-origin: left;
 }
 
 .right-door {
-    border-left: 4px solid #080301;
+    border-left: 5px solid #030100;
     transform-origin: right;
 }
 
-/* Brown Carved Panels / Frames on Doors */
-.door-carving {
+/* Gruhapravesam Traditional Toranam */
+.toranam-container {
     position: absolute;
-    left: 35px;
-    right: 35px;
-    height: 38%;
-    border: 3px solid #2a1409;
-    border-radius: 6px;
-    background: linear-gradient(135deg, #2d170b 0%, #1c0d05 100%);
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 2px 5px rgba(255,255,255,0.03);
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding: 0 15px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.mango-leaf {
+    width: 24px;
+    height: 45px;
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+    border-radius: 0 50% 50% 50%;
+    transform: rotate(25deg);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+    border: 1px solid #104013;
+}
+
+.marigold-bunch {
+    width: 32px;
+    height: 32px;
+    background: radial-gradient(circle, #ff9800 30%, #e65100 80%);
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.7), inset 0 0 6px #ffe082;
+    position: relative;
+    top: 10px;
+}
+
+/* Rich Carved Wooden Panels with Full Designs */
+.door-panel {
+    position: absolute;
+    left: 40px;
+    right: 40px;
+    height: 38%;
+    border: 5px solid #1a0b03;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #3d1c0a 0%, #1c0b04 100%);
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.9), 0 5px 15px rgba(0,0,0,0.7);
+    display: flex;
     justify-content: center;
+    align-items: center;
 }
 
-.top-carving {
-    top: 40px;
+.p-top {
+    top: 75px;
 }
 
-.bottom-carving {
+.p-bottom {
     bottom: 40px;
 }
 
-/* House & Flower carvings inside door in darker/rich brown shades */
-.carving-house {
-    width: 45px;
-    height: 45px;
-    background: url('https://cdn-icons-png.flaticon.com/512/619/619153.png') no-repeat center/contain;
-    opacity: 0.6;
-    filter: sepia(100%) hue-rotate(300deg) saturate(300%) brightness(50%);
-    margin-bottom: 10px;
+/* Intricate Internal Panel Carving/Geometric Design */
+.carving-pattern {
+    width: 85%;
+    height: 85%;
+    border: 2px dashed rgba(212, 175, 55, 0.25);
+    border-radius: 8px;
+    background: radial-gradient(circle, rgba(61, 28, 10, 0.4) 0%, rgba(10, 4, 1, 0.8) 100%);
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+    position: relative;
 }
 
-.carving-flower {
-    width: 35px;
-    height: 35px;
-    background: url('https://cdn-icons-png.flaticon.com/512/2917/2917995.png') no-repeat center/contain;
-    opacity: 0.5;
-    filter: sepia(100%) hue-rotate(300deg) saturate(300%) brightness(50%);
+.carving-pattern::before {
+    content: '';
+    position: absolute;
+    top: 10px; left: 10px; right: 10px; bottom: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 6px;
 }
 
-/* Door Handles (Golden/Brass style) */
+/* Grand Golden Door Handles */
 .door-handle {
     position: absolute;
     top: 50%;
-    width: 12px;
-    height: 80px;
-    background: linear-gradient(to right, #d4af37, #8b6508, #d4af37);
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+    width: 14px;
+    height: 100px;
+    background: linear-gradient(to right, #ffe566, #b8860b, #ffe566);
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.9);
     transform: translateY(-50%);
+    z-index: 5;
 }
 
 .left-door .door-handle {
-    right: 20px;
+    right: 25px;
 }
 
 .right-door .door-handle {
-    left: 20px;
+    left: 25px;
 }
 
-/* Center Logo Badge */
+/* Center 3D House Logo Badge */
 .door-center-badge {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: 20;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    z-index: 25;
+    perspective: 1000px;
 }
 
-.logo-circle {
-    width: 105px;
-    height: 105px;
-    background: linear-gradient(135deg, #2b1509 0%, #120602 100%);
+.badge-3d-wrapper {
+    width: 130px;
+    height: 130px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: pulseScale 2s infinite ease-in-out;
+}
+
+.badge-3d-front {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ffe566 0%, #d4af37 50%, #8b6508 100%);
     border-radius: 50%;
-    border: 4px solid #ffd700;
+    border: 5px solid #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.9), 0 0 25px rgba(212, 175, 55, 0.6);
-    animation: pulse 2s infinite;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,255,255,0.6);
 }
 
-.center-logo-icon {
-    width: 55px;
-    height: 55px;
-    background: url('https://cdn-icons-png.flaticon.com/512/3014/3014120.png') no-repeat center/contain;
-    filter: drop-shadow(0 0 5px #ffd700);
+.badge-house-icon {
+    width: 65px;
+    height: 65px;
+    background: url('https://cdn-icons-png.flaticon.com/512/619/619153.png') no-repeat center/contain;
+    filter: drop-shadow(0 3px 5px rgba(0,0,0,0.6)) brightness(0.2);
 }
 
-/* Open Animation */
+@keyframes pulseScale {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.6)); }
+    50% { transform: scale(1.06); filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.9)); }
+}
+
 .door-container.open .left-door {
     transform: perspective(1500px) rotateY(-90deg);
 }
@@ -141,10 +187,4 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s ease 1s;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
-    50% { transform: scale(1.08); box-shadow: 0 0 30px rgba(212, 175, 55, 0.9); }
-    100% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
 }
