@@ -2,89 +2,16 @@
 <html lang="en">
   <head>
     <!-- BookMyHomez — Complete On-Page SEO Code -->
-
-    <!-- 1. Primary Page Title (50-60 characters) -->
     <title>BookMyHomez — Vacation Home Rentals, Luxury Villas & Holiday Homes</title>
-
-    <!-- 2. Primary Meta Tags & Search Indexing -->
     <meta name="description" content="Find and book verified holiday homes, luxury beach villas, heritage havelis, and cozy apartments across India. Enjoy 100% verified hosts, best rate guarantee, and 24/7 guest support at BookMyHomez." />
-    <meta name="keywords" content="BookMyHomez, vacation home rentals, luxury villas in Goa, holiday homes India, rent villas with pool, book homestays online, heritage haveli Jaipur, Manali mountain chalets, verified home rentals" />
-    <meta name="author" content="BookMyHomez" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- 3. Canonical Link Tag (Prevents duplicate content penalties) -->
     <link rel="canonical" href="https://bookmyhomez.com/" />
-
-    <!-- 4. Open Graph (OG) Tags for WhatsApp & Facebook Social Sharing -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="BookMyHomez" />
-    <meta property="og:url" content="https://bookmyhomez.com/" />
-    <meta property="og:title" content="BookMyHomez — Your Happy Home Partner for Vacation Rentals" />
-    <meta property="og:description" content="Discover luxury villas, cozy mountain cabins, and beach houses across top travel destinations. Verified hosts, zero hidden fees, and instant online booking." />
-    <meta property="og:image" content="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&h=630&q=80" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-
-    <!-- 5. Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="BookMyHomez — Book Unique Holiday Homes & Luxury Villas" />
-    <meta name="twitter:description" content="Explore handpicked vacation home rentals with private pools, sea views, and superhosts across India. Book your dream stay today!" />
-    <meta name="twitter:image" content="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&h=630&q=80" />
-
-    <!-- 6. JSON-LD Schema Markup (VacationRental & LodgingBusiness for Google Rich Snippets) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "LodgingBusiness",
-          "@id": "https://bookmyhomez.com/#organization",
-          "name": "BookMyHomez",
-          "url": "https://bookmyhomez.com/",
-          "logo": "https://bookmyhomez.com/logo.png",
-          "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&h=630&q=80",
-          "description": "BookMyHomez is India's leading vacation home rental platform for luxury villas, holiday havelis, and beachfront apartments.",
-          "telephone": "+91-1800-BOOKHOMEZ",
-          "priceRange": "₹5,000 - ₹50,000 per night",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "BookMyHomez Tower, DLF Cyber City",
-            "addressLocality": "Gurugram",
-            "addressRegion": "Haryana",
-            "postalCode": "122002",
-            "addressCountry": "IN"
-          },
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.92",
-            "reviewCount": "1450"
-          }
-        },
-        {
-          "@type": "WebSite",
-          "@id": "https://bookmyhomez.com/#website",
-          "url": "https://bookmyhomez.com/",
-          "name": "BookMyHomez — Your Happy Home Partner",
-          "description": "Book luxury villas, holiday home rentals, and beach stay apartments across top travel destinations.",
-          "publisher": {
-            "@id": "https://bookmyhomez.com/#organization"
-          },
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://bookmyhomez.com/search?destination={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        }
-      ]
-    }
-    </script>
-
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Yatra+One&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Complete Original Door Design & Animation Styles -->
+    <!-- Complete Door Animation & Serial Lights Styles -->
     <style>
       :root{
         --wood-dark:#4A2C1A;
@@ -106,8 +33,9 @@
         width: 100vw;
         height: 100vh;
         overflow: hidden;
+        transition: opacity 0.6s ease-in-out 1.2s;
       }
-      #door-stage.done{display:none;}
+      #door-stage.done{opacity:0; pointer-events:none; display:none;}
 
       .door-frame{
         position:absolute; inset:0;
@@ -133,164 +61,123 @@
       .door-left{ left:0; transform-origin:left center; border-right:2px solid var(--wood-grain); }
       .door-right{ right:0; transform-origin:right center; border-left:2px solid var(--wood-grain); }
 
+      /* Side Door Vertical Serial Lights */
+      .side-serial-light {
+        position: absolute; top: 20px; bottom: 20px; width: 8px; z-index: 12;
+        pointer-events: none; display: flex; flex-direction: column; justify-content: space-around; align-items: center;
+      }
+      .door-left .side-serial-light { left: 12px; }
+      .door-right .side-serial-light { right: 12px; }
+
+      .side-bulb {
+        width: 8px; height: 8px; border-radius: 50%;
+        box-shadow: 0 0 6px currentColor; animation: bulbGlow 1.2s ease-in-out infinite alternate;
+      }
+      .side-bulb:nth-child(4n+1) { background: #ff3333; color: #ff3333; }
+      .side-bulb:nth-child(4n+2) { background: #33ff33; color: #33ff33; animation-delay: 0.3s; }
+      .side-bulb:nth-child(4n+3) { background: #33ccff; color: #33ccff; animation-delay: 0.6s; }
+      .side-bulb:nth-child(4n+4) { background: #ff33cc; color: #ff33cc; animation-delay: 0.9s; }
+
       .door-panel{
         position:absolute; left:10%; right:10%;
         border-radius:4px;
         background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(0,0,0,0.12) 55%), var(--wood-mid);
         border: 5px solid var(--wood-grain);
         box-shadow: inset 0 3px 6px rgba(255,255,255,0.10), inset 0 -6px 14px rgba(0,0,0,0.65);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: flex; align-items: center; justify-content: center;
       }
       .panel-top{ top:6%; height:38%; }
       .panel-bottom{ bottom:6%; height:46%; }
 
+      /* 4 Boxes Panel Border Serial Lights */
+      .panel-bulb {
+        position: absolute; width: 6px; height: 6px; border-radius: 50%;
+        box-shadow: 0 0 5px currentColor; z-index: 5;
+        animation: bulbGlow 1s ease-in-out infinite alternate;
+      }
+      .panel-bulb:nth-child(3n+1) { background: #ffeb3b; color: #ffeb3b; }
+      .panel-bulb:nth-child(3n+2) { background: #00e5ff; color: #00e5ff; animation-delay: 0.4s; }
+      .panel-bulb:nth-child(3n+3) { background: #ff4081; color: #ff4081; animation-delay: 0.8s; }
+
       .brass-corner{
         position:absolute; width:26px; height:26px;
         background:radial-gradient(circle at 32% 30%, #fbe9ab, var(--brass) 50%, var(--brass-dark) 100%);
-        box-shadow:0 2px 4px rgba(0,0,0,0.55);
+        box-shadow:0 2px 4px rgba(0,0,0,0.55); z-index: 6;
       }
       .brass-corner.tl{ top:-5px; left:-5px; border-radius:0 0 100% 0; }
       .brass-corner.tr{ top:-5px; right:-5px; border-radius:0 0 0 100%; }
       .brass-corner.bl{ bottom:-5px; left:-5px; border-radius:0 100% 0 0; }
       .brass-corner.br{ bottom:-5px; right:-5px; border-radius:100% 0 0 0; }
 
-      /* Animated Center Rosette Design */
       .panel-rosette {
-        width: 75px;
-        height: 75px;
-        border-radius: 50%;
+        width: 75px; height: 75px; border-radius: 50%;
         background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(59,34,19,0.8) 70%);
         border: 2px dashed rgba(212, 175, 55, 0.3);
-        box-shadow: inset 0 3px 6px rgba(0,0,0,0.8), 0 2px 4px rgba(255,255,255,0.05);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        box-shadow: inset 0 3px 6px rgba(0,0,0,0.8);
+        display: flex; align-items: center; justify-content: center;
         animation: rosetteSpin 20s linear infinite;
       }
       .panel-rosette::before {
-        content: "";
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
+        content: ""; width: 45px; height: 45px; border-radius: 50%;
         background: repeating-radial-gradient(circle, var(--wood-grain), var(--wood-dark) 4px, transparent 4px, transparent 8px);
         border: 1px solid rgba(212, 175, 55, 0.4);
       }
-      @keyframes rosetteSpin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
+      @keyframes rosetteSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
       .door-handle{
         position:absolute; top:44%; width:14px; height:110px; border-radius:7px;
         background:linear-gradient(90deg, var(--brass-dark), var(--brass) 35%, #f6e2a0 50%, var(--brass) 65%, var(--brass-dark));
-        box-shadow:0 3px 8px rgba(0,0,0,0.6);
-        z-index: 10;
+        box-shadow:0 3px 8px rgba(0,0,0,0.6); z-index: 10;
       }
       .door-left .door-handle{ right:5%; }
       .door-right .door-handle{ left:5%; }
 
       #door-stage.opened .door-left{ transform:rotateY(-112deg); }
       #door-stage.opened .door-right{ transform:rotateY(112deg); }
-      #door-stage.opened{ opacity:0; pointer-events:none; transition:opacity 0.6s 1.2s; }
+      #door-stage.opened .knock-wrap { display: none; }
 
       .toran{
         position:absolute; top:0; left:0; width:100%; height:140px;
         z-index:5; pointer-events:none;
-        animation: toranSway 4.5s ease-in-out infinite;
-        transform-origin: 50% 0%;
+        animation: toranSway 4.5s ease-in-out infinite; transform-origin: 50% 0%;
       }
-      @keyframes toranSway{
-        0%,100%{ transform:rotate(-0.8deg); }
-        50%{ transform:rotate(0.8deg); }
-      }
-      .garland-line{
-        stroke-dasharray: 3 9;
-        animation: garlandFlow 2.6s linear infinite;
-      }
-      @keyframes garlandFlow{
-        to{ stroke-dashoffset:-24; }
-      }
+      @keyframes toranSway{ 0%,100%{ transform:rotate(-0.8deg); } 50%{ transform:rotate(0.8deg); } }
+      .garland-line{ stroke-dasharray: 3 9; animation: garlandFlow 2.6s linear infinite; }
+      @keyframes garlandFlow{ to{ stroke-dashoffset:-24; } }
 
+      /* Centered Serial Ring & Button */
       .knock-wrap{
         position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-        z-index:20; display:flex; flex-direction:column; align-items:center;
+        z-index:20; display:flex; align-items:center; justify-content:center;
+        width: 140px; height: 140px;
       }
-
-      /* Center Serial Lights Ring around the button */
       .serial-ring {
-        position: absolute;
-        width: 126px;
-        height: 126px;
-        border-radius: 50%;
-        animation: ringSpin 10s linear infinite;
-        pointer-events: none;
+        position: absolute; inset: 0; border-radius: 50%;
+        animation: ringSpin 10s linear infinite; pointer-events: none;
       }
-      @keyframes ringSpin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
+      @keyframes ringSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       .serial-bulb {
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        box-shadow: 0 0 8px currentColor;
-        animation: bulbGlow 1.2s ease-in-out infinite alternate;
+        position: absolute; width: 10px; height: 10px; border-radius: 50%;
+        box-shadow: 0 0 8px currentColor; animation: bulbGlow 1.2s ease-in-out infinite alternate;
       }
-      .serial-bulb:nth-child(4n+1) { background: #ff3333; color: #ff3333; animation-delay: 0s; }
+      .serial-bulb:nth-child(4n+1) { background: #ff3333; color: #ff3333; }
       .serial-bulb:nth-child(4n+2) { background: #33ff33; color: #33ff33; animation-delay: 0.3s; }
       .serial-bulb:nth-child(4n+3) { background: #33ccff; color: #33ccff; animation-delay: 0.6s; }
       .serial-bulb:nth-child(4n+4) { background: #ff33cc; color: #ff33cc; animation-delay: 0.9s; }
-
-      @keyframes bulbGlow {
-        0% { opacity: 0.3; transform: scale(0.8); }
-        100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 14px currentColor, 0 0 22px currentColor; }
-      }
+      @keyframes bulbGlow { 0% { opacity: 0.3; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
 
       .knock-btn{
-        width:90px; height:90px; border-radius:50%;
-        border:3px solid var(--brass-dark);
+        width:90px; height:90px; border-radius:50%; border:3px solid var(--brass-dark);
         background:radial-gradient(circle at 35% 30%, #f6e2a0, var(--brass) 55%, var(--brass-dark) 100%);
-        box-shadow:0 6px 18px rgba(0,0,0,0.55);
-        display:flex; align-items:center; justify-content:center;
-        cursor:pointer;
-        z-index: 2;
+        box-shadow:0 6px 18px rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center;
+        cursor:pointer; z-index: 5; position: relative;
       }
       .knock-btn svg{ animation: iconWiggle 2.6s ease-in-out infinite; transform-origin:50% 78%; }
-      @keyframes iconWiggle{
-        0%,100%{ transform:rotate(0deg); }
-        25%{ transform:rotate(-9deg); }
-        75%{ transform:rotate(9deg); }
-      }
-      .sway-outer{
-        transform-box: fill-box;
-        transform-origin: 50% 0%;
-        animation: leafSway 2.6s ease-in-out infinite;
-      }
-      @keyframes leafSway{
-        0%,100%{ transform:rotate(-6deg); }
-        50%{ transform:rotate(6deg); }
-      }
+      @keyframes iconWiggle{ 0%,100%{ transform:rotate(0deg); } 25%{ transform:rotate(-9deg); } 75%{ transform:rotate(9deg); } }
 
-      /* Door Bottom Traditional Kolam Rangoli */
       .door-kolam {
-        position: absolute;
-        bottom: 12px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 180px;
-        height: 60px;
-        z-index: 15;
-        pointer-events: none;
-        opacity: 0.85;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
-        animation: kolamGlow 3s ease-in-out infinite alternate;
-      }
-      @keyframes kolamGlow {
-        0% { opacity: 0.7; transform: translateX(-50%) scale(0.98); }
-        100% { opacity: 1; transform: translateX(-50%) scale(1.02); }
+        position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+        width: 180px; height: 60px; z-index: 15; pointer-events: none; opacity: 0.85;
       }
     </style>
   </head>
@@ -304,6 +191,7 @@
 
       <!-- Left Door Leaf -->
       <div class="door door-left">
+        <div class="side-serial-light" id="leftSideLights"></div>
         <div class="door-panel panel-top">
           <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
           <div class="brass-corner bl"></div><div class="brass-corner br"></div>
@@ -319,6 +207,7 @@
 
       <!-- Right Door Leaf -->
       <div class="door door-right">
+        <div class="side-serial-light" id="rightSideLights"></div>
         <div class="door-panel panel-top">
           <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
           <div class="brass-corner bl"></div><div class="brass-corner br"></div>
@@ -345,20 +234,14 @@
         <g id="flowers"></g>
       </svg>
 
-      <!-- Traditional Door Kolam / Rangoli Graphic -->
+      <!-- Traditional Door Kolam -->
       <svg class="door-kolam" viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg">
         <g stroke="#f5d682" stroke-width="1.8" fill="none" stroke-linecap="round">
           <path d="M100,55 C90,45 85,35 100,20 C115,35 110,45 100,55 Z" fill="rgba(232, 135, 30, 0.3)" />
-          <path d="M100,55 C90,50 80,45 85,30 C95,35 98,45 100,55 Z" fill="rgba(244, 169, 63, 0.2)" />
-          <path d="M100,55 C110,50 120,45 115,30 C105,35 102,45 100,55 Z" fill="rgba(244, 169, 63, 0.2)" />
           <path d="M60,50 Q80,25 100,50 Q120,25 140,50" />
-          <path d="M40,55 Q70,15 100,55 Q130,15 160,55" />
           <circle cx="100" cy="18" r="3" fill="#f5d682" />
           <circle cx="75" cy="35" r="2" fill="#f5d682" />
           <circle cx="125" cy="35" r="2" fill="#f5d682" />
-          <circle cx="55" cy="48" r="2" fill="#f5d682" />
-          <circle cx="145" cy="48" r="2" fill="#f5d682" />
-          <path d="M20,60 Q100,35 180,60" stroke-width="1.2" />
         </g>
       </svg>
 
@@ -382,7 +265,7 @@
     <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
     <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
-    <!-- Dynamic Toran & Serial Bulbs Generator Script -->
+    <!-- Dynamic JavaScript Generator for Toran, Side Bulbs, 4-Box Bulbs & Center Ring -->
     <script>
       const SVGNS = 'http://www.w3.org/2000/svg';
       function el(tag, attrs){
@@ -393,78 +276,73 @@
       function rnd(min,max){ return min + Math.random()*(max-min); }
       
       function mangoLeaf(x,y,rot,scale,shade){
-        const g = el('g',{transform:`translate(${x},${y}) rotate(${rot}) scale(${scale})`, filter:'url(#softShadow)'});
-        const id = 'lg'+Math.round(x)+Math.round(y);
-        const defs = el('defs',{});
-        const grad = el('linearGradient',{id:id, x1:'0%', y1:'0%', x2:'100%', y2:'100%'});
-        grad.appendChild(el('stop',{offset:'0%','stop-color':'#6b9a5c'}));
-        grad.appendChild(el('stop',{offset:'55%','stop-color':shade}));
-        grad.appendChild(el('stop',{offset:'100%','stop-color':'#2f4b28'}));
-        defs.appendChild(grad);
-        g.appendChild(defs);
-        g.appendChild(el('path',{
-          d:'M0,0 C-6,-9 -5,-22 0,-32 C5,-22 6,-9 0,0 Z',
-          fill: `url(#${id})`, stroke:'#26401f', 'stroke-width':'0.5'
-        }));
+        const g = el('g',{transform:`translate(${x},${y}) rotate(${rot}) scale(${scale})`});
+        g.appendChild(el('path',{d:'M0,0 C-6,-9 -5,-22 0,-32 C5,-22 6,-9 0,0 Z', fill: shade, stroke:'#26401f', 'stroke-width':'0.5'}));
         return g;
       }
-
-      function marigold(x,y,scale,outer,inner){
-        const g = el('g',{transform:`translate(${x},${y}) scale(${scale}) rotate(${rnd(-12,12)})`, filter:'url(#softShadow)'});
+      function marigold(x,y,scale,outer){
+        const g = el('g',{transform:`translate(${x},${y}) scale(${scale})`});
         for(let i=0;i<10;i++){
           const a = (i/10)*Math.PI*2;
-          const r = 6*rnd(0.9,1.1);
-          g.appendChild(el('ellipse',{
-            cx:Math.cos(a)*r, cy:Math.sin(a)*r, rx:4.2, ry:2.6,
-            transform:`rotate(${a*180/Math.PI} ${Math.cos(a)*r} ${Math.sin(a)*r})`,
-            fill: outer
-          }));
+          g.appendChild(el('ellipse',{cx:Math.cos(a)*6, cy:Math.sin(a)*6, rx:4, ry:2.5, fill: outer}));
         }
-        g.appendChild(el('circle',{ cx:0, cy:0, r:2, fill:'#7A4A0E' }));
         return g;
-      }
-
-      function swingWrap(innerG, phase){
-        const wrap = el('g',{
-          class:'sway-outer',
-          style:`animation-delay:${(phase*0.12).toFixed(2)}s;`
-        });
-        wrap.appendChild(innerG);
-        return wrap;
       }
 
       (function(){
+        // Toran Garland
         const leavesG = document.getElementById('leaves');
         const flowersG = document.getElementById('flowers');
-        if(!leavesG || !flowersG) return;
-        const spanW = 1400;
-        const totalItems = 32;
-        for(let i=0; i<totalItems; i++){
-          const t = i / (totalItems - 1);
-          const x = -20 + t * (spanW + 40);
-          const localT = t * 2 - 1;
-          const y = 18 + 55 * (1 - localT * localT);
-          
-          if(i % 2 === 0){
-            const rot = -40 + t * 80 + rnd(-5,5);
-            const shade = (i % 4 === 0) ? '#4F7942' : '#3F6636';
-            leavesG.appendChild(swingWrap(mangoLeaf(x, y, rot, rnd(0.85,1.1), shade), i));
-          } else {
-            const outer = (i % 3 === 1) ? '#E8871E' : '#F4A93F';
-            const inner = (i % 3 === 1) ? '#F4A93F' : '#FFD27A';
-            flowersG.appendChild(swingWrap(marigold(x, y + 8, rnd(0.85,1.05), outer, inner), i));
+        if(leavesG && flowersG){
+          for(let i=0; i<32; i++){
+            const t = i / 31; const x = -20 + t * 1440;
+            const y = 18 + 55 * (1 - Math.pow(t*2-1, 2));
+            if(i % 2 === 0) leavesG.appendChild(mangoLeaf(x, y, -40+t*80, 1, '#4F7942'));
+            else flowersG.appendChild(marigold(x, y+8, 1, '#E8871E'));
           }
         }
 
-        // Generate Serial Bulbs around the Center Ring
+        // Side Door Vertical Serial Lights
+        ['leftSideLights', 'rightSideLights'].forEach(id => {
+          const container = document.getElementById(id);
+          if(container){
+            for(let i=0; i<10; i++){
+              const bulb = document.createElement('div');
+              bulb.className = 'side-bulb';
+              container.appendChild(bulb);
+            }
+          }
+        });
+
+        // 4 Boxes Panel Border Serial Lights
+        document.querySelectorAll('.door-panel').forEach(panel => {
+          const count = 16;
+          for(let i=0; i<count; i++){
+            const bulb = document.createElement('div');
+            bulb.className = 'panel-bulb';
+            let p = i / count;
+            if(p < 0.25){
+              bulb.style.top = '-3px'; bulb.style.left = (p * 4 * 100) + '%';
+            } else if(p < 0.5){
+              bulb.style.top = ((p - 0.25) * 4 * 100) + '%'; bulb.style.right = '-3px';
+            } else if(p < 0.75){
+              bulb.style.bottom = '-3px'; bulb.style.right = ((p - 0.5) * 4 * 100) + '%';
+            } else {
+              bulb.style.bottom = ((p - 0.75) * 4 * 100) + '%'; bulb.style.left = '-3px';
+            }
+            panel.appendChild(bulb);
+          }
+        });
+
+        // Center Knob Ring Serial Bulbs
         const ring = document.getElementById('serialRing');
         if(ring){
           const bulbCount = 12;
-          const radius = 60;
+          const radius = 55;
           for(let i=0; i<bulbCount; i++){
             const angle = (i / bulbCount) * 2 * Math.PI;
-            const bx = 63 + radius * Math.cos(angle) - 5;
-            const by = 63 + radius * Math.sin(angle) - 5;
+            const bx = 70 + radius * Math.cos(angle) - 5;
+            const by = 70 + radius * Math.sin(angle) - 5;
             const bulb = document.createElement('div');
             bulb.className = 'serial-bulb';
             bulb.style.left = bx + 'px';
@@ -481,13 +359,19 @@
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
         document.body.classList.remove('locked');
-        setTimeout(()=>{ stage.remove(); }, 1800);
+        setTimeout(() => {
+          stage.classList.add('done');
+          stage.remove();
+        }, 1800);
       }
 
       if(knockBtn){
         knockBtn.addEventListener('click', openDoors);
-        knockBtn.addEventListener('keydown', (e)=>{
-          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDoors(); }
+        knockBtn.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openDoors();
+          }
         });
       }
     </script>
