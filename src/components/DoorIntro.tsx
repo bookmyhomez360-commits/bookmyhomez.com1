@@ -16,23 +16,34 @@ export default function DoorIntro({ onEnter }: { onEnter: () => void }) {
   return (
     <div className={`door-container ${isOpen ? 'open' : ''} ${isFading ? 'fade-out' : ''}`}>
       <div className="door left-door" onClick={handleOpenDoors}>
-        <div className="door-knocker left-knocker"></div>
+        {/* Door Carvings/Decorations in Brown */}
+        <div className="door-carving top-carving">
+          <div className="carving-house"></div>
+          <div className="carving-flower"></div>
+        </div>
+        <div className="door-carving bottom-carving">
+          <div className="carving-flower"></div>
+        </div>
+        <div className="door-handle"></div>
       </div>
       
-      {/* Center Circle with Your Official BookMyHomez Logo */}
+      {/* Center Logo/Badge */}
       <div className="door-center-badge" onClick={handleOpenDoors}>
         <div className="logo-circle">
-          <img src="/logo.png" alt="BookMyHomez" onError={(e) => {
-            // Fallback to text if local logo image is not found
-            const target = e.target as HTMLElement;
-            target.style.display = 'none';
-          }} />
-          <div className="fallback-text">BMH</div>
+          <div className="center-logo-icon"></div>
         </div>
       </div>
 
       <div className="door right-door" onClick={handleOpenDoors}>
-        <div className="door-knocker right-knocker"></div>
+        {/* Door Carvings/Decorations in Brown */}
+        <div className="door-carving top-carving">
+          <div className="carving-house"></div>
+          <div className="carving-flower"></div>
+        </div>
+        <div className="door-carving bottom-carving">
+          <div className="carving-flower"></div>
+        </div>
+        <div className="door-handle"></div>
       </div>
     </div>
   );
