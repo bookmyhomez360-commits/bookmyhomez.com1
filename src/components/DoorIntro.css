@@ -8,36 +8,41 @@
     z-index: 9999;
     cursor: pointer;
     overflow: hidden;
-    background: #111;
+    background: #000;
 }
 
 .door {
     position: relative;
     width: 50%;
     height: 100%;
-    background: linear-gradient(135deg, #5c3a21 0%, #3d2414 100%),
-                url('https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=1000&auto=format&fit=crop') center/cover;
-    background-blend-mode: overlay;
-    border: 5px solid #23130a;
+    /* Real house kitchen interior image background */
+    background: url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=1600&auto=format&fit=crop') no-repeat center center;
+    background-size: 200% 100%; /* Image rendii doors ki correct ga set avvadaniki */
     transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.6);
 }
 
+/* Left door image background positioning */
 .left-door {
-    border-right: 3px solid #111;
+    background-position: left center;
+    border-right: 2px solid rgba(255, 255, 255, 0.2);
     transform-origin: left;
 }
 
+/* Right door image background positioning */
 .right-door {
-    border-left: 3px solid #111;
+    background-position: right center;
+    border-left: 2px solid rgba(255, 255, 255, 0.2);
     transform-origin: right;
 }
 
+/* Center "TAP ON DOOR" Button Styling */
 .door-content {
     position: absolute;
-    right: -150px;
+    right: -125px; /* Exact ga center loki ravadaniki */
     top: 50%;
     transform: translateY(-50%);
-    width: 300px;
+    width: 250px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -47,35 +52,31 @@
 .key-banner {
     display: flex;
     align-items: center;
-    background: rgba(40, 20, 10, 0.85);
-    padding: 12px 25px;
+    justify-content: center;
+    background: rgba(20, 20, 20, 0.85);
+    padding: 14px 28px;
     border-radius: 50px;
-    border: 2px solid #d4af37;
-    box-shadow: 0px 5px 15px rgba(0,0,0,0.5);
+    border: 2px solid #e5c158; /* Premium golden border */
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.8);
+    backdrop-filter: blur(5px);
     animation: pulse 2s infinite;
 }
 
 .tap-text {
-    color: #ffd700;
-    font-weight: bold;
-    font-size: 18px;
+    color: #f3e5ab; /* Golden text */
+    font-weight: 800;
+    font-size: 16px;
     letter-spacing: 2px;
-    margin-left: 10px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
 }
 
-.golden-key {
-    width: 35px;
-    height: 35px;
-    background: url('https://cdn-icons-png.flaticon.com/512/934/934298.png') no-repeat center/contain;
-}
-
+/* Door Open Animation (3D Opening Effect) */
 .door-container.open .left-door {
-    transform: perspective(1200px) rotateY(-90deg);
+    transform: perspective(1500px) rotateY(-90deg);
 }
 
 .door-container.open .right-door {
-    transform: perspective(1200px) rotateY(90deg);
+    transform: perspective(1500px) rotateY(90deg);
 }
 
 .door-container.fade-out {
@@ -84,8 +85,9 @@
     transition: opacity 0.5s ease 1s;
 }
 
+/* Glow & Pulse Animation */
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+    0% { transform: scale(1); box-shadow: 0 0 15px rgba(229, 193, 88, 0.4); }
+    50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(229, 193, 88, 0.8); }
+    100% { transform: scale(1); box-shadow: 0 0 15px rgba(229, 193, 88, 0.4); }
 }
