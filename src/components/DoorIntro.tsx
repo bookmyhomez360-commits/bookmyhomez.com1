@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import doorImg from '/door-cartoon.jpg'; 
-import introVid from '/intro-video.mp4';
+// శ్రద్ధ వహించండి: ఇక్కడ ఎలాంటి import doorImg / import introVid ఉండకూడదు!
 
 interface DoorIntroProps {
   onComplete: () => void;
@@ -12,26 +11,27 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
   const [isPlayingVideo, setIsPlayingVideo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // public/ ఫోల్డర్ లో ఉన్న ఫైల్ పాత్‌లు
+  const doorImgPath = '/door-cartoon.jpg';
+  const introVidPath = '/intro-video.mp4';
+
   const handleDoorClick = () => {
     setIsOpen(true);
     
-    // డోర్ క్లిక్ చేసాక వీడియో స్టార్ట్ అవుతుంది
     setTimeout(() => {
       setIsPlayingVideo(true);
     }, 800);
   };
 
-  // వీడియో ప్లే కావడం మొదలయ్యాక, వీడియో ఎంత టైమ్ ఉందో దాని ప్రకారం ఆటో-ఎగ్జిట్ బ్యాకప్ టైమర్
   useEffect(() => {
     if (isPlayingVideo && videoRef.current) {
       const video = videoRef.current;
       
       const handleLoadedMetadata = () => {
-        // వీడియో నిడివి (duration) తెలుసుకుని, పూర్తయ్యే సమయానికి ఆటోమేటిక్‌గా వెబ్‌సైట్‌కి పంపుతుంది
         const videoDuration = video.duration * 1000;
         setTimeout(() => {
           onComplete();
-        }, videoDuration + 300); // 300ms Extra Safety
+        }, videoDuration + 300);
       };
 
       video.addEventListener('loadedmetadata', handleLoadedMetadata);
@@ -55,7 +55,7 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
         >
           <div 
             className="w-full h-full bg-center bg-no-repeat bg-contain"
-            style={{ backgroundImage: `url(${doorImg})` }}
+            style={{ backgroundImage: `url(${doorImgPath})` }}
           />
 
           {!isOpen && (
@@ -71,16 +71,15 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
         <div className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
           <video
             ref={videoRef}
-            src={introVid}
+            src={introVidPath}
             autoPlay
             playsInline
-            onEnded={onComplete} // 1. వీడియో పూర్తవ్వగానే మెయిన్ వెబ్‌సైట్‌కి వెళ్తుంది
+            onEnded={onComplete}
             className="w-full h-full object-contain max-w-full max-h-full"
           />
           
-          {/* Skip Button */}
           <button
-            onClick={onComplete} // 2. మ్యాన్యువల్‌గా దాటవేయడానికి
+            onClick={onComplete}
             className="absolute top-5 right-5 bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-xs sm:text-sm px-4 py-2 rounded-full z-20 shadow-lg transition active:scale-95"
           >
             Skip Intro ➔
