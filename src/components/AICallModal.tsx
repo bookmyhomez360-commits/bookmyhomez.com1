@@ -6,124 +6,145 @@ interface AICallModalProps {
 }
 
 const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
-  const [formData, setFormData] = useState({ name: '', phone: '', email: '' });
+  const [formData, setFormData] = useState({
+    fullName: '',
+    mobile: '',
+    email: ''
+  });
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
 
   if (!isOpen) return null;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setStatus('idle');
+    setMessage('');
 
     try {
       const response = await fetch('/api/trigger-ominidim-call', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
-        setStatus('success');
+        setMessage('Call initiated successfully! You will receive a call shortly.');
         setTimeout(() => {
           onClose();
-          setStatus('idle');
-          setFormData({ name: '', phone: '', email: '' });
+          setMessage('');
         }, 3000);
       } else {
-        setStatus('error');
+        setMessage('Failed to initiate call. Please try again.');
       }
     } catch (error) {
-      console.error("Error triggering AI call:", error);
-      setStatus('error');
+      setMessage('An error occurred. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-0">
+    // సెంటర్‌లో రావడం కోసం: flex items-center justify-center 
+    // వెనుక ఉన్న స్క్రీన్ బ్లర్ అవ్వడం కోసం: bg-black/60 backdrop-blur-sm
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
       
-      {/* Modal Box - సరిగ్గా మధ్యలో ఉండటానికి flex, max-h-[85vh] వాడాను */}
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative flex flex-col max-h-[85vh] animate-fade-in-up">
+      {/* పాపప్ బాక్స్ - వెబ్‌సైట్ కి మ్యాచ్ అయ్యేలా డార్క్ కలర్ */}
+      <div className="relative w-full max-w-md bg-[#0F172A] border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
         
-        {/* Header Section with X Button */}
-        <div className="flex justify-between items-center p-5 border-b border-gray-100 shrink-0">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800">Get Instant Details</h2>
+        {/* Header - టైటిల్ మరియు X బటన్ */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50">
+          <h2 className="text-xl font-semibold text-white">Request a Callback</h2>
           <button 
             onClick={onClose}
-            className="text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 p-2 rounded-full transition-all"
-            title="Close"
+            className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-full transition-colors"
           >
-            {/* 'X' Icon */}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        {/* Scrollable Content Area - కంటెంట్ ఎక్కువైతే లోపల మాత్రమే స్క్రోల్ అవుతుంది */}
-        <div className="p-5 md:p-7 overflow-y-auto">
-          <p className="text-gray-500 mb-6 text-sm">Enter your details and connect with our Property Expert.</p>
-
-          {status === 'success' ? (
-            <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl text-center font-medium">
-              Submitted successfully! We are connecting your call... 📞
+        {/* Body - ఫారమ్ */}
+        <div className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            
+            {/* Full Name */}
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-1">Full Name</label>
+              <input
+                type="text"
+                name="fullName"
+                required
+                value={formData.fullName}
+                onChange={handleChange}
+                placeholder="Enter your full name"
+                // ఇక్కడ bg-slate-800 మరియు text-white వాడాము కాబట్టి టైప్ చేసే లెటర్స్ స్పష్టంగా కనిపిస్తాయి
+                className="w-full px-4 py-3 bg-[#1E293B] border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-[#4F46E5] focus:ring-1 focus:ring-[#4F46E5] transition-colors"
+              />
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
-                <input 
-                  type="text" 
-                  required 
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
-                  placeholder="Enter your full name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Mobile Number</label>
-                <input 
-                  type="tel" 
-                  required 
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
-                  placeholder="+91 9876543210"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                />
-              </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
-                <input 
-                  type="email" 
-                  required 
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
-                  placeholder="your@email.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                />
-              </div>
+            {/* Mobile Number */}
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-1">Mobile Number</label>
+              <input
+                type="tel"
+                name="mobile"
+                required
+                value={formData.mobile}
+                onChange={handleChange}
+                placeholder="+91 9876543210"
+                className="w-full px-4 py-3 bg-[#1E293B] border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-[#4F46E5] focus:ring-1 focus:ring-[#4F46E5] transition-colors"
+              />
+            </div>
 
-              <button 
-                type="submit" 
-                disabled={loading}
-                className={`w-full py-3.5 mt-2 rounded-xl text-white font-bold text-lg transition-all shadow-lg ${
-                  loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/30'
-                }`}
-              >
-                {loading ? 'Submitting...' : 'Submit'}
-              </button>
-              
-              {status === 'error' && (
-                <p className="text-red-500 text-sm text-center mt-3 font-medium">Something went wrong. Please try again.</p>
+            {/* Email Address */}
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-1">Email Address</label>
+              <input
+                type="email"
+                name="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="your@email.com"
+                className="w-full px-4 py-3 bg-[#1E293B] border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-[#4F46E5] focus:ring-1 focus:ring-[#4F46E5] transition-colors"
+              />
+            </div>
+
+            {/* Success/Error Message */}
+            {message && (
+              <div className={`p-3 rounded-lg text-sm ${message.includes('successfully') ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
+                {message}
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-4 bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-70 flex items-center justify-center"
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Connecting...
+                </span>
+              ) : (
+                'Submit'
               )}
-            </form>
-          )}
+            </button>
+
+          </form>
         </div>
       </div>
     </div>
