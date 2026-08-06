@@ -15,7 +15,7 @@
     position: relative;
     width: 50%;
     height: 100%;
-    background: linear-gradient(135deg, #5c3a21 0%, #3d2414 100%), 
+    background: linear-gradient(135deg, #5c3a21 0%, #3d2414 100%),
                 url('https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=1000&auto=format&fit=crop') center/cover;
     background-blend-mode: overlay;
     border: 5px solid #23130a;
