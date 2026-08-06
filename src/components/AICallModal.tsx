@@ -10,7 +10,6 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  // మోడల్ ఓపెన్ లేకపోతే ఏమి చూపించకూడదు
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,7 +18,6 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
     setStatus('idle');
 
     try {
-      // మీ బ్యాకెండ్ API కి డేటా పంపుతున్నాం
       const response = await fetch('/api/trigger-ominidim-call', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -28,7 +26,6 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
 
       if (response.ok) {
         setStatus('success');
-        // 3 సెకన్ల తర్వాత మోడల్ ఆటోమాటిక్ గా క్లోజ్ అవుతుంది
         setTimeout(() => {
           onClose();
           setStatus('idle');
@@ -57,12 +54,12 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
           ✕
         </button>
         
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Get an Instant Call 🤖</h2>
-        <p className="text-gray-500 mb-6 text-sm">Enter your details and our AI Agent will call you immediately.</p>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Get Instant Details 🤖</h2>
+        <p className="text-gray-500 mb-6 text-sm">Enter your details and connect with our AI Property Expert.</p>
 
         {status === 'success' ? (
           <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl text-center font-medium">
-            Success! Our AI Agent is calling you now... 📞
+            Submitted successfully! Our AI Agent is calling you now... 📞
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -72,7 +69,7 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
                 type="text" 
                 required 
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
-                placeholder="Enter your name"
+                placeholder="Enter your full name"
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
               />
@@ -109,11 +106,11 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
                 loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/30'
               }`}
             >
-              {loading ? 'Connecting to AI...' : 'Call Me Now'}
+              {loading ? 'Submitting...' : 'Submit'}
             </button>
             
             {status === 'error' && (
-              <p className="text-red-500 text-sm text-center mt-3 font-medium">Something went wrong. Please check your backend API.</p>
+              <p className="text-red-500 text-sm text-center mt-3 font-medium">Something went wrong. Please try again.</p>
             )}
           </form>
         )}
