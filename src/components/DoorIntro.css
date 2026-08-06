@@ -10,7 +10,7 @@
     z-index: 9999;
     cursor: pointer;
     overflow: hidden;
-    background: #0b0502;
+    background: #050201;
 }
 
 /* Rich Wood Double Door */
@@ -18,75 +18,55 @@
     position: relative;
     width: 50%;
     height: 100%;
-    background: linear-gradient(135deg, #4a2810 0%, #221207 100%);
-    border: 8px solid #140803;
-    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(135deg, #381d0c 0%, #170b04 100%);
+    border: 8px solid #0d0603;
+    box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.9);
     transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .left-door {
-    border-right: 4px solid #080301;
+    border-right: 4px solid #050201;
     transform-origin: left;
 }
 
 .right-door {
-    border-left: 4px solid #080301;
+    border-left: 4px solid #050201;
     transform-origin: right;
 }
 
-/* Wooden Door Panel Carvings/Decorations */
-.door-panel-design {
+/* Artistic House & Floral/Decorative Carvings on Doors */
+.door-carving {
     position: absolute;
-    top: 40px;
-    left: 40px;
-    right: 40px;
-    bottom: 40px;
-    border: 4px solid rgba(212, 175, 55, 0.2);
-    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6), 0 0 10px rgba(0, 0, 0, 0.5);
-    background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+    left: 30px;
+    right: 30px;
+    height: 38%;
+    border: 2px solid rgba(212, 175, 55, 0.25);
+    border-radius: 6px;
+    background: radial-gradient(circle, rgba(212,175,55,0.03) 0%, rgba(0,0,0,0.2) 100%);
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
 }
 
-.door-panel-design::before {
+.top-carving {
+    top: 35px;
+}
+
+.bottom-carving {
+    bottom: 35px;
+}
+
+/* Elegant Inner Floral / House Shape Motif inside carvings */
+.door-carving::before {
     content: '';
     position: absolute;
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    height: 40%;
-    border: 2px solid rgba(212, 175, 55, 0.15);
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    border: 1px dashed rgba(212, 175, 55, 0.2);
+    border-radius: 4px;
 }
 
-.door-panel-design::after {
-    content: '';
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    height: 40%;
-    border: 2px solid rgba(212, 175, 55, 0.15);
-}
-
-/* Door Handles */
-.door-handle {
-    position: absolute;
-    top: 50%;
-    width: 14px;
-    height: 90px;
-    background: linear-gradient(to right, #ffd700, #b8860b, #ffd700);
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.8);
-    transform: translateY(-50%);
-}
-
-.left-handle {
-    right: 25px;
-}
-
-.right-handle {
-    left: 25px;
-}
-
-/* Center Round Logo Badge */
+/* Center Badge with House & Key motif */
 .door-center-badge {
     position: absolute;
     left: 50%;
@@ -99,30 +79,24 @@
 }
 
 .logo-circle {
-    width: 90px;
-    height: 90px;
-    background: #1a0d05;
+    width: 95px;
+    height: 95px;
+    background: linear-gradient(135deg, #241207 0%, #0d0603 100%);
     border-radius: 50%;
-    border: 3px solid #d4af37;
+    border: 3px solid #ffd700;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.9), 0 0 20px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.9), 0 0 25px rgba(212, 175, 55, 0.5);
     animation: pulse 2s infinite;
-    overflow: hidden;
 }
 
-.logo-circle img {
-    width: 80%;
-    height: 80%;
-    object-fit: contain;
-}
-
-.fallback-logo-text {
-    color: #ffd700;
-    font-weight: bold;
-    font-size: 16px;
-    letter-spacing: 1px;
+/* House Icon Graphic */
+.house-badge-icon {
+    width: 45px;
+    height: 45px;
+    background: url('https://cdn-icons-png.flaticon.com/512/619/619153.png') no-repeat center/contain;
+    filter: drop-shadow(0 0 3px #ffd700);
 }
 
 /* Open Animation */
@@ -142,6 +116,6 @@
 
 @keyframes pulse {
     0% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
-    50% { transform: scale(1.08); box-shadow: 0 0 25px rgba(212, 175, 55, 0.8); }
+    50% { transform: scale(1.08); box-shadow: 0 0 30px rgba(212, 175, 55, 0.8); }
     100% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
 }
