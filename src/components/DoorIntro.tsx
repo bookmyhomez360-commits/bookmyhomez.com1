@@ -28,7 +28,7 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onUnlock }) => {
       greeting: "ನಮಸ್ಕಾರ, ಇದು ಮಧು bookmyhomez ನಿಂದ ಪರಿಚಯಿಸಿಕೊಳ್ಳುತ್ತಿದ್ದೇನೆ.",
       desc: "ನಮ್ಮ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಬಾಡಿಗೆಗೆ ಮತ್ತು ಶಾರ್ಟ್ ಸ್ಟೇಗಾಗಿ ಪ್ರಾಪರ್ಟೀಸ್ ಲಭ್ಯವಿವೆ. ನಿಮ್ಮ ಪ್ರಾಪರ್ಟೀಸ್‌ಗಳನ್ನು ನೀವು ಉಚಿತವಾಗಿ ಲಿಸ್ಟ್ ಮಾಡಬಹುದು.",
       btnText: "ವೆಬ್‌ಸೈಟ್‌ಗೆ ಪ್ರವೇಶಿಸಿ",
-      skipText: "ಸ್ಕಿప్ (Skip)",
+      skipText: "ಸ್ಕಿಪ್ (Skip)",
       speechText: "ನಮಸ್ಕಾರ, ಇದು ಮಧು bookmyhomez ನಿಂದ ಪರಿಚಯಿಸಿಕೊಳ್ಳುತ್ತಿದ್ದೇನೆ. ನಮ್ಮ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಬಾಡಿಗೆಗೆ ಮತ್ತು ಶಾರ್ಟ್ ಸ್ಟೇಗಾಗಿ ಪ್ರಾಪರ್ಟೀಸ್ ಲಭ್ಯವಿವೆ. ನಿಮ್ಮ ಪ್ರಾಪರ್ಟೀಸ್‌ಗಳನ್ನು ನೀವು ಉಚಿತವಾಗಿ ಲಿಸ್ಟ್ ಮಾಡಬಹುದು."
     }
   };
@@ -169,45 +169,53 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onUnlock }) => {
 
         </div>
 
-        {/* ఎడమ వైపు గ్రాండ్ వుడెన్ డోర్ */}
+        {/* ఎడమ వైపు రియల్ వుడెన్ డోర్ (అసలైన చెక్క రంగు మరియు టెక్చర్‌తో) */}
         <div 
-          className={`absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-[#1a0c05] via-[#3d1c0a] to-[#241107] border-r-4 border-amber-950 shadow-[inset_-25px_0_50px_rgba(0,0,0,0.9)] flex items-center justify-end origin-left transition-transform duration-[1800ms] ease-in-out z-20 ${
+          className={`absolute top-0 left-0 w-1/2 h-full bg-[#3d2314] border-r-8 border-[#1a0e08] shadow-[inset_-30px_0_60px_rgba(0,0,0,0.8)] flex items-center justify-end origin-left transition-transform duration-[1800ms] ease-in-out z-20 ${
             isOpen ? 'rotate-y-[-110deg]' : 'rotate-y-0'
           }`}
-          style={{ transformStyle: 'preserve-3d' }}
+          style={{ 
+            backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 2px, transparent 2px, transparent 4px), radial-gradient(circle, rgba(90,50,25,0.6) 0%, rgba(30,15,5,0.9) 100%)',
+            transformStyle: 'preserve-3d' 
+          }}
         >
-          <div className="absolute inset-6 border-2 border-amber-700/40 rounded-l-xl flex flex-col justify-around p-8 opacity-60 pointer-events-none">
-            <div className="h-full border-b border-amber-700/30 my-6 shadow-inner"></div>
-            <div className="h-full border-b border-amber-700/30 my-6 shadow-inner"></div>
+          {/* వుడెన్ ప్యానెల్ ఫ్రేమ్స్ */}
+          <div className="absolute inset-8 border-4 border-[#24130a] rounded-l-2xl shadow-[inset_0_0_20px_rgba(0,0,0,0.9)] flex flex-col justify-around p-8 opacity-80 pointer-events-none">
+            <div className="h-full border-b-4 border-[#24130a] my-6 shadow-inner"></div>
+            <div className="h-full border-b-4 border-[#24130a] my-6 shadow-inner"></div>
           </div>
         </div>
 
-        {/* కుడి వైపు గ్రాండ్ వుడెన్ డోర్ */}
+        {/* కుడి వైపు రియల్ వుడెన్ డోర్ */}
         <div 
-          className={`absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#1a0c05] via-[#3d1c0a] to-[#241107] border-l-4 border-amber-950 shadow-[inset_25px_0_50px_rgba(0,0,0,0.9)] flex items-center justify-start origin-right transition-transform duration-[1800ms] ease-in-out z-20 ${
+          className={`absolute top-0 right-0 w-1/2 h-full bg-[#3d2314] border-l-8 border-[#1a0e08] shadow-[inset_30px_0_60px_rgba(0,0,0,0.8)] flex items-center justify-start origin-right transition-transform duration-[1800ms] ease-in-out z-20 ${
             isOpen ? 'rotate-y-[110deg]' : 'rotate-y-0'
           }`}
-          style={{ transformStyle: 'preserve-3d' }}
+          style={{ 
+            backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 2px, transparent 2px, transparent 4px), radial-gradient(circle, rgba(90,50,25,0.6) 0%, rgba(30,15,5,0.9) 100%)',
+            transformStyle: 'preserve-3d' 
+          }}
         >
-          <div className="absolute inset-6 border-2 border-amber-700/40 rounded-r-xl flex flex-col justify-around p-8 opacity-60 pointer-events-none">
-            <div className="h-full border-b border-amber-700/30 my-6 shadow-inner"></div>
-            <div className="h-full border-b border-amber-700/30 my-6 shadow-inner"></div>
+          {/* వుడెన్ ప్యానెల్ ఫ్రేమ్స్ */}
+          <div className="absolute inset-8 border-4 border-[#24130a] rounded-r-2xl shadow-[inset_0_0_20px_rgba(0,0,0,0.9)] flex flex-col justify-around p-8 opacity-80 pointer-events-none">
+            <div className="h-full border-b-4 border-[#24130a] my-6 shadow-inner"></div>
+            <div className="h-full border-b-4 border-[#24130a] my-6 shadow-inner"></div>
           </div>
         </div>
 
-        {/* మధ్యలో పెద్ద కీ ఐకాన్ మరియు దాని మీద 'TAP ON DOOR' టెక్స్ట్ */}
+        {/* మధ్యలో పెద్ద కీ ఐకాన్ మరియు ఆ ఐకాన్ పైనే 'TAP ON DOOR' టెక్స్ట్ */}
         <div className={`absolute z-30 flex flex-col items-center justify-center transition-all duration-500 ${isOpen ? 'opacity-0 scale-90 pointer-events-none' : 'opacity-100 scale-100'}`}>
           <button 
             onClick={handleOpenDoors}
-            className="group relative bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black px-12 py-7 rounded-3xl shadow-[0_0_60px_rgba(245,158,11,0.8)] transition-all hover:scale-105 active:scale-95 cursor-pointer flex flex-col items-center gap-3 border-4 border-amber-200"
+            className="group relative bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black px-12 py-8 rounded-3xl shadow-[0_0_70px_rgba(245,158,11,0.9)] transition-all hover:scale-105 active:scale-95 cursor-pointer flex flex-col items-center justify-center gap-3 border-4 border-amber-200"
           >
             {/* చాలా పెద్దదైన కీ ఐకాన్ */}
-            <svg className="w-14 h-14 text-slate-950 transform -rotate-45 group-hover:rotate-0 transition-transform duration-300 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-16 h-16 text-slate-950 transform -rotate-45 group-hover:rotate-0 transition-transform duration-300 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
             </svg>
             
-            {/* కీ కింద లేదా దానిపై స్పష్టంగా కనిపించే 'TAP ON DOOR' */}
-            <span className="text-base sm:text-xl font-black tracking-widest uppercase text-slate-950 bg-amber-300/40 px-4 py-1 rounded-xl">
+            {/* కీ ఐకాన్ కింద స్పష్టంగా 'TAP ON DOOR' టెక్స్ట్ */}
+            <span className="text-lg sm:text-2xl font-black tracking-widest uppercase text-slate-950 drop-shadow-sm">
               TAP ON DOOR
             </span>
           </button>
