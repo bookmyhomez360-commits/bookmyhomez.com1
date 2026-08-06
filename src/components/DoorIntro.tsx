@@ -1,4 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+
+import doorImg from '/door-cartoon.jpg'; 
+import introVid from '/intro-video.mp4';
 
 interface DoorIntroProps {
   onComplete: () => void;
@@ -12,16 +15,33 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
   const handleDoorClick = () => {
     setIsOpen(true);
     
-    // డోర్ ఓపెన్ కాగానే వీడియో స్టార్ట్ అవుతుంది
+    // డోర్ క్లిక్ చేసాక వీడియో స్టార్ట్ అవుతుంది
     setTimeout(() => {
       setIsPlayingVideo(true);
-      if (videoRef.current) {
-        videoRef.current.play().catch((err) => {
-          console.log("Autoplay issue handled: ", err);
-        });
-      }
     }, 800);
   };
+
+  // వీడియో ప్లే కావడం మొదలయ్యాక, వీడియో ఎంత టైమ్ ఉందో దాని ప్రకారం ఆటో-ఎగ్జిట్ బ్యాకప్ టైమర్
+  useEffect(() => {
+    if (isPlayingVideo && videoRef.current) {
+      const video = videoRef.current;
+      
+      const handleLoadedMetadata = () => {
+        // వీడియో నిడివి (duration) తెలుసుకుని, పూర్తయ్యే సమయానికి ఆటోమేటిక్‌గా వెబ్‌సైట్‌కి పంపుతుంది
+        const videoDuration = video.duration * 1000;
+        setTimeout(() => {
+          onComplete();
+        }, videoDuration + 300); // 300ms Extra Safety
+      };
+
+      video.addEventListener('loadedmetadata', handleLoadedMetadata);
+      video.play().catch((err) => console.log("Autoplay error:", err));
+
+      return () => {
+        video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      };
+    }
+  }, [isPlayingVideo, onComplete]);
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center overflow-hidden w-screen h-screen">
@@ -29,42 +49,39 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
         /* --- Door Intro Screen --- */
         <div 
           onClick={handleDoorClick} 
-          className={`relative w-full h-full cursor-pointer flex items-center justify-center bg-cover bg-center bg-no-repeat select-none transition-transform duration-1000 ease-in-out ${
-            isOpen ? 'scale-110 opacity-0' : 'scale-100 opacity-100'
+          className={`relative w-full h-full cursor-pointer flex items-center justify-center bg-black transition-all duration-1000 ease-in-out ${
+            isOpen ? 'scale-105 opacity-0' : 'scale-100 opacity-100'
           }`}
-          /* మీ క్రొత్త కార్టూన్ డోర్ ఇమేజ్ ని public/door-cartoon.jpg లేదా తగిన నేమ్‌తో సేవ్ చేసుకోండి */
-          style={{ backgroundImage: "url('/door-cartoon.jpg')" }}
         >
-          {/* Subtle Overlay to make text legible */}
-          <div className="absolute inset-0 bg-black/20" />
-          
-          {/* Tap On Door Hint - Fully responsive text */}
+          <div 
+            className="w-full h-full bg-center bg-no-repeat bg-contain"
+            style={{ backgroundImage: `url(${doorImg})` }}
+          />
+
           {!isOpen && (
-            <div className="z-10 animate-pulse text-center px-4 pointer-events-none">
-              <span className="inline-block bg-black/60 backdrop-blur-md border border-yellow-400/50 text-yellow-400 font-extrabold text-xl sm:text-3xl md:text-5xl px-6 py-3 rounded-2xl shadow-2xl tracking-widest">
+            <div className="absolute z-10 animate-pulse text-center px-4 pointer-events-none">
+              <span className="inline-block bg-black/70 backdrop-blur-md border border-yellow-400 text-yellow-400 font-extrabold text-xl sm:text-3xl md:text-5xl px-6 py-3 rounded-2xl shadow-2xl tracking-widest">
                 TAP ON DOOR
               </span>
             </div>
           )}
         </div>
       ) : (
-        /* --- Native Website-like Video Layer --- */
+        /* --- Intro Video Screen --- */
         <div className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
           <video
             ref={videoRef}
-            src="/intro-video.mp4"
+            src={introVid}
             autoPlay
             playsInline
-            muted={false}
-            onEnded={onComplete}
-            /* object-cover ఉపయోగించడం వలన ల్యాప్‌టాప్ లేదా మొబైల్ దేంట్లోనైనా నార్మల్ వీడియోలా కాకుండా ఒక వెబ్‌సైట్ లేఅవుట్‌లా ఫుల్ స్క్రీన్‌ను కవర్ చేస్తుంది */
-            className="w-full h-full object-cover pointer-events-none select-none"
+            onEnded={onComplete} // 1. వీడియో పూర్తవ్వగానే మెయిన్ వెబ్‌సైట్‌కి వెళ్తుంది
+            className="w-full h-full object-contain max-w-full max-h-full"
           />
           
-          {/* Custom Skip Button (వెబ్‌సైట్ లుక్ రావడానికి వీలుగా) */}
+          {/* Skip Button */}
           <button
-            onClick={onComplete}
-            className="absolute top-5 right-5 bg-black/60 hover:bg-black/80 backdrop-blur-md text-white border border-white/30 font-semibold text-xs sm:text-sm px-4 py-2 rounded-full z-20 shadow-lg transition active:scale-95"
+            onClick={onComplete} // 2. మ్యాన్యువల్‌గా దాటవేయడానికి
+            className="absolute top-5 right-5 bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-xs sm:text-sm px-4 py-2 rounded-full z-20 shadow-lg transition active:scale-95"
           >
             Skip Intro ➔
           </button>
