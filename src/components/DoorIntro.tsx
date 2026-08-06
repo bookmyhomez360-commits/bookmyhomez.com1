@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './DoorIntro.css'; // CSS file kosam
+import './DoorIntro.css';
 
 export default function DoorIntro({ onEnter }: { onEnter: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,7 +9,7 @@ export default function DoorIntro({ onEnter }: { onEnter: () => void }) {
     setIsOpen(true);
     setIsFading(true);
     setTimeout(() => {
-      onEnter(); // Door open ayyaka main website chupinchadaniki
+      onEnter();
     }, 1500);
   };
 
@@ -17,9 +17,9 @@ export default function DoorIntro({ onEnter }: { onEnter: () => void }) {
     <div className={`door-container ${isOpen ? 'open' : ''} ${isFading ? 'fade-out' : ''}`}>
       <div className="door left-door" onClick={handleOpenDoors}>
         <div className="door-content">
-          <div className="key-banner">
+          {/* Text box poyi direct ga Golden Key */}
+          <div className="golden-key-container" title="Tap to Open">
             <div className="golden-key"></div>
-            <span className="tap-text">TAP ON DOOR</span>
           </div>
         </div>
       </div>
