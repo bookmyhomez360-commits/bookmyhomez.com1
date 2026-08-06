@@ -172,15 +172,15 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
       <div
         onClick={handleDoorClick}
         className={`absolute top-0 left-0 w-1/2 h-full cursor-pointer transition-transform duration-1200 ease-in-out origin-left z-10 ${
-          isOpen ? '-rotate-y-100 opacity-85 pointer-events-none' : ''
+          isOpen ? '-rotate-y-100 opacity-80 pointer-events-none' : ''
         }`}
         style={{
           transformStyle: 'preserve-3d',
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://images.unsplash.com/photo-1546484475-7f7bd55792da?q=80&w=2000&auto=format&fit=crop')`,
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=2000&auto=format&fit=crop')`,
           backgroundSize: '200% 100%',
           backgroundPosition: 'left center',
-          boxShadow: 'inset -50px 0 100px rgba(0,0,0,0.85)',
-          borderRight: '6px solid #1a0a04'
+          boxShadow: 'inset -50px 0 100px rgba(0,0,0,0.9)',
+          borderRight: '8px solid #140802'
         }}
       ></div>
 
@@ -188,15 +188,15 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
       <div
         onClick={handleDoorClick}
         className={`absolute top-0 right-0 w-1/2 h-full cursor-pointer transition-transform duration-1200 ease-in-out origin-right z-10 ${
-          isOpen ? 'rotate-y-100 opacity-85 pointer-events-none' : ''
+          isOpen ? 'rotate-y-100 opacity-80 pointer-events-none' : ''
         }`}
         style={{
           transformStyle: 'preserve-3d',
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://images.unsplash.com/photo-1546484475-7f7bd55792da?q=80&w=2000&auto=format&fit=crop')`,
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=2000&auto=format&fit=crop')`,
           backgroundSize: '200% 100%',
           backgroundPosition: 'right center',
-          boxShadow: 'inset 50px 0 100px rgba(0,0,0,0.85)',
-          borderLeft: '6px solid #1a0a04'
+          boxShadow: 'inset 50px 0 100px rgba(0,0,0,0.9)',
+          borderLeft: '8px solid #140802'
         }}
       ></div>
 
@@ -213,11 +213,11 @@ export const DoorIntro: React.FC<DoorIntroProps> = ({ onComplete }) => {
           <img 
             src="https://png.pngtree.com/png-vector/20240125/ourmid/pngtree-vintage-golden-key-png-image_11494883.png" 
             alt="Vintage Golden Key" 
-            className="w-[320px] sm:w-[450px] md:w-[550px] h-auto filter drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)] select-none pointer-events-none"
+            className="w-[320px] sm:w-[450px] md:w-[580px] h-auto filter drop-shadow-[0_15px_35px_rgba(0,0,0,0.95)] select-none pointer-events-none"
           />
 
           {/* కీ షాఫ్ట్ మీద పర్‌ఫెక్ట్‌గా సెట్ చేసిన TAP ON DOOR టెక్స్ట్ */}
-          <span className="absolute font-serif text-[#ffd700] font-bold tracking-[4px] text-xs sm:text-base md:text-xl uppercase drop-shadow-[2px_2px_5px_rgba(0,0,0,0.95)] whitespace-nowrap">
+          <span className="absolute font-serif text-[#ffd700] font-bold tracking-[5px] text-xs sm:text-base md:text-xl uppercase drop-shadow-[2px_3px_6px_rgba(0,0,0,0.98)] whitespace-nowrap">
             TAP ON DOOR
           </span>
 
