@@ -43,8 +43,9 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative animate-fade-in-up">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4">
+      {/* ఇక్కడ max-h-[90vh] మరియు overflow-y-auto యాడ్ చేశాను */}
+      <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md relative animate-fade-in-up max-h-[90vh] overflow-y-auto">
         
         {/* Close Button */}
         <button 
@@ -54,7 +55,7 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
           ✕
         </button>
         
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Get Instant Details</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2 pr-6">Get Instant Details</h2>
         <p className="text-gray-500 mb-6 text-sm">Enter your details and connect with our Property Expert.</p>
 
         {status === 'success' ? (
