@@ -54,12 +54,12 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
           ✕
         </button>
         
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Get Instant Details 🤖</h2>
-        <p className="text-gray-500 mb-6 text-sm">Enter your details and connect with our AI Property Expert.</p>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Get Instant Details</h2>
+        <p className="text-gray-500 mb-6 text-sm">Enter your details and connect with our Property Expert.</p>
 
         {status === 'success' ? (
           <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl text-center font-medium">
-            Submitted successfully! Our AI Agent is calling you now... 📞
+            Submitted successfully! We are connecting your call... 📞
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
