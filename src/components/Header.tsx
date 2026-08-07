@@ -47,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <header className="sticky top-0 z-40 bg-[#090D16]/90 backdrop-blur-xl border-b border-slate-800/80 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2">
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-1 sm:gap-4">
           
           {/* 1. Logo Card (Left Side) */}
           <a
@@ -63,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </a>
 
-          {/* 2. Central Navigation Pills (Desktop & Tablet) */}
+          {/* 2. Central Navigation Pills (Desktop Only) */}
           <nav className="hidden lg:flex items-center gap-1 bg-slate-900/90 p-1.5 rounded-full border border-slate-800">
             <button
               onClick={() => navigateTo('explore')}
@@ -121,10 +121,10 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </nav>
 
-          {/* 3. Blog Button */}
+          {/* 3. Blog Button (Both Mobile & Laptop lo middle/top lo kanipistundi) */}
           <button
             onClick={() => navigateTo('blog')}
-            className={`hidden lg:flex px-5 py-2 rounded-full text-xs font-bold transition cursor-pointer items-center gap-1.5 shadow-md ${
+            className={`flex px-3 sm:px-5 py-2 rounded-full text-[11px] sm:text-xs font-bold transition cursor-pointer items-center gap-1.5 shadow-md shrink-0 ${
               currentTab === 'blog'
                 ? 'bg-indigo-600 text-white'
                 : 'bg-indigo-600/80 hover:bg-indigo-500 text-white'
@@ -134,12 +134,12 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           {/* 4. Action Controls (Right Side: Fill Details, List Property + Sign In, Heart, User Dropdown) */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             
             {/* Fill Details Button */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl transition-all shadow-lg shadow-green-500/30 hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0"
+              className="flex items-center gap-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl transition-all shadow-lg shadow-green-500/30 hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0"
             >
               <span className="whitespace-nowrap">Fill Details</span>
             </button>
@@ -153,14 +153,14 @@ export const Header: React.FC<HeaderProps> = ({
                   openAuthModal();
                 }
               }}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-black px-2 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center gap-1 cursor-pointer shrink-0"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-black px-2 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center gap-1 cursor-pointer shrink-0"
             >
               <PlusCircle className="w-4 h-4 hidden md:block" />
               <span className="hidden sm:inline">List Property</span>
               <span className="sm:hidden">List</span>
               
               {!currentUser ? (
-                <span className="bg-indigo-900/80 text-white text-[9px] sm:text-[10px] px-1 py-0.5 rounded uppercase font-extrabold border border-indigo-400/50">
+                <span className="bg-indigo-900/80 text-white text-[8px] sm:text-[10px] px-1 py-0.5 rounded uppercase font-extrabold border border-indigo-400/50">
                   SIGN IN
                 </span>
               ) : (
@@ -177,10 +177,10 @@ export const Header: React.FC<HeaderProps> = ({
               title="Saved Properties"
             >
               <Heart
-                className={`w-4 h-4 ${savedCount > 0 ? 'text-rose-500 fill-rose-500' : ''}`}
+                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${savedCount > 0 ? 'text-rose-500 fill-rose-500' : ''}`}
               />
               {savedCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center border-2 border-slate-950">
+                <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] sm:text-[10px] font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center border-2 border-slate-950">
                   {savedCount}
                 </span>
               )}
@@ -191,7 +191,7 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="relative">
                 <button
                   onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                  className="flex items-center gap-2 pl-1.5 sm:pl-2 pr-2 sm:pr-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 transition cursor-pointer"
+                  className="flex items-center gap-1.5 pl-1 pr-2 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 transition cursor-pointer shrink-0"
                 >
                   <img
                     src={currentUser.avatar}
@@ -206,7 +206,7 @@ export const Header: React.FC<HeaderProps> = ({
                       {currentUser.role}
                     </p>
                   </div>
-                  <ChevronDown className="w-3 h-3 text-slate-400 ml-0.5 sm:ml-1" />
+                  <ChevronDown className="w-3 h-3 text-slate-400 ml-0.5" />
                 </button>
 
                 {showProfileDropdown && (
@@ -260,7 +260,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Mobile / Tablet Scrollable Navigation Bar (Appears under main header on small screens) */}
+        {/* Mobile / Tablet Scrollable Navigation Bar (Home, Buy, Rent, Short Stay, Land & Plots) */}
         <div className="flex lg:hidden items-center gap-1.5 overflow-x-auto px-3 py-2 bg-slate-950/80 border-t border-slate-800/60 scrollbar-none">
           <button
             onClick={() => navigateTo('explore')}
@@ -315,17 +315,6 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             <Layers className="w-3 h-3" /> Land & Plots
-          </button>
-
-          <button
-            onClick={() => navigateTo('blog')}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0 ${
-              currentTab === 'blog'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800'
-            }`}
-          >
-            Blog
           </button>
         </div>
       </header>
