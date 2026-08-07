@@ -47,23 +47,38 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <header className="sticky top-0 z-40 bg-[#090D16]/90 backdrop-blur-xl border-b border-slate-800/80 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-1">
+        <div className="max-w-7xl mx-auto px-1.5 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-1">
           
-          {/* 1. Logo Card (Left Side) */}
-          <a
-            onClick={(e) => {
-              e.preventDefault();
-              navigateTo('explore');
-            }}
-            href="#"
-            className="flex items-center group transition transform hover:scale-105 cursor-pointer shrink-0"
-          >
-            <div className="h-10 sm:h-16 px-1.5 py-1 flex items-center justify-center bg-white rounded-xl shadow-lg border border-indigo-500/40 overflow-hidden">
-              <Logo className="h-8 sm:h-14 w-auto max-w-full" />
-            </div>
-          </a>
+          {/* Left Side: Logo & Blog Button Connected */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {/* 1. Logo Card */}
+            <a
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo('explore');
+              }}
+              href="#"
+              className="flex items-center group transition transform hover:scale-105 cursor-pointer shrink-0"
+            >
+              <div className="h-10 sm:h-16 px-1.5 py-1 flex items-center justify-center bg-white rounded-xl shadow-lg border border-indigo-500/40 overflow-hidden">
+                <Logo className="h-8 sm:h-14 w-auto max-w-full" />
+              </div>
+            </a>
 
-          {/* 2. Desktop Navigation Pills */}
+            {/* 2. Blog Button (Logo pakkane untundi) */}
+            <button
+              onClick={() => navigateTo('blog')}
+              className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-bold transition cursor-pointer flex items-center shadow-md shrink-0 ${
+                currentTab === 'blog'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-indigo-600/80 hover:bg-indigo-500 text-white'
+              }`}
+            >
+              Blog
+            </button>
+          </div>
+
+          {/* Desktop Navigation Pills (Hidden on mobile) */}
           <nav className="hidden lg:flex items-center gap-1 bg-slate-900/90 p-1.5 rounded-full border border-slate-800">
             <button
               onClick={() => navigateTo('explore')}
@@ -121,22 +136,10 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </nav>
 
-          {/* 3. Right Side Action Controls (Blog, Fill Details, List, Heart, User) */}
-          <div className="flex items-center gap-1 sm:gap-2">
+          {/* Right Side Action Controls: Fill Details -> List Property -> Heart -> Profile */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             
-            {/* Blog Button */}
-            <button
-              onClick={() => navigateTo('blog')}
-              className={`flex px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-bold transition cursor-pointer items-center shadow-md shrink-0 ${
-                currentTab === 'blog'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-indigo-600/80 hover:bg-indigo-500 text-white'
-              }`}
-            >
-              Blog
-            </button>
-
-            {/* Fill Details Button */}
+            {/* 3. Fill Details Button */}
             <button
               onClick={() => setIsModalOpen(true)}
               className="flex items-center bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1.5 sm:py-2.5 rounded-xl transition-all shadow-lg shadow-green-500/30 shrink-0"
@@ -144,7 +147,7 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="whitespace-nowrap">Fill Details</span>
             </button>
 
-            {/* List Property + Sign In Combined Button */}
+            {/* 4. List Property + Sign In Combined Button */}
             <button
               onClick={() => {
                 if (currentUser) {
@@ -153,7 +156,7 @@ export const Header: React.FC<HeaderProps> = ({
                   openAuthModal();
                 }
               }}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-black px-2 sm:px-4 py-1.5 sm:py-2.5 rounded-xl text-[10px] sm:text-xs shadow-lg shadow-blue-600/30 transition flex items-center gap-1 shrink-0"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-black px-1.5 sm:px-4 py-1.5 sm:py-2.5 rounded-xl text-[10px] sm:text-xs shadow-lg shadow-blue-600/30 transition flex items-center gap-1 shrink-0"
             >
               <PlusCircle className="w-4 h-4 hidden md:block" />
               <span className="hidden sm:inline">List Property</span>
@@ -170,7 +173,7 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </button>
 
-            {/* Favorites Heart Counter Button */}
+            {/* 5. Favorites Heart Counter Button */}
             <button
               onClick={() => navigateTo('favorites')}
               className="relative p-1.5 sm:p-2.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition cursor-pointer shrink-0"
@@ -186,7 +189,7 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </button>
 
-            {/* User Account / Profile Dropdown */}
+            {/* 6. User Account / Profile Dropdown */}
             {currentUser && (
               <div className="relative">
                 <button
