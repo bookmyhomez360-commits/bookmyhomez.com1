@@ -104,6 +104,7 @@
         width: 100vw;
         height: 100vh;
         overflow: hidden;
+        transition: opacity 0.8s ease 2.2s; /* Fade out effect after doors open */
       }
       #door-stage.done{display:none;}
 
@@ -111,6 +112,14 @@
         position:absolute; inset:0;
         background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
       }
+
+      /* Slow Opening Transition for Doors */
+      .door {
+        transition: transform 2.5s cubic-bezier(0.25, 1, 0.5, 1);
+        transform-style: preserve-3d;
+      }
+      .door-left { transform-origin: left; }
+      .door-right { transform-origin: right; }
 
       /* Side Door Vertical Serial Lights */
       .side-serial-light {
@@ -233,13 +242,13 @@
       }
     </style>
   </head>
-  <body>
+  <body class="locked">
     <!-- Door Intro Overlay -->
     <div id="door-stage">
       <div class="door-frame"></div>
 
       <!-- Left Door Leaf -->
-      <div class="door door-left">
+      <div class="door door-left" style="position:absolute; top:0; bottom:0; left:0; width:50%;">
         <div class="side-serial-light" id="leftSideLights"></div>
         <div class="door-panel panel-top">
           <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
@@ -255,7 +264,7 @@
       </div>
 
       <!-- Right Door Leaf -->
-      <div class="door door-right">
+      <div class="door door-right" style="position:absolute; top:0; bottom:0; right:0; width:50%;">
         <div class="side-serial-light" id="rightSideLights"></div>
         <div class="door-panel panel-top">
           <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
@@ -271,7 +280,7 @@
       </div>
 
       <!-- Toran Garland -->
-      <svg class="toran" viewBox="0 0 1400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <svg class="toran" viewBox="0 0 1400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="position:absolute; top:0; left:0; width:100%; z-index:18; pointer-events:none;">
         <defs>
           <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
             <feDropShadow dx="0" dy="2" stdDeviation="1.4" flood-color="#1a1006" flood-opacity="0.45"/>
@@ -416,6 +425,12 @@
       function openDoors(){
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
+        document.body.classList.remove('locked');
+        
+        // Completely remove the door overlay from DOM after the smooth animation completes
+        setTimeout(() => {
+          stage.classList.add('done');
+        }, 3000);
       }
 
       if(knockBtn){
