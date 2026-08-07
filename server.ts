@@ -8,7 +8,7 @@ let propertiesStore: Property[] = [...INITIAL_PROPERTIES];
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT_NUM = Number(process.env.PORT) || 3000;
 
   app.use(express.json({ limit: '10mb' }));
 
@@ -84,47 +84,42 @@ async function startServer() {
   // OMINIDIM AI CALL TRIGGER API 
   // -------------------------------------------------------------
   app.post('/api/trigger-ominidim-call', async (req, res) => {
-  try {
-    const { agentId, agent_id, fullName, mobile, email } = req.body;
+    try {
+      const { agentId, agent_id, fullName, mobile, email } = req.body;
 
-    // Mobile number lo unna spaces ni remove chestunnam (+91 6301478309 -> +916301478309)
-    const formattedMobile = mobile ? mobile.replace(/\s+/g, '') : '';
+      // Mobile number lo unna spaces ni remove chestunnam (+91 6301478309 -> +916301478309)
+      const formattedMobile = mobile ? mobile.replace(/\s+/g, '') : '';
 
-    // Omnidimension API ki request pampistunnam
-    const response = await fetch('https://api.omnidimension.io/v1/make-call', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer Ahmni5AcuICUTssvjj28pI07dL8DM1qPwomv-sY9U_M`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        agent_id: agentId || agent_id || "233563",
-        customer_number: formattedMobile,
-        customer_name: fullName,
-        customer_email: email
-      })
-    });
+      // Omnidimension API ki request pampistunnam
+      const response = await fetch('https://api.omnidimension.io/v1/make-call', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer Ahmni5AcuICUTssvjj28pI07dL8DM1qPwomv-sY9U_M`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          agent_id: agentId || agent_id || "233563",
+          customer_number: formattedMobile,
+          customer_name: fullName,
+          customer_email: email
+        })
+      });
 
-    if (response.ok) {
-      res.status(200).json({ success: true, message: "AI Agent is calling now!" });
-    } else {
-      const errorData = await response.json().catch(() => ({}));
-      console.error("Omnidimension Error:", errorData);
-      res.status(400).json({ success: false, message: "Call failed to connect.", error: errorData });
+      if (response.ok) {
+        res.status(200).json({ success: true, message: "AI Agent is calling now!" });
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Omnidimension Error:", errorData);
+        res.status(400).json({ success: false, message: "Call failed to connect.", error: errorData });
+      }
+    } catch (error) {
+      console.error("Server Error:", error);
+      res.status(500).json({ success: false, error: "Internal Server Error" });
     }
-  } catch (error) {
-    console.error("Server Error:", error);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
-  }
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  });
   // -------------------------------------------------------------
 
-  // Vite middleware for development
+  // Vite middleware for development / Static serving for production
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -139,8 +134,9 @@ app.listen(PORT, () => {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[BookMyHomez] Server running on http://0.0.0.0:${PORT}`);
+  // Single unified server listen at the very end using PORT_NUM
+  app.listen(PORT_NUM, "0.0.0.0", () => {
+    console.log(`[BookMyHomez] Server running on http://0.0.0.0:${PORT_NUM}`);
   });
 }
 
