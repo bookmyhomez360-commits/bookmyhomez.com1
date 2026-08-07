@@ -80,7 +80,7 @@
     }
     </script>
 
-    <!-- Complete Door, Serial Lights Styles -->
+    <!-- Complete Door Styles -->
     <style>
       :root{
         --wood-dark:#4A2C1A;
@@ -117,10 +117,8 @@
 
       .door-container {
         position: relative;
-        width: 100%;
-        max-width: 600px;
-        height: 100%;
-        max-height: 100vh;
+        width: 100vw;
+        height: 100vh;
         display: flex;
         transform-style: preserve-3d;
       }
@@ -226,8 +224,8 @@
         background:linear-gradient(90deg, var(--brass-dark), var(--brass) 35%, #f6e2a0 50%, var(--brass) 65%, var(--brass-dark));
         box-shadow:0 3px 8px rgba(0,0,0,0.6); z-index: 10;
       }
-      .door-left .door-handle{ right:5px; }
-      .door-right .door-handle{ left:5px; }
+      .door-left .door-handle{ right:15px; }
+      .door-right .door-handle{ left:15px; }
 
       #door-stage.opened .door-left{ transform:rotateY(-110deg); }
       #door-stage.opened .door-right{ transform:rotateY(110deg); }
@@ -288,9 +286,9 @@
 
       <div class="door-container">
         <!-- Toran Garland -->
-        <svg class="toran" viewBox="0 0 600 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M-50,15 Q150,90 300,40 Q450,90 650,15" stroke="#5c3a1e" stroke-width="4" fill="none" opacity="0.55"/>
-          <path class="garland-line" d="M-50,15 Q150,90 300,40 Q450,90 650,15" stroke="#D4AF37" stroke-width="3.5" fill="none" opacity="0.9"/>
+        <svg class="toran" viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M-50,15 Q300,90 600,40 Q900,90 1250,15" stroke="#5c3a1e" stroke-width="4" fill="none" opacity="0.55"/>
+          <path class="garland-line" d="M-50,15 Q300,90 600,40 Q900,90 1250,15" stroke="#D4AF37" stroke-width="3.5" fill="none" opacity="0.9"/>
           <g id="leaves"></g>
           <g id="flowers"></g>
         </svg>
@@ -392,18 +390,18 @@
         const leavesG = document.getElementById('leaves');
         const flowersG = document.getElementById('flowers');
         if(leavesG && flowersG){
-          for(let i=0; i<20; i++){
-            const t = i / 19; const x = 20 + t * 560;
+          for(let i=0; i<30; i++){
+            const t = i / 29; const x = 20 + t * 1160;
             const y = 15 + 45 * (1 - Math.pow(t*2-1, 2));
-            if(i % 2 === 0) leavesG.appendChild(mangoLeaf(x, y, -40+t*80, 0.8, '#4F7942'));
-            else flowersG.appendChild(marigold(x, y+6, 0.8, '#E8871E'));
+            if(i % 2 === 0) leavesG.appendChild(mangoLeaf(x, y, -40+t*80, 0.9, '#4F7942'));
+            else flowersG.appendChild(marigold(x, y+6, 0.9, '#E8871E'));
           }
         }
 
         ['leftSideLights', 'rightSideLights'].forEach(id => {
           const container = document.getElementById(id);
           if(container){
-            for(let i=0; i<10; i++){
+            for(let i=0; i<12; i++){
               const bulb = document.createElement('div');
               bulb.className = 'side-bulb';
               container.appendChild(bulb);
@@ -454,7 +452,6 @@
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
         
-        // Remove door stage completely after animation completes so website works normally
         setTimeout(() => {
           stage.classList.add('done');
           document.body.classList.remove('locked');
