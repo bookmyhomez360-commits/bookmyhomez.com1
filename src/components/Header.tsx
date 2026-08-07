@@ -49,11 +49,9 @@ export const Header: React.FC<HeaderProps> = ({
       <header className="sticky top-0 z-40 bg-[#090D16]/90 backdrop-blur-xl border-b border-slate-800/80 transition-all duration-300">
         
         {/* ==========================================
-            1. LAPTOP / DESKTOP HEADER (Hidden on Mobile)
+            1. LAPTOP / DESKTOP HEADER
            ========================================== */}
         <div className="hidden lg:flex max-w-7xl mx-auto px-6 lg:px-8 h-20 items-center justify-between gap-4">
-          
-          {/* Logo Card */}
           <a
             onClick={(e) => {
               e.preventDefault();
@@ -67,7 +65,6 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </a>
 
-          {/* Central Navigation Pills */}
           <nav className="flex items-center gap-1 bg-slate-900/90 p-1.5 rounded-full border border-slate-800">
             <button
               onClick={() => navigateTo('explore')}
@@ -79,7 +76,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Home className="w-3.5 h-3.5" /> Home
             </button>
-
             <button
               onClick={() => navigateToCategory('Buy')}
               className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
@@ -90,7 +86,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <ShoppingBag className="w-3.5 h-3.5" /> Buy
             </button>
-
             <button
               onClick={() => navigateToCategory('Rent')}
               className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
@@ -101,7 +96,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Key className="w-3.5 h-3.5" /> Rent
             </button>
-
             <button
               onClick={() => navigateToCategory('Short Stay')}
               className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
@@ -112,7 +106,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Hotel className="w-3.5 h-3.5" /> Short Stay
             </button>
-
             <button
               onClick={() => navigateToCategory('Plots')}
               className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
@@ -125,7 +118,6 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </nav>
 
-          {/* Right Section (Blog, Fill Details, List Property, Heart, Profile) */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => navigateTo('blog')}
@@ -137,14 +129,12 @@ export const Header: React.FC<HeaderProps> = ({
             >
               Blog
             </button>
-
             <button
               onClick={() => setIsModalOpen(true)}
               className="flex items-center bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-bold px-3 py-2.5 rounded-xl transition-all shadow-lg shadow-green-500/30"
             >
               <span>Fill Details</span>
             </button>
-
             <button
               onClick={() => {
                 if (currentUser) {
@@ -167,11 +157,9 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               )}
             </button>
-
             <button
               onClick={() => navigateTo('favorites')}
               className="relative p-2.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition cursor-pointer"
-              title="Saved Properties"
             >
               <Heart
                 className={`w-4 h-4 ${savedCount > 0 ? 'text-rose-500 fill-rose-500' : ''}`}
@@ -182,7 +170,6 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               )}
             </button>
-
             {currentUser && (
               <div className="relative">
                 <button
@@ -204,7 +191,6 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
                   <ChevronDown className="w-3 h-3 text-slate-400" />
                 </button>
-
                 {showProfileDropdown && (
                   <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl py-2 z-50 backdrop-blur-xl">
                     <div className="px-4 py-3 border-b border-slate-800">
@@ -252,9 +238,9 @@ export const Header: React.FC<HeaderProps> = ({
 
 
         {/* =========================================================================================
-            2. MOBILE TOP BAR (Only visible on Mobile/Tablet - Exactly 5 elements: Logo, Blog, Details, List, Heart)
+            2. MOBILE TOP BAR (Zero/Minimal Gap - Ultra-compact layout using flex-1 and tight spacing)
            ========================================================================================= */}
-        <div className="flex lg:hidden px-2 h-14 items-center justify-between gap-1 bg-[#090D16]">
+        <div className="flex lg:hidden px-1 h-14 items-center justify-between gap-0.5 bg-[#090D16]">
           
           {/* Element 1: Logo */}
           <a
@@ -263,9 +249,9 @@ export const Header: React.FC<HeaderProps> = ({
               navigateTo('explore');
             }}
             href="#"
-            className="flex items-center group transition transform hover:scale-105 cursor-pointer shrink-0"
+            className="flex items-center group transition transform hover:scale-105 cursor-pointer shrink-0 pr-0.5"
           >
-            <div className="h-8 px-1.5 py-0.5 flex items-center justify-center bg-white rounded-lg shadow border border-indigo-500/40 overflow-hidden">
+            <div className="h-8 px-1 py-0.5 flex items-center justify-center bg-white rounded-md shadow border border-indigo-500/40 overflow-hidden">
               <Logo className="h-6 w-auto max-w-full" />
             </div>
           </a>
@@ -273,7 +259,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Element 2: Blog */}
           <button
             onClick={() => navigateTo('blog')}
-            className={`px-2 py-1.5 rounded-md text-[10px] font-bold transition cursor-pointer shadow shrink-0 ${
+            className={`flex-1 text-center py-1.5 px-1 rounded text-[10px] font-bold transition cursor-pointer shadow truncate ${
               currentTab === 'blog'
                 ? 'bg-indigo-600 text-white'
                 : 'bg-indigo-600/80 text-white'
@@ -285,9 +271,9 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Element 3: Fill Details */}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center bg-gradient-to-r from-green-500 to-emerald-600 text-white text-[9px] font-bold px-2 py-1.5 rounded-md shadow shrink-0"
+            className="flex-1 text-center bg-gradient-to-r from-green-500 to-emerald-600 text-white text-[10px] font-bold py-1.5 px-1 rounded shadow truncate"
           >
-            <span>Details</span>
+            Details
           </button>
 
           {/* Element 4: List Property */}
@@ -299,7 +285,7 @@ export const Header: React.FC<HeaderProps> = ({
                 openAuthModal();
               }
             }}
-            className="bg-blue-600 text-white font-bold px-2 py-1.5 rounded-md text-[9px] shadow transition flex items-center gap-0.5 shrink-0"
+            className="flex-1 text-center bg-blue-600 text-white font-bold py-1.5 px-1 rounded text-[10px] shadow transition flex items-center justify-center gap-0.5 truncate"
           >
             <span>List</span>
             {!currentUser && (
@@ -312,7 +298,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Element 5: Heart (Favorites) */}
           <button
             onClick={() => navigateTo('favorites')}
-            className="relative p-1.5 rounded-md border border-slate-800 bg-slate-900 text-slate-300 transition shrink-0"
+            className="relative p-1.5 rounded border border-slate-800 bg-slate-900 text-slate-300 transition shrink-0 flex items-center justify-center ml-0.5"
           >
             <Heart
               className={`w-3.5 h-3.5 ${savedCount > 0 ? 'text-rose-500 fill-rose-500' : ''}`}
