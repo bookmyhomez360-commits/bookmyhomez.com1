@@ -80,17 +80,12 @@ async function startServer() {
     res.json({ success: true, message: "Property deleted successfully", id });
   });
 
-  // -------------------------------------------------------------
   // OMINIDIM AI CALL TRIGGER API 
-  // -------------------------------------------------------------
   app.post('/api/trigger-ominidim-call', async (req, res) => {
     try {
       const { agentId, agent_id, fullName, mobile, email } = req.body;
-
-      // Mobile number lo unna spaces ni remove chestunnam (+91 6301478309 -> +916301478309)
       const formattedMobile = mobile ? mobile.replace(/\s+/g, '') : '';
 
-      // Omnidimension API ki request pampistunnam
       const response = await fetch('https://api.omnidimension.io/v1/make-call', {
         method: 'POST',
         headers: {
@@ -109,17 +104,14 @@ async function startServer() {
         res.status(200).json({ success: true, message: "AI Agent is calling now!" });
       } else {
         const errorData = await response.json().catch(() => ({}));
-        console.error("Omnidimension Error:", errorData);
         res.status(400).json({ success: false, message: "Call failed to connect.", error: errorData });
       }
     } catch (error) {
-      console.error("Server Error:", error);
       res.status(500).json({ success: false, error: "Internal Server Error" });
     }
   });
-  // -------------------------------------------------------------
 
-  // Vite middleware for development / Static serving for production
+  // Vite middleware / Production static serving
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -134,7 +126,7 @@ async function startServer() {
     });
   }
 
-  // Single unified server listen at the very end
+  // Server listening MUST be at the very end
   app.listen(PORT_NUM, "0.0.0.0", () => {
     console.log(`[BookMyHomez] Server running on http://0.0.0.0:${PORT_NUM}`);
   });
