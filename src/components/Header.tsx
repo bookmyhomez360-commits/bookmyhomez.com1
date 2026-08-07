@@ -14,7 +14,6 @@ import {
   Building,
   CirclePlus,
   LogOut,
-  LogIn,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -50,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
       <header className="sticky top-0 z-40 bg-[#090D16]/90 backdrop-blur-xl border-b border-slate-800/80 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           
-          {/* Logo Card */}
+          {/* 1. Logo Card (Left Side) */}
           <a
             onClick={(e) => {
               e.preventDefault();
@@ -59,13 +58,13 @@ export const Header: React.FC<HeaderProps> = ({
             href="#"
             className="flex items-center group transition transform hover:scale-105 cursor-pointer"
           >
-            <div className="h-12 sm:h-14 px-2 py-1 flex items-center justify-center bg-white rounded-xl shadow-lg border border-indigo-500/40 overflow-hidden">
-              <Logo className="h-10 sm:h-12 w-auto max-w-full" />
+            <div className="h-14 sm:h-16 px-2 py-1 flex items-center justify-center bg-white rounded-xl shadow-lg border border-indigo-500/40 overflow-hidden">
+              <Logo className="h-12 sm:h-14 w-auto max-w-full" />
             </div>
           </a>
 
-          {/* Central Navigation Pills (Home, Buy, Rent, Short Stay, Land & Plots) */}
-          <nav className="hidden md:flex items-center gap-1 bg-slate-900/90 p-1.5 rounded-full border border-slate-800 shadow-inner">
+          {/* 2. Central Navigation Pills (Home, Buy, Rent, Short Stay, Land & Plots) */}
+          <nav className="hidden md:flex items-center gap-1 bg-slate-900/90 p-1.5 rounded-full border border-slate-800">
             <button
               onClick={() => navigateTo('explore')}
               className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
@@ -122,18 +121,30 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </nav>
 
-          {/* Action Controls (Right Side) */}
+          {/* 3. Blog Button */}
+          <button
+            onClick={() => navigateTo('blog')}
+            className={`hidden lg:flex px-5 py-2 rounded-full text-xs font-bold transition cursor-pointer items-center gap-1.5 shadow-md ${
+              currentTab === 'blog'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-indigo-600/80 hover:bg-indigo-500 text-white'
+            }`}
+          >
+            Blog
+          </button>
+
+          {/* 4. Action Controls (Right Side: Fill Details, List Property + Sign In, Heart, User Dropdown) */}
           <div className="flex items-center gap-3">
             
             {/* Fill Details Button */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-1.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all shadow-lg shadow-green-500/30 hover:scale-[1.02] active:scale-95 cursor-pointer"
+              className="flex items-center gap-1.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-bold px-3 py-2.5 rounded-xl transition-all shadow-lg shadow-green-500/30 hover:scale-[1.02] active:scale-95 cursor-pointer"
             >
-              <span className="whitespace-nowrap">Fill Details</span>
+              <span className="whitespace-nowrap hidden sm:inline">Fill Details</span>
             </button>
 
-            {/* List Property / Sign In Button */}
+            {/* List Property + Sign In Combined Button */}
             <button
               onClick={() => {
                 if (currentUser) {
@@ -150,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
               
               {!currentUser ? (
                 <span className="bg-indigo-900/80 text-white text-[10px] px-1.5 py-0.5 rounded uppercase font-extrabold border border-indigo-400/50">
-                  Sign In
+                  SIGN IN
                 </span>
               ) : (
                 <span className="bg-white/20 text-white text-[10px] px-1.5 py-0.5 rounded uppercase font-extrabold hidden sm:inline">
@@ -175,8 +186,8 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </button>
 
-            {/* User Account / Profile Dropdown */}
-            {currentUser ? (
+            {/* User Account / Profile Dropdown (If Logged In) */}
+            {currentUser && (
               <div className="relative">
                 <button
                   onClick={() => setShowProfileDropdown(!showProfileDropdown)}
@@ -219,7 +230,11 @@ export const Header: React.FC<HeaderProps> = ({
 
                     <button
                       onClick={() => {
-                        openWizard();
+                        if (currentUser) {
+                          openWizard();
+                        } else {
+                          openAuthModal();
+                        }
                         setShowProfileDropdown(false);
                       }}
                       className="w-full text-left px-4 py-2.5 text-xs text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 transition cursor-pointer"
@@ -241,15 +256,7 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
                 )}
               </div>
-            ) : (
-              <button
-                onClick={openAuthModal}
-                className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl flex items-center gap-2 transition cursor-pointer shadow-sm"
-              >
-                <LogIn className="w-4 h-4 text-indigo-400" /> Log In / Sign Up
-              </button>
             )}
-
           </div>
         </div>
       </header>
