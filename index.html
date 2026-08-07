@@ -80,85 +80,49 @@
     }
     </script>
 
-    <!-- Door Styles -->
+    <!-- Complete Door, Serial Lights & Video Player Styles -->
     <style>
       :root{
-        --wood-dark:#3A1F10;
-        --wood-mid:#5C3217;
-        --wood-grain:#241108;
+        --wood-dark:#4A2C1A;
+        --wood-mid:#6B3E22;
+        --wood-light:#8B5A34;
+        --wood-grain:#3B2213;
         --brass:#D4AF37;
         --brass-dark:#9C7A1E;
+        --marigold:#E8871E;
+        --marigold-light:#F4A93F;
+        --mango-leaf:#4F7942;
       }
-      
-      body.locked{overflow:hidden;}
+      *{box-sizing:border-box;margin:0;padding:0;}
+      html,body{height:100%;}
+      body.locked{overflow:hidden; height:100vh;}
 
       #door-stage{
         position:fixed; inset:0; z-index:99999;
         perspective:2200px;
-        background:linear-gradient(180deg,#1c1007,#0a0502);
+        background:linear-gradient(180deg,#2b1a10,#1c1009);
         width: 100vw;
         height: 100vh;
         overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: opacity 0.8s ease, visibility 0.8s ease;
       }
-      #door-stage.done{
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        display: none;
-      }
-
-      .door-container {
-        position: relative;
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        transform-style: preserve-3d;
-      }
+      #door-stage.done{display:none;}
 
       .door-frame{
         position:absolute; inset:0;
-        background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.15), transparent 65%), linear-gradient(180deg,#2b1508,#140a04);
-        z-index: 1;
+        background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
       }
 
-      .door {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 50%;
-        background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(0,0,0,0.25) 60%), var(--wood-mid);
-        border: 6px solid var(--wood-grain);
-        transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
-        z-index: 10;
-        overflow: hidden;
-      }
-
-      .door-left {
-        left: 0;
-        transform-origin: left;
-        border-right: 3px solid var(--wood-grain);
-      }
-
-      .door-right {
-        right: 0;
-        transform-origin: right;
-        border-left: 3px solid var(--wood-grain);
-      }
-
+      /* Side Door Vertical Serial Lights */
       .side-serial-light {
-        position: absolute; top: 20px; bottom: 20px; width: 10px; z-index: 12;
+        position: absolute; top: 20px; bottom: 20px; width: 8px; z-index: 12;
         pointer-events: none; display: flex; flex-direction: column; justify-content: space-around; align-items: center;
       }
-      .door-left .side-serial-light { left: 15px; }
-      .door-right .side-serial-light { right: 15px; }
+      .door-left .side-serial-light { left: 12px; }
+      .door-right .side-serial-light { right: 12px; }
 
       .side-bulb {
-        width: 9px; height: 9px; border-radius: 50%;
-        box-shadow: 0 0 8px currentColor; animation: bulbGlow 1.2s ease-in-out infinite alternate;
+        width: 8px; height: 8px; border-radius: 50%;
+        box-shadow: 0 0 6px currentColor; animation: bulbGlow 1.2s ease-in-out infinite alternate;
       }
       .side-bulb:nth-child(4n+1) { background: #ff3333; color: #ff3333; }
       .side-bulb:nth-child(4n+2) { background: #33ff33; color: #33ff33; animation-delay: 0.3s; }
@@ -166,19 +130,20 @@
       .side-bulb:nth-child(4n+4) { background: #ff33cc; color: #ff33cc; animation-delay: 0.9s; }
 
       .door-panel{
-        position:absolute; left:12%; right:12%;
-        border-radius:6px;
-        background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2) 60%), var(--wood-dark);
-        border: 4px solid var(--wood-grain);
-        box-shadow: inset 0 4px 8px rgba(255,255,255,0.08), inset 0 -8px 16px rgba(0,0,0,0.8);
+        position:absolute; left:10%; right:10%;
+        border-radius:4px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(0,0,0,0.12) 55%), var(--wood-mid);
+        border: 5px solid var(--wood-grain);
+        box-shadow: inset 0 3px 6px rgba(255,255,255,0.10), inset 0 -6px 14px rgba(0,0,0,0.65);
         display: flex; align-items: center; justify-content: center;
       }
-      .panel-top{ top:7%; height:36%; }
-      .panel-bottom{ bottom:7%; height:44%; }
+      .panel-top{ top:6%; height:38%; }
+      .panel-bottom{ bottom:6%; height:46%; }
 
+      /* 4 Boxes Panel Border Serial Lights */
       .panel-bulb {
         position: absolute; width: 6px; height: 6px; border-radius: 50%;
-        box-shadow: 0 0 6px currentColor; z-index: 5;
+        box-shadow: 0 0 5px currentColor; z-index: 5;
         animation: bulbGlow 1s ease-in-out infinite alternate;
       }
       .panel-bulb:nth-child(3n+1) { background: #ffeb3b; color: #ffeb3b; }
@@ -186,44 +151,53 @@
       .panel-bulb:nth-child(3n+3) { background: #ff4081; color: #ff4081; animation-delay: 0.8s; }
 
       .brass-corner{
-        position:absolute; width:28px; height:28px;
-        background:radial-gradient(circle at 32% 30%, #fff2cc, var(--brass) 50%, var(--brass-dark) 100%);
-        box-shadow:0 2px 5px rgba(0,0,0,0.6); z-index: 6;
+        position:absolute; width:26px; height:26px;
+        background:radial-gradient(circle at 32% 30%, #fbe9ab, var(--brass) 50%, var(--brass-dark) 100%);
+        box-shadow:0 2px 4px rgba(0,0,0,0.55); z-index: 6;
       }
       .brass-corner.tl{ top:-5px; left:-5px; border-radius:0 0 100% 0; }
       .brass-corner.tr{ top:-5px; right:-5px; border-radius:0 0 0 100%; }
       .brass-corner.bl{ bottom:-5px; left:-5px; border-radius:0 100% 0 0; }
       .brass-corner.br{ bottom:-5px; right:-5px; border-radius:100% 0 0 0; }
 
+      /* Animated Rosette Design inside 4 Boxes */
       .panel-rosette {
-        width: 75px; height: 75px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(0,0,0,0.6) 0%, rgba(36,17,8,0.9) 70%);
-        border: 2px dashed rgba(212, 175, 55, 0.5);
-        box-shadow: inset 0 4px 10px rgba(0,0,0,0.9);
+        width: 80px; height: 80px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(0,0,0,0.5) 0%, rgba(59,34,19,0.85) 70%);
+        border: 2px dashed rgba(212, 175, 55, 0.4);
+        box-shadow: inset 0 4px 8px rgba(0,0,0,0.85), 0 0 12px rgba(212,175,55,0.2);
         display: flex; align-items: center; justify-content: center;
-        animation: rosetteSpin 20s linear infinite;
+        animation: rosetteSpin 16s linear infinite;
+      }
+      .panel-rosette::before {
+        content: ""; width: 48px; height: 48px; border-radius: 50%;
+        background: repeating-radial-gradient(circle, var(--wood-grain), var(--wood-dark) 4px, transparent 4px, transparent 8px);
+        border: 1px solid rgba(212, 175, 55, 0.6);
+        animation: rosetteSpinReverse 12s linear infinite;
       }
       @keyframes rosetteSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      @keyframes rosetteSpinReverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
 
       .door-handle{
-        position:absolute; top:44%; width:16px; height:120px; border-radius:8px;
-        background:linear-gradient(90deg, var(--brass-dark), var(--brass) 35%, #fff2cc 50%, var(--brass) 65%, var(--brass-dark));
-        box-shadow:0 4px 10px rgba(0,0,0,0.7); z-index: 10;
+        position:absolute; top:44%; width:14px; height:110px; border-radius:7px;
+        background:linear-gradient(90deg, var(--brass-dark), var(--brass) 35%, #f6e2a0 50%, var(--brass) 65%, var(--brass-dark));
+        box-shadow:0 3px 8px rgba(0,0,0,0.6); z-index: 10;
       }
-      .door-left .door-handle{ right:18px; }
-      .door-right .door-handle{ left:18px; }
+      .door-left .door-handle{ right:5%; }
+      .door-right .door-handle{ left:5%; }
 
-      #door-stage.opened .door-left{ transform:rotateY(-110deg); }
-      #door-stage.opened .door-right{ transform:rotateY(110deg); }
-      #door-stage.opened .knock-wrap { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+      #door-stage.opened .door-left{ transform:rotateY(-112deg); }
+      #door-stage.opened .door-right{ transform:rotateY(112deg); }
+      #door-stage.opened .knock-wrap { display: none; }
 
+      /* Center Knob Button with Serial Lights Ring */
       .knock-wrap{
         position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-        z-index:30; display:flex; flex-direction:column; align-items:center; justify-content:center;
-        width: 200px; height: 200px;
+        z-index:20; display:flex; align-items:center; justify-content:center;
+        width: 140px; height: 140px;
       }
       .serial-ring {
-        position: absolute; width: 140px; height: 140px; border-radius: 50%; top: 10px;
+        position: absolute; inset: 0; border-radius: 50%;
         animation: ringSpin 10s linear infinite; pointer-events: none;
       }
       @keyframes ringSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -235,112 +209,108 @@
       .serial-bulb:nth-child(4n+2) { background: #33ff33; color: #33ff33; animation-delay: 0.3s; }
       .serial-bulb:nth-child(4n+3) { background: #33ccff; color: #33ccff; animation-delay: 0.6s; }
       .serial-bulb:nth-child(4n+4) { background: #ff33cc; color: #ff33cc; animation-delay: 0.9s; }
-      @keyframes bulbGlow { 0% { opacity: 0.4; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.3); } }
+      @keyframes bulbGlow { 0% { opacity: 0.3; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
 
       .knock-btn{
-        width:100px; height:100px; border-radius:50%; border:4px solid var(--brass-dark);
-        background:radial-gradient(circle at 35% 30%, #fff2cc, var(--brass) 55%, var(--brass-dark) 100%);
-        box-shadow:0 8px 25px rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center;
-        cursor:pointer; z-index: 35; position: relative;
-        transition: transform 0.2s ease;
+        width:90px; height:90px; border-radius:50%; border:3px solid var(--brass-dark);
+        background:radial-gradient(circle at 35% 30%, #f6e2a0, var(--brass) 55%, var(--brass-dark) 100%);
+        box-shadow:0 6px 18px rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center;
+        cursor:pointer; z-index: 5; position: relative;
       }
-      .knock-btn:hover { transform: scale(1.08); }
       .knock-btn svg{ animation: iconWiggle 2.6s ease-in-out infinite; transform-origin:50% 78%; }
       @keyframes iconWiggle{ 0%,100%{ transform:rotate(0deg); } 25%{ transform:rotate(-9deg); } 75%{ transform:rotate(9deg); } }
 
-      .click-text {
-        margin-top: 15px; color: #fff2cc; font-family: sans-serif; font-size: 15px; font-weight: bold;
-        background: rgba(0, 0, 0, 0.6); padding: 6px 16px; border-radius: 20px;
-        border: 1px solid var(--brass); box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        letter-spacing: 0.5px; z-index: 35; pointer-events: none;
-        animation: textPulse 1.5s ease-in-out infinite alternate;
-      }
-      @keyframes textPulse { 0% { opacity: 0.7; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
-
-      .toran {
-        position: absolute; top: 0; left: 0; width: 100%; height: 120px; z-index: 20; pointer-events: none;
-      }
-
+      /* Enhanced Animated Traditional Kolam / Rangoli */
       .door-kolam {
-        position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-        width: 260px; height: 80px; z-index: 20; pointer-events: none;
-        filter: drop-shadow(0 3px 8px rgba(0,0,0,0.8));
+        position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+        width: 240px; height: 75px; z-index: 15; pointer-events: none;
+        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7));
+        animation: kolamGlow 3s ease-in-out infinite alternate;
+      }
+      @keyframes kolamGlow {
+        0% { opacity: 0.8; filter: drop-shadow(0 2px 4px rgba(255,215,0,0.3)); }
+        100% { opacity: 1; filter: drop-shadow(0 2px 10px rgba(255,215,0,0.8)); }
       }
     </style>
   </head>
-  <body class="locked">
+  <body>
     <!-- Door Intro Overlay -->
     <div id="door-stage">
       <div class="door-frame"></div>
 
-      <div class="door-container">
-        <!-- Toran Garland -->
-        <svg class="toran" viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M-50,15 Q300,90 600,40 Q900,90 1250,15" stroke="#3a1f10" stroke-width="4" fill="none" opacity="0.6"/>
-          <path class="garland-line" d="M-50,15 Q300,90 600,40 Q900,90 1250,15" stroke="#D4AF37" stroke-width="3.5" fill="none" opacity="0.95"/>
-          <g id="leaves"></g>
-          <g id="flowers"></g>
-        </svg>
-
-        <!-- Left Door Leaf -->
-        <div class="door door-left">
-          <div class="side-serial-light" id="leftSideLights"></div>
-          <div class="door-panel panel-top">
-            <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
-            <div class="brass-corner bl"></div><div class="brass-corner br"></div>
-            <div class="panel-rosette"></div>
-          </div>
-          <div class="door-panel panel-bottom">
-            <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
-            <div class="brass-corner bl"></div><div class="brass-corner br"></div>
-            <div class="panel-rosette"></div>
-          </div>
-          <div class="door-handle"></div>
+      <!-- Left Door Leaf -->
+      <div class="door door-left">
+        <div class="side-serial-light" id="leftSideLights"></div>
+        <div class="door-panel panel-top">
+          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
+          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
+          <div class="panel-rosette"></div>
         </div>
-
-        <!-- Right Door Leaf -->
-        <div class="door door-right">
-          <div class="side-serial-light" id="rightSideLights"></div>
-          <div class="door-panel panel-top">
-            <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
-            <div class="brass-corner bl"></div><div class="brass-corner br"></div>
-            <div class="panel-rosette"></div>
-          </div>
-          <div class="door-panel panel-bottom">
-            <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
-            <div class="brass-corner bl"></div><div class="brass-corner br"></div>
-            <div class="panel-rosette"></div>
-          </div>
-          <div class="door-handle"></div>
+        <div class="door-panel panel-bottom">
+          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
+          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
+          <div class="panel-rosette"></div>
         </div>
+        <div class="door-handle"></div>
+      </div>
 
-        <!-- Door Kolam / Rangoli -->
-        <svg class="door-kolam" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
-          <g stroke="#fce8a2" stroke-width="1.8" fill="none" stroke-linecap="round">
-            <path d="M120,65 C105,50 95,35 120,15 C145,35 135,50 120,65 Z" fill="rgba(232, 135, 30, 0.4)" />
-            <path d="M120,65 C105,55 90,45 100,30 C112,35 116,50 120,65 Z" fill="rgba(244, 169, 63, 0.3)" />
-            <path d="M120,65 C135,55 150,45 140,30 C128,35 124,50 120,65 Z" fill="rgba(244, 169, 63, 0.3)" />
-            <path d="M70,55 Q95,25 120,55 Q145,25 170,55" />
-            <path d="M45,65 Q80,15 120,65 Q160,15 195,65" />
-            <path d="M25,72 Q120,30 215,72" stroke-width="1.2" />
-            <circle cx="120" cy="12" r="3.5" fill="#fce8a2" />
-            <circle cx="92" cy="38" r="2.2" fill="#fce8a2" />
-            <circle cx="148" cy="38" r="2.2" fill="#fce8a2" />
-            <circle cx="65" cy="52" r="2" fill="#fce8a2" />
-            <circle cx="175" cy="52" r="2" fill="#fce8a2" />
-          </g>
-        </svg>
+      <!-- Right Door Leaf -->
+      <div class="door door-right">
+        <div class="side-serial-light" id="rightSideLights"></div>
+        <div class="door-panel panel-top">
+          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
+          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
+          <div class="panel-rosette"></div>
+        </div>
+        <div class="door-panel panel-bottom">
+          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
+          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
+          <div class="panel-rosette"></div>
+        </div>
+        <div class="door-handle"></div>
+      </div>
 
-        <!-- Center Knob Button with Click Text -->
-        <div class="knock-wrap" id="knockWrap">
-          <div class="serial-ring" id="serialRing"></div>
-          <div class="knock-btn" id="knockBtn" role="button" tabindex="0">
-            <svg viewBox="0 0 24 24" width="45" height="45" stroke="#3A1F10" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
-              <path d="M3 11.5 12 4l9 7.5"/>
-              <path d="M5 10v9.5a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/>
-            </svg>
-          </div>
-          <div class="click-text">🚪 Click to Open</div>
+      <!-- Toran Garland -->
+      <svg class="toran" viewBox="0 0 1400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="2" stdDeviation="1.4" flood-color="#1a1006" flood-opacity="0.45"/>
+          </filter>
+        </defs>
+        <path d="M-50,15 Q350,110 700,50 Q1050,110 1450,15" stroke="#5c3a1e" stroke-width="4" fill="none" opacity="0.55"/>
+        <path class="garland-line" d="M-50,15 Q350,110 700,50 Q1050,110 1450,15" stroke="#D4AF37" stroke-width="3.5" fill="none" opacity="0.9"/>
+        <g id="leaves"></g>
+        <g id="flowers"></g>
+      </svg>
+
+      <!-- Enhanced Traditional Animated Door Kolam / Rangoli -->
+      <svg class="door-kolam" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#fce8a2" stroke-width="1.8" fill="none" stroke-linecap="round">
+          <!-- Central Lotus Motif -->
+          <path d="M120,65 C105,50 95,35 120,15 C145,35 135,50 120,65 Z" fill="rgba(232, 135, 30, 0.35)" />
+          <path d="M120,65 C105,55 90,45 100,30 C112,35 116,50 120,65 Z" fill="rgba(244, 169, 63, 0.25)" />
+          <path d="M120,65 C135,55 150,45 140,30 C128,35 124,50 120,65 Z" fill="rgba(244, 169, 63, 0.25)" />
+          <!-- Symmetric Rangoli Curves -->
+          <path d="M70,55 Q95,25 120,55 Q145,25 170,55" />
+          <path d="M45,65 Q80,15 120,65 Q160,15 195,65" />
+          <path d="M25,72 Q120,30 215,72" stroke-width="1.2" />
+          <!-- Dots / Accents -->
+          <circle cx="120" cy="12" r="3.5" fill="#fce8a2" />
+          <circle cx="92" cy="38" r="2.2" fill="#fce8a2" />
+          <circle cx="148" cy="38" r="2.2" fill="#fce8a2" />
+          <circle cx="65" cy="52" r="2" fill="#fce8a2" />
+          <circle cx="175" cy="52" r="2" fill="#fce8a2" />
+        </g>
+      </svg>
+
+      <!-- Center Knob Button with Serial Lights Ring -->
+      <div class="knock-wrap" id="knockWrap">
+        <div class="serial-ring" id="serialRing"></div>
+        <div class="knock-btn" id="knockBtn" role="button" tabindex="0">
+          <svg viewBox="0 0 24 24" width="40" height="40" stroke="#4A2C1A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M3 11.5 12 4l9 7.5"/>
+            <path d="M5 10v9.5a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/>
+          </svg>
         </div>
       </div>
     </div>
@@ -353,7 +323,7 @@
     <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
     <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
-    <!-- Dynamic JavaScript Generator -->
+    <!-- Dynamic JavaScript Generator for Toran, Side Bulbs, 4-Box Bulbs & Center Ring -->
     <script>
       const SVGNS = 'http://www.w3.org/2000/svg';
       function el(tag, attrs){
@@ -361,10 +331,11 @@
         for(const k in attrs) n.setAttribute(k, attrs[k]);
         return n;
       }
+      function rnd(min,max){ return min + Math.random()*(max-min); }
       
       function mangoLeaf(x,y,rot,scale,shade){
         const g = el('g',{transform:`translate(${x},${y}) rotate(${rot}) scale(${scale})`});
-        g.appendChild(el('path',{d:'M0,0 C-6,-9 -5,-22 0,-32 C5,-22 6,-9 0,0 Z', fill: shade, stroke:'#1b2e18', 'stroke-width':'0.5'}));
+        g.appendChild(el('path',{d:'M0,0 C-6,-9 -5,-22 0,-32 C5,-22 6,-9 0,0 Z', fill: shade, stroke:'#26401f', 'stroke-width':'0.5'}));
         return g;
       }
       function marigold(x,y,scale,outer){
@@ -377,21 +348,23 @@
       }
 
       (function(){
+        // Toran Garland
         const leavesG = document.getElementById('leaves');
         const flowersG = document.getElementById('flowers');
         if(leavesG && flowersG){
-          for(let i=0; i<30; i++){
-            const t = i / 29; const x = 20 + t * 1160;
-            const y = 15 + 45 * (1 - Math.pow(t*2-1, 2));
-            if(i % 2 === 0) leavesG.appendChild(mangoLeaf(x, y, -40+t*80, 0.9, '#4F7942'));
-            else flowersG.appendChild(marigold(x, y+6, 0.9, '#E8871E'));
+          for(let i=0; i<32; i++){
+            const t = i / 31; const x = -20 + t * 1440;
+            const y = 18 + 55 * (1 - Math.pow(t*2-1, 2));
+            if(i % 2 === 0) leavesG.appendChild(mangoLeaf(x, y, -40+t*80, 1, '#4F7942'));
+            else flowersG.appendChild(marigold(x, y+8, 1, '#E8871E'));
           }
         }
 
+        // Side Door Vertical Serial Lights
         ['leftSideLights', 'rightSideLights'].forEach(id => {
           const container = document.getElementById(id);
           if(container){
-            for(let i=0; i<12; i++){
+            for(let i=0; i<10; i++){
               const bulb = document.createElement('div');
               bulb.className = 'side-bulb';
               container.appendChild(bulb);
@@ -399,6 +372,7 @@
           }
         });
 
+        // 4 Boxes Panel Border Serial Lights
         document.querySelectorAll('.door-panel').forEach(panel => {
           const count = 16;
           for(let i=0; i<count; i++){
@@ -418,10 +392,11 @@
           }
         });
 
+        // Center Knob Ring Serial Bulbs
         const ring = document.getElementById('serialRing');
         if(ring){
           const bulbCount = 12;
-          const radius = 65;
+          const radius = 55;
           for(let i=0; i<bulbCount; i++){
             const angle = (i / bulbCount) * 2 * Math.PI;
             const bx = 70 + radius * Math.cos(angle) - 5;
@@ -441,11 +416,6 @@
       function openDoors(){
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
-        
-        setTimeout(() => {
-          stage.classList.add('done');
-          document.body.classList.remove('locked');
-        }, 1500);
       }
 
       if(knockBtn){
