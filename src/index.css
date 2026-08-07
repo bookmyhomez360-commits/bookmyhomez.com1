@@ -32,42 +32,78 @@
   animation: kenBurns 18s ease-in-out infinite alternate;
 }
 
-/* మొత్తం హోమ్‌పేజీ ఎలిమెంట్స్ ఒకదానిపై ఒకటి పడకుండా ఉండటానికి */
-body {
+/* --- పర్ఫెక్ట్ సెంటర్ & లేఅవుట్ ఫిక్స్ --- */
+html, body {
   margin: 0;
   padding: 0;
+  width: 100%;
   overflow-x: hidden;
+  font-family: 'Poppins', sans-serif;
+  background-color: #0b0f19;
+  color: #ffffff;
 }
 
-.hero-section, .home-container, main {
-  position: relative;
+#root {
   width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
+/* హెడర్ ఎలిమెంట్స్ లెఫ్ట్ సైడ్ పోకుండా, అటుఇటు స్పేసింగ్‌తో ఉండేలా */
+header, nav, .navbar {
+  width: 100% !important;
+  max-width: 1440px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 15px 30px !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  z-index: 100 !important;
+}
+
+/* హోమ్‌పేజీ మెయిన్ సెక్షన్ మరియు కంటెంట్ సెంటర్ చేయడానికి */
+main, .hero-section, .home-container {
+  width: 100% !important;
+  max-width: 1440px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+/* హెడ్మింగ్ మరియు సెర్చ్ బాక్స్ ఓవర్‌లాప్ అవకుండా ప్రాపర్ గ్యాప్ */
 .hero-content {
-  margin-top: 120px !important;
-  margin-bottom: 40px !important;
+  width: 100% !important;
+  text-align: center !important;
+  margin-top: 30px !important;
+  margin-bottom: 30px !important;
+  padding: 0 20px !important;
+  box-sizing: border-box !important;
 }
 
 .search-bar-container, .hero-search {
-  position: relative !important;
-  z-index: 10 !important;
-  margin: 20px auto !important;
   width: 90% !important;
-  max-width: 1200px !important;
+  max-width: 1100px !important;
+  margin: 20px auto !important;
+  position: relative !important;
+  z-index: 50 !important;
 }
 
+/* మొబైల్ వ్యూ కోసం అడ్జస్ట్మెంట్స్ */
 @media (max-width: 768px) {
-  .hero-content {
-    margin-top: 90px !important;
-    padding: 0 15px;
+  header, nav, .navbar {
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 10px 15px !important;
+    text-align: center !important;
   }
-  .hero-content h1 {
-    font-size: 28px !important;
-    line-height: 1.3 !important;
+  .hero-content {
+    margin-top: 15px !important;
   }
 }
