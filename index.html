@@ -2,85 +2,16 @@
 <html lang="en">
   <head>
     <!-- BookMyHomez — Complete On-Page SEO Code -->
-
-    <!-- 1. Primary Page Title (50-60 characters) -->
     <title>BookMyHomez — Vacation Home Rentals, Luxury Villas & Holiday Homes</title>
-
-    <!-- 2. Primary Meta Tags & Search Indexing -->
     <meta name="description" content="Find and book verified holiday homes, luxury beach villas, heritage havelis, and cozy apartments across India. Enjoy 100% verified hosts, best rate guarantee, and 24/7 guest support at BookMyHomez." />
-    <meta name="keywords" content="BookMyHomez, vacation home rentals, luxury villas in Goa, holiday homes India, rent villas with pool, book homestays online, heritage haveli Jaipur, Manali mountain chalets, verified home rentals" />
-    <meta name="author" content="BookMyHomez" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- 3. Canonical Link Tag (Prevents duplicate content penalties) -->
     <link rel="canonical" href="https://bookmyhomez.com/" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- 4. Open Graph (OG) Tags for WhatsApp & Facebook Social Sharing -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="BookMyHomez" />
-    <meta property="og:url" content="https://bookmyhomez.com/" />
-    <meta property="og:title" content="BookMyHomez — Your Happy Home Partner for Vacation Rentals" />
-    <meta property="og:description" content="Discover luxury villas, cozy mountain cabins, and beach houses across top travel destinations. Verified hosts, zero hidden fees, and instant online booking." />
-    <meta property="og:image" content="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&h=630&q=80" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-
-    <!-- 5. Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="BookMyHomez — Book Unique Holiday Homes & Luxury Villas" />
-    <meta name="twitter:description" content="Explore handpicked vacation home rentals with private pools, sea views, and superhosts across India. Book your dream stay today!" />
-    <meta name="twitter:image" content="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&h=630&q=80" />
-
-    <!-- 6. JSON-LD Schema Markup (VacationRental & LodgingBusiness for Google Rich Snippets) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "LodgingBusiness",
-          "@id": "https://bookmyhomez.com/#organization",
-          "name": "BookMyHomez",
-          "url": "https://bookmyhomez.com/",
-          "logo": "https://bookmyhomez.com/logo.png",
-          "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&h=630&q=80",
-          "description": "BookMyHomez is India's leading vacation home rental platform for luxury villas, holiday havelis, and beachfront apartments.",
-          "telephone": "+91-1800-BOOKHOMEZ",
-          "priceRange": "₹5,000 - ₹50,000 per night",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "BookMyHomez Tower, DLF Cyber City",
-            "addressLocality": "Gurugram",
-            "addressRegion": "Haryana",
-            "postalCode": "122002",
-            "addressCountry": "IN"
-          },
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.92",
-            "reviewCount": "1450"
-          }
-        },
-        {
-          "@type": "WebSite",
-          "@id": "https://bookmyhomez.com/#website",
-          "url": "https://bookmyhomez.com/",
-          "name": "BookMyHomez — Your Happy Home Partner",
-          "description": "Book luxury villas, holiday home rentals, and beach stay apartments across top travel destinations.",
-          "publisher": {
-            "@id": "https://bookmyhomez.com/#organization"
-          },
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://bookmyhomez.com/search?destination={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        }
-      ]
-    }
-    </script>
-
-    <!-- Complete Door, Serial Lights & Video Player Styles -->
+    <!-- Complete Door Animation & Serial Lights Styles -->
     <style>
       :root{
         --wood-dark:#4A2C1A;
@@ -93,8 +24,6 @@
         --marigold-light:#F4A93F;
         --mango-leaf:#4F7942;
       }
-      *{box-sizing:border-box;margin:0;padding:0;}
-      html,body{height:100%;}
       body.locked{overflow:hidden; height:100vh;}
 
       #door-stage{
@@ -104,27 +33,33 @@
         width: 100vw;
         height: 100vh;
         overflow: hidden;
-        transition: opacity 0.8s ease, visibility 0.8s ease;
+        transition: opacity 0.6s ease-in-out 1.2s;
       }
-      #door-stage.done{
-        opacity: 0;
-        visibility: hidden;
-        display: none !important;
-      }
+      #door-stage.done{opacity:0; pointer-events:none; display:none;}
 
       .door-frame{
         position:absolute; inset:0;
         background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
       }
 
-      /* Slow Opening Transition for Doors */
-      .door {
-        position: absolute; top: 0; bottom: 0; width: 50%;
-        transition: transform 2.5s cubic-bezier(0.25, 1, 0.5, 1);
-        transform-style: preserve-3d;
+      .frame-pillar{
+        position:absolute; top:0; bottom:0; width:26px; z-index:6;
+        background:repeating-linear-gradient(180deg, #6B3E22 0px, #4A2C1A 18px, #6B3E22 36px);
       }
-      .door-left { left: 0; transform-origin: left; }
-      .door-right { right: 0; transform-origin: right; }
+      .frame-pillar.left{ left:0; }
+      .frame-pillar.right{ right:0; }
+
+      .door{
+        position:absolute; top:0; bottom:0; width:50%;
+        background:
+          repeating-linear-gradient(90deg, rgba(0,0,0,0.10) 0px, transparent 2px, transparent 9px, rgba(0,0,0,0.10) 11px, transparent 13px, transparent 22px),
+          linear-gradient(90deg, var(--wood-dark) 0%, var(--wood-light) 12%, var(--wood-mid) 30%, var(--wood-light) 55%, var(--wood-mid) 78%, var(--wood-dark) 100%);
+        box-shadow: inset 0 0 90px rgba(0,0,0,0.6);
+        transition: transform 1.6s cubic-bezier(.72,-0.15,.24,1.05);
+        will-change: transform;
+      }
+      .door-left{ left:0; transform-origin:left center; border-right:2px solid var(--wood-grain); }
+      .door-right{ right:0; transform-origin:right center; border-left:2px solid var(--wood-grain); }
 
       /* Side Door Vertical Serial Lights */
       .side-serial-light {
@@ -174,23 +109,20 @@
       .brass-corner.bl{ bottom:-5px; left:-5px; border-radius:0 100% 0 0; }
       .brass-corner.br{ bottom:-5px; right:-5px; border-radius:100% 0 0 0; }
 
-      /* Animated Rosette Design inside 4 Boxes */
       .panel-rosette {
-        width: 80px; height: 80px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(0,0,0,0.5) 0%, rgba(59,34,19,0.85) 70%);
-        border: 2px dashed rgba(212, 175, 55, 0.4);
-        box-shadow: inset 0 4px 8px rgba(0,0,0,0.85), 0 0 12px rgba(212,175,55,0.2);
+        width: 75px; height: 75px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(59,34,19,0.8) 70%);
+        border: 2px dashed rgba(212, 175, 55, 0.3);
+        box-shadow: inset 0 3px 6px rgba(0,0,0,0.8);
         display: flex; align-items: center; justify-content: center;
-        animation: rosetteSpin 16s linear infinite;
+        animation: rosetteSpin 20s linear infinite;
       }
       .panel-rosette::before {
-        content: ""; width: 48px; height: 48px; border-radius: 50%;
+        content: ""; width: 45px; height: 45px; border-radius: 50%;
         background: repeating-radial-gradient(circle, var(--wood-grain), var(--wood-dark) 4px, transparent 4px, transparent 8px);
-        border: 1px solid rgba(212, 175, 55, 0.6);
-        animation: rosetteSpinReverse 12s linear infinite;
+        border: 1px solid rgba(212, 175, 55, 0.4);
       }
       @keyframes rosetteSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      @keyframes rosetteSpinReverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
 
       .door-handle{
         position:absolute; top:44%; width:14px; height:110px; border-radius:7px;
@@ -204,7 +136,16 @@
       #door-stage.opened .door-right{ transform:rotateY(112deg); }
       #door-stage.opened .knock-wrap { display: none; }
 
-      /* Center Knob Button with Serial Lights Ring */
+      .toran{
+        position:absolute; top:0; left:0; width:100%; height:140px;
+        z-index:5; pointer-events:none;
+        animation: toranSway 4.5s ease-in-out infinite; transform-origin: 50% 0%;
+      }
+      @keyframes toranSway{ 0%,100%{ transform:rotate(-0.8deg); } 50%{ transform:rotate(0.8deg); } }
+      .garland-line{ stroke-dasharray: 3 9; animation: garlandFlow 2.6s linear infinite; }
+      @keyframes garlandFlow{ to{ stroke-dashoffset:-24; } }
+
+      /* Centered Serial Ring & Button */
       .knock-wrap{
         position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
         z-index:20; display:flex; align-items:center; justify-content:center;
@@ -234,23 +175,19 @@
       .knock-btn svg{ animation: iconWiggle 2.6s ease-in-out infinite; transform-origin:50% 78%; }
       @keyframes iconWiggle{ 0%,100%{ transform:rotate(0deg); } 25%{ transform:rotate(-9deg); } 75%{ transform:rotate(9deg); } }
 
-      /* Enhanced Animated Traditional Kolam / Rangoli */
       .door-kolam {
-        position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
-        width: 240px; height: 75px; z-index: 15; pointer-events: none;
-        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7));
-        animation: kolamGlow 3s ease-in-out infinite alternate;
-      }
-      @keyframes kolamGlow {
-        0% { opacity: 0.8; filter: drop-shadow(0 2px 4px rgba(255,215,0,0.3)); }
-        100% { opacity: 1; filter: drop-shadow(0 2px 10px rgba(255,215,0,0.8)); }
+        position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+        width: 180px; height: 60px; z-index: 15; pointer-events: none; opacity: 0.85;
       }
     </style>
   </head>
   <body class="locked">
+
     <!-- Door Intro Overlay -->
     <div id="door-stage">
       <div class="door-frame"></div>
+      <div class="frame-pillar left"></div>
+      <div class="frame-pillar right"></div>
 
       <!-- Left Door Leaf -->
       <div class="door door-left">
@@ -285,7 +222,7 @@
       </div>
 
       <!-- Toran Garland -->
-      <svg class="toran" viewBox="0 0 1400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="position:absolute; top:0; left:0; width:100%; z-index:18; pointer-events:none;">
+      <svg class="toran" viewBox="0 0 1400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
             <feDropShadow dx="0" dy="2" stdDeviation="1.4" flood-color="#1a1006" flood-opacity="0.45"/>
@@ -297,23 +234,14 @@
         <g id="flowers"></g>
       </svg>
 
-      <!-- Enhanced Traditional Animated Door Kolam / Rangoli -->
-      <svg class="door-kolam" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
-        <g stroke="#fce8a2" stroke-width="1.8" fill="none" stroke-linecap="round">
-          <!-- Central Lotus Motif -->
-          <path d="M120,65 C105,50 95,35 120,15 C145,35 135,50 120,65 Z" fill="rgba(232, 135, 30, 0.35)" />
-          <path d="M120,65 C105,55 90,45 100,30 C112,35 116,50 120,65 Z" fill="rgba(244, 169, 63, 0.25)" />
-          <path d="M120,65 C135,55 150,45 140,30 C128,35 124,50 120,65 Z" fill="rgba(244, 169, 63, 0.25)" />
-          <!-- Symmetric Rangoli Curves -->
-          <path d="M70,55 Q95,25 120,55 Q145,25 170,55" />
-          <path d="M45,65 Q80,15 120,65 Q160,15 195,65" />
-          <path d="M25,72 Q120,30 215,72" stroke-width="1.2" />
-          <!-- Dots / Accents -->
-          <circle cx="120" cy="12" r="3.5" fill="#fce8a2" />
-          <circle cx="92" cy="38" r="2.2" fill="#fce8a2" />
-          <circle cx="148" cy="38" r="2.2" fill="#fce8a2" />
-          <circle cx="65" cy="52" r="2" fill="#fce8a2" />
-          <circle cx="175" cy="52" r="2" fill="#fce8a2" />
+      <!-- Traditional Door Kolam -->
+      <svg class="door-kolam" viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#f5d682" stroke-width="1.8" fill="none" stroke-linecap="round">
+          <path d="M100,55 C90,45 85,35 100,20 C115,35 110,45 100,55 Z" fill="rgba(232, 135, 30, 0.3)" />
+          <path d="M60,50 Q80,25 100,50 Q120,25 140,50" />
+          <circle cx="100" cy="18" r="3" fill="#f5d682" />
+          <circle cx="75" cy="35" r="2" fill="#f5d682" />
+          <circle cx="125" cy="35" r="2" fill="#f5d682" />
         </g>
       </svg>
 
@@ -431,11 +359,10 @@
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
         document.body.classList.remove('locked');
-        
-        // Remove overlay completely from flow after doors open smoothly
         setTimeout(() => {
           stage.classList.add('done');
-        }, 2500);
+          stage.remove();
+        }, 1800);
       }
 
       if(knockBtn){
