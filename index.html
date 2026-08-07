@@ -80,18 +80,14 @@
     }
     </script>
 
-    <!-- Door Styles (Isolated only to overlay) -->
+    <!-- Door Styles -->
     <style>
       :root{
-        --wood-dark:#4A2C1A;
-        --wood-mid:#6B3E22;
-        --wood-light:#8B5A34;
-        --wood-grain:#3B2213;
+        --wood-dark:#3A1F10;
+        --wood-mid:#5C3217;
+        --wood-grain:#241108;
         --brass:#D4AF37;
         --brass-dark:#9C7A1E;
-        --marigold:#E8871E;
-        --marigold-light:#F4A93F;
-        --mango-leaf:#4F7942;
       }
       
       body.locked{overflow:hidden;}
@@ -99,7 +95,7 @@
       #door-stage{
         position:fixed; inset:0; z-index:99999;
         perspective:2200px;
-        background:linear-gradient(180deg,#2b1a10,#1c1009);
+        background:linear-gradient(180deg,#1c1007,#0a0502);
         width: 100vw;
         height: 100vh;
         overflow: hidden;
@@ -125,7 +121,7 @@
 
       .door-frame{
         position:absolute; inset:0;
-        background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
+        background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.15), transparent 65%), linear-gradient(180deg,#2b1508,#140a04);
         z-index: 1;
       }
 
@@ -134,8 +130,8 @@
         top: 0;
         bottom: 0;
         width: 50%;
-        background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(0,0,0,0.12) 55%), var(--wood-mid);
-        border: 5px solid var(--wood-grain);
+        background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(0,0,0,0.25) 60%), var(--wood-mid);
+        border: 6px solid var(--wood-grain);
         transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
         z-index: 10;
         overflow: hidden;
@@ -144,25 +140,25 @@
       .door-left {
         left: 0;
         transform-origin: left;
-        border-right: 2px solid var(--wood-grain);
+        border-right: 3px solid var(--wood-grain);
       }
 
       .door-right {
         right: 0;
         transform-origin: right;
-        border-left: 2px solid var(--wood-grain);
+        border-left: 3px solid var(--wood-grain);
       }
 
       .side-serial-light {
-        position: absolute; top: 20px; bottom: 20px; width: 8px; z-index: 12;
+        position: absolute; top: 20px; bottom: 20px; width: 10px; z-index: 12;
         pointer-events: none; display: flex; flex-direction: column; justify-content: space-around; align-items: center;
       }
-      .door-left .side-serial-light { left: 12px; }
-      .door-right .side-serial-light { right: 12px; }
+      .door-left .side-serial-light { left: 15px; }
+      .door-right .side-serial-light { right: 15px; }
 
       .side-bulb {
-        width: 8px; height: 8px; border-radius: 50%;
-        box-shadow: 0 0 6px currentColor; animation: bulbGlow 1.2s ease-in-out infinite alternate;
+        width: 9px; height: 9px; border-radius: 50%;
+        box-shadow: 0 0 8px currentColor; animation: bulbGlow 1.2s ease-in-out infinite alternate;
       }
       .side-bulb:nth-child(4n+1) { background: #ff3333; color: #ff3333; }
       .side-bulb:nth-child(4n+2) { background: #33ff33; color: #33ff33; animation-delay: 0.3s; }
@@ -170,19 +166,19 @@
       .side-bulb:nth-child(4n+4) { background: #ff33cc; color: #ff33cc; animation-delay: 0.9s; }
 
       .door-panel{
-        position:absolute; left:10%; right:10%;
-        border-radius:4px;
-        background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(0,0,0,0.12) 55%), var(--wood-mid);
-        border: 5px solid var(--wood-grain);
-        box-shadow: inset 0 3px 6px rgba(255,255,255,0.10), inset 0 -6px 14px rgba(0,0,0,0.65);
+        position:absolute; left:12%; right:12%;
+        border-radius:6px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2) 60%), var(--wood-dark);
+        border: 4px solid var(--wood-grain);
+        box-shadow: inset 0 4px 8px rgba(255,255,255,0.08), inset 0 -8px 16px rgba(0,0,0,0.8);
         display: flex; align-items: center; justify-content: center;
       }
-      .panel-top{ top:6%; height:38%; }
-      .panel-bottom{ bottom:6%; height:46%; }
+      .panel-top{ top:7%; height:36%; }
+      .panel-bottom{ bottom:7%; height:44%; }
 
       .panel-bulb {
         position: absolute; width: 6px; height: 6px; border-radius: 50%;
-        box-shadow: 0 0 5px currentColor; z-index: 5;
+        box-shadow: 0 0 6px currentColor; z-index: 5;
         animation: bulbGlow 1s ease-in-out infinite alternate;
       }
       .panel-bulb:nth-child(3n+1) { background: #ffeb3b; color: #ffeb3b; }
@@ -190,9 +186,9 @@
       .panel-bulb:nth-child(3n+3) { background: #ff4081; color: #ff4081; animation-delay: 0.8s; }
 
       .brass-corner{
-        position:absolute; width:26px; height:26px;
-        background:radial-gradient(circle at 32% 30%, #fbe9ab, var(--brass) 50%, var(--brass-dark) 100%);
-        box-shadow:0 2px 4px rgba(0,0,0,0.55); z-index: 6;
+        position:absolute; width:28px; height:28px;
+        background:radial-gradient(circle at 32% 30%, #fff2cc, var(--brass) 50%, var(--brass-dark) 100%);
+        box-shadow:0 2px 5px rgba(0,0,0,0.6); z-index: 6;
       }
       .brass-corner.tl{ top:-5px; left:-5px; border-radius:0 0 100% 0; }
       .brass-corner.tr{ top:-5px; right:-5px; border-radius:0 0 0 100%; }
@@ -200,29 +196,22 @@
       .brass-corner.br{ bottom:-5px; right:-5px; border-radius:100% 0 0 0; }
 
       .panel-rosette {
-        width: 80px; height: 80px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(0,0,0,0.5) 0%, rgba(59,34,19,0.85) 70%);
-        border: 2px dashed rgba(212, 175, 55, 0.4);
-        box-shadow: inset 0 4px 8px rgba(0,0,0,0.85), 0 0 12px rgba(212,175,55,0.2);
+        width: 75px; height: 75px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(0,0,0,0.6) 0%, rgba(36,17,8,0.9) 70%);
+        border: 2px dashed rgba(212, 175, 55, 0.5);
+        box-shadow: inset 0 4px 10px rgba(0,0,0,0.9);
         display: flex; align-items: center; justify-content: center;
-        animation: rosetteSpin 16s linear infinite;
-      }
-      .panel-rosette::before {
-        content: ""; width: 48px; height: 48px; border-radius: 50%;
-        background: repeating-radial-gradient(circle, var(--wood-grain), var(--wood-dark) 4px, transparent 4px, transparent 8px);
-        border: 1px solid rgba(212, 175, 55, 0.6);
-        animation: rosetteSpinReverse 12s linear infinite;
+        animation: rosetteSpin 20s linear infinite;
       }
       @keyframes rosetteSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      @keyframes rosetteSpinReverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
 
       .door-handle{
-        position:absolute; top:44%; width:14px; height:110px; border-radius:7px;
-        background:linear-gradient(90deg, var(--brass-dark), var(--brass) 35%, #f6e2a0 50%, var(--brass) 65%, var(--brass-dark));
-        box-shadow:0 3px 8px rgba(0,0,0,0.6); z-index: 10;
+        position:absolute; top:44%; width:16px; height:120px; border-radius:8px;
+        background:linear-gradient(90deg, var(--brass-dark), var(--brass) 35%, #fff2cc 50%, var(--brass) 65%, var(--brass-dark));
+        box-shadow:0 4px 10px rgba(0,0,0,0.7); z-index: 10;
       }
-      .door-left .door-handle{ right:15px; }
-      .door-right .door-handle{ left:15px; }
+      .door-left .door-handle{ right:18px; }
+      .door-right .door-handle{ left:18px; }
 
       #door-stage.opened .door-left{ transform:rotateY(-110deg); }
       #door-stage.opened .door-right{ transform:rotateY(110deg); }
@@ -230,11 +219,11 @@
 
       .knock-wrap{
         position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-        z-index:30; display:flex; align-items:center; justify-content:center;
-        width: 140px; height: 140px;
+        z-index:30; display:flex; flex-direction:column; align-items:center; justify-content:center;
+        width: 200px; height: 200px;
       }
       .serial-ring {
-        position: absolute; inset: 0; border-radius: 50%;
+        position: absolute; width: 140px; height: 140px; border-radius: 50%; top: 10px;
         animation: ringSpin 10s linear infinite; pointer-events: none;
       }
       @keyframes ringSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -246,30 +235,36 @@
       .serial-bulb:nth-child(4n+2) { background: #33ff33; color: #33ff33; animation-delay: 0.3s; }
       .serial-bulb:nth-child(4n+3) { background: #33ccff; color: #33ccff; animation-delay: 0.6s; }
       .serial-bulb:nth-child(4n+4) { background: #ff33cc; color: #ff33cc; animation-delay: 0.9s; }
-      @keyframes bulbGlow { 0% { opacity: 0.3; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
+      @keyframes bulbGlow { 0% { opacity: 0.4; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.3); } }
 
       .knock-btn{
-        width:90px; height:90px; border-radius:50%; border:3px solid var(--brass-dark);
-        background:radial-gradient(circle at 35% 30%, #f6e2a0, var(--brass) 55%, var(--brass-dark) 100%);
-        box-shadow:0 6px 18px rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center;
+        width:100px; height:100px; border-radius:50%; border:4px solid var(--brass-dark);
+        background:radial-gradient(circle at 35% 30%, #fff2cc, var(--brass) 55%, var(--brass-dark) 100%);
+        box-shadow:0 8px 25px rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center;
         cursor:pointer; z-index: 35; position: relative;
+        transition: transform 0.2s ease;
       }
+      .knock-btn:hover { transform: scale(1.08); }
       .knock-btn svg{ animation: iconWiggle 2.6s ease-in-out infinite; transform-origin:50% 78%; }
       @keyframes iconWiggle{ 0%,100%{ transform:rotate(0deg); } 25%{ transform:rotate(-9deg); } 75%{ transform:rotate(9deg); } }
+
+      .click-text {
+        margin-top: 15px; color: #fff2cc; font-family: sans-serif; font-size: 15px; font-weight: bold;
+        background: rgba(0, 0, 0, 0.6); padding: 6px 16px; border-radius: 20px;
+        border: 1px solid var(--brass); box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        letter-spacing: 0.5px; z-index: 35; pointer-events: none;
+        animation: textPulse 1.5s ease-in-out infinite alternate;
+      }
+      @keyframes textPulse { 0% { opacity: 0.7; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
 
       .toran {
         position: absolute; top: 0; left: 0; width: 100%; height: 120px; z-index: 20; pointer-events: none;
       }
 
       .door-kolam {
-        position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
-        width: 240px; height: 75px; z-index: 20; pointer-events: none;
-        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7));
-        animation: kolamGlow 3s ease-in-out infinite alternate;
-      }
-      @keyframes kolamGlow {
-        0% { opacity: 0.8; filter: drop-shadow(0 2px 4px rgba(255,215,0,0.3)); }
-        100% { opacity: 1; filter: drop-shadow(0 2px 10px rgba(255,215,0,0.8)); }
+        position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+        width: 260px; height: 80px; z-index: 20; pointer-events: none;
+        filter: drop-shadow(0 3px 8px rgba(0,0,0,0.8));
       }
     </style>
   </head>
@@ -281,8 +276,8 @@
       <div class="door-container">
         <!-- Toran Garland -->
         <svg class="toran" viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M-50,15 Q300,90 600,40 Q900,90 1250,15" stroke="#5c3a1e" stroke-width="4" fill="none" opacity="0.55"/>
-          <path class="garland-line" d="M-50,15 Q300,90 600,40 Q900,90 1250,15" stroke="#D4AF37" stroke-width="3.5" fill="none" opacity="0.9"/>
+          <path d="M-50,15 Q300,90 600,40 Q900,90 1250,15" stroke="#3a1f10" stroke-width="4" fill="none" opacity="0.6"/>
+          <path class="garland-line" d="M-50,15 Q300,90 600,40 Q900,90 1250,15" stroke="#D4AF37" stroke-width="3.5" fill="none" opacity="0.95"/>
           <g id="leaves"></g>
           <g id="flowers"></g>
         </svg>
@@ -322,9 +317,9 @@
         <!-- Door Kolam / Rangoli -->
         <svg class="door-kolam" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
           <g stroke="#fce8a2" stroke-width="1.8" fill="none" stroke-linecap="round">
-            <path d="M120,65 C105,50 95,35 120,15 C145,35 135,50 120,65 Z" fill="rgba(232, 135, 30, 0.35)" />
-            <path d="M120,65 C105,55 90,45 100,30 C112,35 116,50 120,65 Z" fill="rgba(244, 169, 63, 0.25)" />
-            <path d="M120,65 C135,55 150,45 140,30 C128,35 124,50 120,65 Z" fill="rgba(244, 169, 63, 0.25)" />
+            <path d="M120,65 C105,50 95,35 120,15 C145,35 135,50 120,65 Z" fill="rgba(232, 135, 30, 0.4)" />
+            <path d="M120,65 C105,55 90,45 100,30 C112,35 116,50 120,65 Z" fill="rgba(244, 169, 63, 0.3)" />
+            <path d="M120,65 C135,55 150,45 140,30 C128,35 124,50 120,65 Z" fill="rgba(244, 169, 63, 0.3)" />
             <path d="M70,55 Q95,25 120,55 Q145,25 170,55" />
             <path d="M45,65 Q80,15 120,65 Q160,15 195,65" />
             <path d="M25,72 Q120,30 215,72" stroke-width="1.2" />
@@ -336,20 +331,21 @@
           </g>
         </svg>
 
-        <!-- Center Knob Button -->
+        <!-- Center Knob Button with Click Text -->
         <div class="knock-wrap" id="knockWrap">
           <div class="serial-ring" id="serialRing"></div>
           <div class="knock-btn" id="knockBtn" role="button" tabindex="0">
-            <svg viewBox="0 0 24 24" width="40" height="40" stroke="#4A2C1A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <svg viewBox="0 0 24 24" width="45" height="45" stroke="#3A1F10" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
               <path d="M3 11.5 12 4l9 7.5"/>
               <path d="M5 10v9.5a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/>
             </svg>
           </div>
+          <div class="click-text">🚪 Click to Open</div>
         </div>
       </div>
     </div>
 
-    <!-- React Root (మీ ఒరిజినల్ వెబ్‌సైట్ కంటెంట్ అంతా ఇక్కడే ఉంటుంది) -->
+    <!-- React Root -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
@@ -368,7 +364,7 @@
       
       function mangoLeaf(x,y,rot,scale,shade){
         const g = el('g',{transform:`translate(${x},${y}) rotate(${rot}) scale(${scale})`});
-        g.appendChild(el('path',{d:'M0,0 C-6,-9 -5,-22 0,-32 C5,-22 6,-9 0,0 Z', fill: shade, stroke:'#26401f', 'stroke-width':'0.5'}));
+        g.appendChild(el('path',{d:'M0,0 C-6,-9 -5,-22 0,-32 C5,-22 6,-9 0,0 Z', fill: shade, stroke:'#1b2e18', 'stroke-width':'0.5'}));
         return g;
       }
       function marigold(x,y,scale,outer){
@@ -425,7 +421,7 @@
         const ring = document.getElementById('serialRing');
         if(ring){
           const bulbCount = 12;
-          const radius = 55;
+          const radius = 65;
           for(let i=0; i<bulbCount; i++){
             const angle = (i / bulbCount) * 2 * Math.PI;
             const bx = 70 + radius * Math.cos(angle) - 5;
