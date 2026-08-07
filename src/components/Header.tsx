@@ -14,6 +14,7 @@ import {
   Building,
   CirclePlus,
   LogOut,
+  LogIn,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -46,8 +47,8 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-[#090D16]/95 backdrop-blur-xl border-b border-slate-800/80 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2">
+      <header className="sticky top-0 z-40 bg-[#090D16]/90 backdrop-blur-xl border-b border-slate-800/80 transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           
           {/* Logo Card */}
           <a
@@ -56,18 +57,18 @@ export const Header: React.FC<HeaderProps> = ({
               navigateTo('explore');
             }}
             href="#"
-            className="flex items-center group transition transform hover:scale-105 cursor-pointer shrink-0"
+            className="flex items-center group transition transform hover:scale-105 cursor-pointer"
           >
-            <div className="h-11 sm:h-14 px-2 py-1 flex items-center justify-center bg-white rounded-xl shadow-lg border border-indigo-500/40 overflow-hidden">
-              <Logo className="h-9 sm:h-12 w-auto max-w-full" />
+            <div className="h-12 sm:h-14 px-2 py-1 flex items-center justify-center bg-white rounded-xl shadow-lg border border-indigo-500/40 overflow-hidden">
+              <Logo className="h-10 sm:h-12 w-auto max-w-full" />
             </div>
           </a>
 
-          {/* Central Navigation Pills */}
-          <nav className="hidden xl:flex items-center gap-1 bg-slate-900/90 p-1.5 rounded-full border border-slate-800 shrink-0">
+          {/* Central Navigation Pills (Home, Buy, Rent, Short Stay, Land & Plots) */}
+          <nav className="hidden md:flex items-center gap-1 bg-slate-900/90 p-1.5 rounded-full border border-slate-800 shadow-inner">
             <button
               onClick={() => navigateTo('explore')}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1 ${
+              className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'explore'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -78,7 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={() => navigateToCategory('Buy')}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1 ${
+              className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'listings' && activeFilterCategory === 'Buy'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -89,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={() => navigateToCategory('Rent')}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1 ${
+              className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'listings' && activeFilterCategory === 'Rent'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -100,7 +101,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={() => navigateToCategory('Short Stay')}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1 ${
+              className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'listings' && activeFilterCategory === 'Short Stay'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -111,7 +112,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={() => navigateToCategory('Plots')}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1 ${
+              className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'listings' && activeFilterCategory === 'Plots'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -119,31 +120,20 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Layers className="w-3.5 h-3.5" /> Land & Plots
             </button>
-
-            <button
-              onClick={() => navigateTo('blog')}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer ${
-                currentTab === 'blog'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              Blog
-            </button>
           </nav>
 
-          {/* Action Controls */}
-          <div className="flex items-center gap-2">
+          {/* Action Controls (Right Side) */}
+          <div className="flex items-center gap-3">
             
             {/* Fill Details Button */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="hidden md:flex items-center gap-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-xl transition-all shadow-lg shadow-green-500/30 cursor-pointer shrink-0"
+              className="flex items-center gap-1.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all shadow-lg shadow-green-500/30 hover:scale-[1.02] active:scale-95 cursor-pointer"
             >
-              <span>Fill Details</span>
+              <span className="whitespace-nowrap">Fill Details</span>
             </button>
 
-            {/* List Property + Sign In బటన్ */}
+            {/* List Property / Sign In Button */}
             <button
               onClick={() => {
                 if (currentUser) {
@@ -152,17 +142,18 @@ export const Header: React.FC<HeaderProps> = ({
                   openAuthModal();
                 }
               }}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-black px-3 py-2 rounded-xl text-xs shadow-lg shadow-blue-600/30 transition flex items-center gap-1.5 cursor-pointer shrink-0"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-black px-4 py-2.5 rounded-xl text-xs shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center gap-2 cursor-pointer"
             >
-              <PlusCircle className="w-3.5 h-3.5 hidden sm:block" />
-              <span>List Property</span>
+              <PlusCircle className="w-4 h-4 hidden md:block" />
+              <span className="hidden sm:inline">List Property</span>
+              <span className="sm:hidden">List</span>
               
               {!currentUser ? (
-                <span className="bg-indigo-950 text-white text-[9px] px-1 py-0.5 rounded uppercase font-extrabold border border-indigo-400/50">
+                <span className="bg-indigo-900/80 text-white text-[10px] px-1.5 py-0.5 rounded uppercase font-extrabold border border-indigo-400/50">
                   Sign In
                 </span>
               ) : (
-                <span className="bg-white/20 text-white text-[9px] px-1 py-0.5 rounded uppercase font-extrabold hidden sm:inline">
+                <span className="bg-white/20 text-white text-[10px] px-1.5 py-0.5 rounded uppercase font-extrabold hidden sm:inline">
                   Free
                 </span>
               )}
@@ -171,37 +162,40 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Favorites Heart Counter Button */}
             <button
               onClick={() => navigateTo('favorites')}
-              className="relative p-2 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition cursor-pointer shrink-0"
+              className="relative p-2.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition cursor-pointer"
               title="Saved Properties"
             >
               <Heart
                 className={`w-4 h-4 ${savedCount > 0 ? 'text-rose-500 fill-rose-500' : ''}`}
               />
               {savedCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-slate-950">
+                <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-950">
                   {savedCount}
                 </span>
               )}
             </button>
 
-            {/* User Account / Profile */}
-            {currentUser && (
+            {/* User Account / Profile Dropdown */}
+            {currentUser ? (
               <div className="relative">
                 <button
                   onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                  className="flex items-center gap-1.5 pl-1.5 pr-2 py-1 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 transition cursor-pointer"
+                  className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 transition cursor-pointer"
                 >
                   <img
                     src={currentUser.avatar}
-                    className="w-7 h-7 rounded-lg object-cover border border-indigo-500/40"
+                    className="w-8 h-8 rounded-lg object-cover border border-indigo-500/40"
                     alt="Avatar"
                   />
                   <div className="text-left hidden lg:block">
-                    <p className="text-[11px] font-bold text-white leading-none">
+                    <p className="text-xs font-bold text-white leading-none">
                       {currentUser.name}
                     </p>
+                    <p className="text-[10px] text-indigo-400 font-medium leading-tight mt-0.5">
+                      {currentUser.role}
+                    </p>
                   </div>
-                  <ChevronDown className="w-3 h-3 text-slate-400" />
+                  <ChevronDown className="w-3 h-3 text-slate-400 ml-1" />
                 </button>
 
                 {showProfileDropdown && (
@@ -225,11 +219,7 @@ export const Header: React.FC<HeaderProps> = ({
 
                     <button
                       onClick={() => {
-                        if (currentUser) {
-                          openWizard();
-                        } else {
-                          openAuthModal();
-                        }
+                        openWizard();
                         setShowProfileDropdown(false);
                       }}
                       className="w-full text-left px-4 py-2.5 text-xs text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 transition cursor-pointer"
@@ -251,7 +241,15 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
                 )}
               </div>
+            ) : (
+              <button
+                onClick={openAuthModal}
+                className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl flex items-center gap-2 transition cursor-pointer shadow-sm"
+              >
+                <LogIn className="w-4 h-4 text-indigo-400" /> Log In / Sign Up
+              </button>
             )}
+
           </div>
         </div>
       </header>
