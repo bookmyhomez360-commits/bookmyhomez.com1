@@ -32,78 +32,62 @@
   animation: kenBurns 18s ease-in-out infinite alternate;
 }
 
-/* --- పర్ఫెక్ట్ సెంటర్ & లేఅవుట్ ఫిక్స్ --- */
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  overflow-x: hidden;
-  font-family: 'Poppins', sans-serif;
-  background-color: #0b0f19;
-  color: #ffffff;
-}
-
-#root {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* హెడర్ ఎలిమెంట్స్ లెఫ్ట్ సైడ్ పోకుండా, అటుఇటు స్పేసింగ్‌తో ఉండేలా */
-header, nav, .navbar {
-  width: 100% !important;
-  max-width: 1440px !important;
-  margin: 0 auto !important;
+/* హెడర్ మెను మరియు బటన్స్ ఒకదానిపై ఒకటి పడకుండా సరిచేయడానికి */
+.header-main-container {
   display: flex !important;
+  align-items: center !important;
   justify-content: space-between !important;
-  align-items: center !important;
-  padding: 15px 30px !important;
+  flex-wrap: wrap !important;
+  padding: 10px 50px !important; /* ప్యాడింగ్ అవసరమైతే అడ్జస్ట్ చేసుకోండి */
+  width: 100% !important;
   box-sizing: border-box !important;
+  background-color: #0b0f19 !important; /* బ్యాక్‌గ్రౌండ్ కలర్ సెట్ చేయండి */
   position: relative !important;
-  z-index: 100 !important;
+  z-index: 999 !important;
 }
 
-/* హోమ్‌పేజీ మెయిన్ సెక్షన్ మరియు కంటెంట్ సెంటర్ చేయడానికి */
-main, .hero-section, .home-container {
-  width: 100% !important;
-  max-width: 1440px !important;
-  margin: 0 auto !important;
+/* లోగో మరియు నావిగేషన్ లింక్స్ */
+.header-logo-nav {
   display: flex !important;
-  flex-direction: column !important;
   align-items: center !important;
-  justify-content: center !important;
-  position: relative !important;
-  box-sizing: border-box !important;
+  flex-wrap: wrap !important;
+  gap: 30px !important; /* లింక్స్ మధ్య స్పేస్ */
 }
 
-/* హెడ్మింగ్ మరియు సెర్చ్ బాక్స్ ఓవర్‌లాప్ అవకుండా ప్రాపర్ గ్యాప్ */
-.hero-content {
-  width: 100% !important;
-  text-align: center !important;
-  margin-top: 30px !important;
-  margin-bottom: 30px !important;
-  padding: 0 20px !important;
-  box-sizing: border-box !important;
+/* నావిగేషన్ లింక్స్ */
+.header-nav-links {
+  display: flex !important;
+  align-items: center !important;
+  gap: 20px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
 }
 
-.search-bar-container, .hero-search {
-  width: 90% !important;
-  max-width: 1100px !important;
-  margin: 20px auto !important;
-  position: relative !important;
-  z-index: 50 !important;
+/* రైట్ సైడ్ బటన్స్ */
+.header-right-buttons {
+  display: flex !important;
+  align-items: center !important;
+  gap: 15px !important;
 }
 
-/* మొబైల్ వ్యూ కోసం అడ్జస్ట్మెంట్స్ */
-@media (max-width: 768px) {
-  header, nav, .navbar {
+/* రెస్పాన్సివ్: మొబైల్ వ్యూ కోసం */
+@media (max-width: 992px) {
+  .header-main-container {
     flex-direction: column !important;
-    gap: 12px !important;
-    padding: 10px 15px !important;
-    text-align: center !important;
+    gap: 15px !important;
+    padding: 15px !important;
   }
-  .hero-content {
-    margin-top: 15px !important;
+  .header-logo-nav {
+    justify-content: center !important;
+    gap: 15px !important;
+  }
+  .header-nav-links {
+    justify-content: center !important;
+    gap: 10px !important;
+  }
+  .header-right-buttons {
+    justify-content: center !important;
   }
 }
+
