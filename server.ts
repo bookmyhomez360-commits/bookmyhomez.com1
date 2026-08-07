@@ -8,7 +8,7 @@ let propertiesStore: Property[] = [...INITIAL_PROPERTIES];
 
 async function startServer() {
   const app = express();
-  const PORT_NUM = Number(process.env.PORT) || 3000;
+  const PORT_NUM = 8080;
 
   app.use(express.json({ limit: '10mb' }));
 
