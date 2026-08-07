@@ -116,7 +116,6 @@ export default function App() {
       await updatePropertyInFirestore(propertyId, { status: newStatus });
     } catch (error) {
       console.error("Error toggling status in Firebase:", error);
-      alert("Failed to update status in database. Check console for details.");
     }
   };
 
