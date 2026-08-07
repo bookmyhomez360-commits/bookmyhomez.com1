@@ -134,7 +134,7 @@ async function startServer() {
     });
   }
 
-  // Single unified server listen at the very end using PORT_NUM
+  // Single unified server listen at the very end
   app.listen(PORT_NUM, "0.0.0.0", () => {
     console.log(`[BookMyHomez] Server running on http://0.0.0.0:${PORT_NUM}`);
   });
