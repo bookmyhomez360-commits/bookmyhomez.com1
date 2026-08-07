@@ -14,7 +14,6 @@ import {
   Building,
   CirclePlus,
   LogOut,
-  User as UserIcon,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -48,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <header className="sticky top-0 z-40 bg-[#090D16]/90 backdrop-blur-xl border-b border-slate-800/80 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
           
           {/* Logo Card */}
           <a
@@ -57,18 +56,18 @@ export const Header: React.FC<HeaderProps> = ({
               navigateTo('explore');
             }}
             href="#"
-            className="flex items-center group transition transform hover:scale-105 cursor-pointer"
+            className="flex items-center group transition transform hover:scale-105 cursor-pointer shrink-0"
           >
-            <div className="h-14 sm:h-16 px-2 py-1 flex items-center justify-center bg-white rounded-xl shadow-lg border border-indigo-500/40 overflow-hidden">
-              <Logo className="h-12 sm:h-14 w-auto max-w-full" />
+            <div className="h-12 sm:h-14 px-2 py-1 flex items-center justify-center bg-white rounded-xl shadow-lg border border-indigo-500/40 overflow-hidden">
+              <Logo className="h-10 sm:h-12 w-auto max-w-full" />
             </div>
           </a>
 
-          {/* Central Navigation Pills */}
-          <nav className="hidden md:flex items-center gap-1 bg-slate-900/90 p-1.5 rounded-full border border-slate-800">
+          {/* Central Navigation Pills (మొబైల్‌లో దాగుంటాయి, పెద్ద స్క్రీన్‌లపై నీట్‌గా కనిపిస్తాయి) */}
+          <nav className="hidden lg:flex items-center gap-1 bg-slate-900/90 p-1.5 rounded-full border border-slate-800 shrink-0">
             <button
               onClick={() => navigateTo('explore')}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'explore'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -79,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={() => navigateToCategory('Buy')}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'listings' && activeFilterCategory === 'Buy'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -90,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={() => navigateToCategory('Rent')}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'listings' && activeFilterCategory === 'Rent'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -101,7 +100,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={() => navigateToCategory('Short Stay')}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'listings' && activeFilterCategory === 'Short Stay'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -112,7 +111,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={() => navigateToCategory('Plots')}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'listings' && activeFilterCategory === 'Plots'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -120,28 +119,28 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Layers className="w-3.5 h-3.5" /> Land & Plots
             </button>
+
+            <button
+              onClick={() => navigateTo('blog')}
+              className={`px-3.5 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                currentTab === 'blog'
+                  ? 'bg-indigo-600 text-white shadow-md'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+              }`}
+            >
+              Blog
+            </button>
           </nav>
 
-          <button
-            onClick={() => navigateTo('blog')}
-            className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              currentTab === 'blog'
-                ? 'bg-indigo-600 text-white shadow-md'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
-            }`}
-          >
-            Blog
-          </button>
-
           {/* Action Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             
             {/* Fill Details Button */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-1.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-xl transition-all shadow-lg shadow-green-500/30 hover:scale-[1.02] active:scale-95 cursor-pointer"
+              className="hidden sm:flex items-center gap-1.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-bold px-3 py-2.5 rounded-xl transition-all shadow-lg shadow-green-500/30 hover:scale-[1.02] active:scale-95 cursor-pointer"
             >
-              <span className="whitespace-nowrap hidden sm:inline">Fill Details</span>
+              <span className="whitespace-nowrap">Fill Details</span>
             </button>
 
             {/* List Property + Sign In కంబైన్డ్ బటన్ */}
@@ -153,7 +152,7 @@ export const Header: React.FC<HeaderProps> = ({
                   openAuthModal();
                 }
               }}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-black px-4 py-2.5 rounded-xl text-xs shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center gap-2 cursor-pointer"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-black px-3.5 py-2.5 rounded-xl text-xs shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center gap-1.5 cursor-pointer shrink-0"
             >
               <PlusCircle className="w-4 h-4 hidden md:block" />
               <span className="hidden sm:inline">List Property</span>
@@ -173,7 +172,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Favorites Heart Counter Button */}
             <button
               onClick={() => navigateTo('favorites')}
-              className="relative p-2.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition cursor-pointer"
+              className="relative p-2.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition cursor-pointer shrink-0"
               title="Saved Properties"
             >
               <Heart
@@ -195,7 +194,7 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   <img
                     src={currentUser.avatar}
-                    className="w-8 h-8 rounded-lg object-cover border border-indigo-500/40"
+                    className="w-7 h-7 rounded-lg object-cover border border-indigo-500/40"
                     alt="Avatar"
                   />
                   <div className="text-left hidden lg:block">
@@ -206,7 +205,7 @@ export const Header: React.FC<HeaderProps> = ({
                       {currentUser.role}
                     </p>
                   </div>
-                  <ChevronDown className="w-3 h-3 text-slate-400 ml-1" />
+                  <ChevronDown className="w-3 h-3 text-slate-400 ml-0.5" />
                 </button>
 
                 {showProfileDropdown && (
@@ -261,7 +260,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </header>
 
-      {/* AI Call Modal - హెడర్ బయట ఉండటం వల్ల ఇది స్క్రీన్‌కి సరిగ్గా సెంటర్‌లో ఓపెన్ అవుతుంది */}
+      {/* AI Call Modal */}
       <AICallModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
