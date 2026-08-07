@@ -83,43 +83,45 @@ async function startServer() {
   // -------------------------------------------------------------
   // OMINIDIM AI CALL TRIGGER API 
   // -------------------------------------------------------------
-  app.post("/api/trigger-ominidim-call", async (req, res) => {
-    const { name, phone, email } = req.body;
+  app.post('/api/trigger-ominidim-call', async (req, res) => {
+  try {
+    const { agentId, agent_id, fullName, mobile, email } = req.body;
 
-    if (!phone) {
-      res.status(400).json({ success: false, message: "Phone number is required" });
-      return;
+    // Mobile number lo unna spaces ni remove chestunnam (+91 6301478309 -> +916301478309)
+    const formattedMobile = mobile ? mobile.replace(/\s+/g, '') : '';
+
+    // Omnidimension API ki request pampistunnam
+    const response = await fetch('https://api.omnidimension.io/v1/make-call', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer Ahmni5AcuICUTssvjj28pI07dL8DM1qPwomv-sY9U_M`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        agent_id: agentId || agent_id || "233563",
+        customer_number: formattedMobile,
+        customer_name: fullName,
+        customer_email: email
+      })
+    });
+
+    if (response.ok) {
+      res.status(200).json({ success: true, message: "AI Agent is calling now!" });
+    } else {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("Omnidimension Error:", errorData);
+      res.status(400).json({ success: false, message: "Call failed to connect.", error: errorData });
     }
+  } catch (error) {
+    console.error("Server Error:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+});
 
-    try {
-      // OmniDimension API కి రిక్వెస్ట్ పంపుతున్నాం
-      const response = await fetch('https://api.omnidimension.io/v1/make-call', {
-        method: 'POST',
-        headers: {
-          // మీరు ఇచ్చిన API Key ని ఇక్కడ డైరెక్ట్‌గా యాడ్ చేశాను
-          'Authorization': `Bearer Ahnmi5AeuICUTssvjj28pHO7dL8EMlqPwomv-sY9U_M`, 
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          agent_id: "233563", // మీ బుక్ మై హోమ్స్ ఏజెంట్ ID
-          customer_number: phone,
-          customer_name: name,
-          customer_email: email
-        })
-      });
-
-      if (response.ok) {
-        res.status(200).json({ success: true, message: "AI Agent is calling now!" });
-      } else {
-        const errorData = await response.json();
-        console.error("OmniDimension Error:", errorData);
-        res.status(500).json({ success: false, message: "Call failed to connect." });
-      }
-    } catch (error) {
-      console.error("Server Error:", error);
-      res.status(500).json({ success: false, error: "Internal Server Error" });
-    }
-  });
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
   // -------------------------------------------------------------
 
   // Vite middleware for development
