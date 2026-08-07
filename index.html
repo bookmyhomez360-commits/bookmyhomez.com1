@@ -77,7 +77,7 @@
         background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
       }
 
-      /* Fullscreen Background Website Template Video Styling */
+      /* Fullscreen Background Video Styling - Fixed to prevent black screen */
       .inner-screen-bg {
         position: absolute; inset: 0; z-index: 1;
         background: #000;
@@ -95,9 +95,9 @@
         top: 50%; left: 50%;
         transform: translate(-50%, -50%);
         min-width: 100%; min-height: 100%;
-        width: auto; height: auto;
+        width: 100%; height: 100%;
         object-fit: cover;
-        z-index: 0;
+        z-index: 2;
       }
       
       /* Top Controls: Skip & Sound Buttons */
@@ -288,14 +288,11 @@
         </button>
       </div>
 
-      <!-- Fullscreen Background Template Video -->
+      <!-- Fullscreen Background Video -->
       <div class="inner-screen-bg" id="innerScreenBg">
         <div class="poster">
-          <video id="v" playsinline webkit-playsinline autoplay muted preload="auto">
-            <!-- ల్యాప్‌టాప్/డెస్క్‌టాప్ కోసం వీడియో -->
-            <source src="WhatsApp Video 2026-08-07 at 2.00.32 PM.mp4" media="(min-width: 769px)" type="video/mp4">
-            <!-- మొబైల్ ఫోన్ల కోసం వీడియో -->
-            <source src="WhatsApp Video 2026-08-07 at 2.19.05 PM.mp4" media="(max-width: 768px)" type="video/mp4">
+          <video id="v" playsinline webkit-playsinline autoplay muted preload="auto" loop>
+            <source src="WhatsApp Video 2026-08-07 at 2.00.32 PM.mp4" type="video/mp4">
             మీ బ్రౌజర్ వీడియోను సపోర్ట్ చేయడం లేదు.
           </video>
         </div>
