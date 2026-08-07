@@ -80,6 +80,10 @@
     }
     </script>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Complete Door Animation Styles with Wood Boxes Design -->
     <style>
       :root{
@@ -90,6 +94,8 @@
         --brass:#D4AF37;
         --brass-dark:#9C7A1E;
       }
+      *{box-sizing:border-box;margin:0;padding:0;}
+      html,body{height:100%; width:100%; overflow-x: hidden;}
       body.locked{overflow:hidden; height:100vh;}
 
       #door-stage{
@@ -180,7 +186,6 @@
       #door-stage.opened .knock-wrap { display: none; }
       #door-stage.opened .toran,
       #door-stage.opened .door-kolam { opacity: 0; visibility: hidden; transition: opacity 0.3s ease; }
-      #door-stage.opened{ opacity:0; pointer-events:none; transition:opacity 0.6s 1.2s; }
 
       /* Wood Panel Boxes Design & Animation inside Doors */
       .door-panel-container {
@@ -233,16 +238,6 @@
       @keyframes kolamGlow {
         0% { opacity: 0.8; filter: drop-shadow(0 2px 4px rgba(255,215,0,0.3)); }
         100% { opacity: 1; filter: drop-shadow(0 2px 10px rgba(255,215,0,0.8)); }
-      }
-
-      /* Rosette Spin Animation */
-      .rosette-spin {
-        animation: rosetteSpin 12s linear infinite;
-        transform-origin: center;
-      }
-      @keyframes rosetteSpin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
       }
 
       /* Bulb Glow Animation */
@@ -488,6 +483,16 @@
         }, 100);
       }
 
+      function skipToWebsite() {
+        if(!stage) return;
+        stage.classList.add('done');
+        document.body.classList.remove('locked');
+        if(v) v.pause();
+        setTimeout(() => {
+          stage.remove();
+        }, 100);
+      }
+
       function openDoors(){
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
@@ -498,10 +503,7 @@
       }
 
       if(skipBtn){
-        skipBtn.addEventListener('click', () => {
-          openDoors();
-          setTimeout(closeDoorAndShowWebsite, 1200);
-        });
+        skipBtn.addEventListener('click', skipToWebsite);
       }
 
       if(v){
