@@ -148,6 +148,7 @@
       .knock-wrap{
         position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
         z-index:20; display:flex; flex-direction:column; align-items:center;
+        transition: opacity 0.4s ease, transform 0.4s ease;
       }
       .knock-btn{
         width:90px; height:90px; border-radius:50%;
@@ -172,6 +173,65 @@
         0%,100%{ transform:rotate(-6deg); }
         50%{ transform:rotate(6deg); }
       }
+
+      /* Detailed Door Design Panels & Handles */
+      .door-panel {
+        position: absolute;
+        top: 8%; bottom: 8%; width: 70%;
+        left: 15%;
+        border: 3px groove rgba(107, 62, 34, 0.6);
+        box-shadow: inset 0 0 15px rgba(0,0,0,0.4);
+        display: flex; flex-direction: column; justify-content: space-around; align-items: center;
+        padding: 40px 0;
+      }
+      .door-inner-circle {
+        width: 110px; height: 110px; border-radius: 50%;
+        border: 4px solid var(--brass-dark);
+        background: radial-gradient(circle, rgba(59,34,19,0.8) 40%, var(--wood-dark) 100%);
+        box-shadow: inset 0 4px 8px rgba(0,0,0,0.6), 0 2px 5px rgba(0,0,0,0.3);
+        display: flex; align-items: center; justify-content: center;
+      }
+      .door-inner-circle::after {
+        content: '';
+        width: 70px; height: 70px; border-radius: 50%;
+        border: 2px dashed var(--brass);
+        opacity: 0.7;
+      }
+      .door-handle {
+        position: absolute;
+        top: 50%;
+        width: 14px; height: 85px;
+        background: linear-gradient(90deg, var(--brass-dark), var(--brass), var(--brass-dark));
+        border-radius: 4px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        transform: translateY(-50%);
+      }
+      .door-left .door-handle { right: 12px; }
+      .door-right .door-handle { left: 12px; }
+
+      .corner-plate {
+        position: absolute;
+        width: 45px; height: 45px;
+        border: 3px solid var(--brass-dark);
+        background: var(--brass);
+      }
+      .door-left .corner-plate.top-left { top: 0; left: 0; border-right: none; border-bottom: none; }
+      .door-left .corner-plate.bottom-left { bottom: 0; left: 0; border-right: none; border-top: none; }
+      .door-right .corner-plate.top-right { top: 0; right: 0; border-left: none; border-bottom: none; }
+      .door-right .corner-plate.bottom-right { bottom: 0; right: 0; border-left: none; border-top: none; }
+
+      /* Opening Animation States matching video reference */
+      #door-stage.opening .knock-wrap {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+        pointer-events: none;
+      }
+      #door-stage.opening .door-left {
+        transform: rotateY(-110deg);
+      }
+      #door-stage.opening .door-right {
+        transform: rotateY(110deg);
+      }
     </style>
   </head>
   <body class="locked">
@@ -182,8 +242,27 @@
       <div class="frame-pillar left"></div>
       <div class="frame-pillar right"></div>
 
-      <div class="door door-left"></div>
-      <div class="door door-right"></div>
+      <!-- Left Door with detailed panels, handles, and corner brackets -->
+      <div class="door door-left">
+        <div class="corner-plate top-left"></div>
+        <div class="corner-plate bottom-left"></div>
+        <div class="door-panel">
+          <div class="door-inner-circle"></div>
+          <div class="door-inner-circle"></div>
+        </div>
+        <div class="door-handle"></div>
+      </div>
+
+      <!-- Right Door with detailed panels, handles, and corner brackets -->
+      <div class="door door-right">
+        <div class="corner-plate top-right"></div>
+        <div class="corner-plate bottom-right"></div>
+        <div class="door-panel">
+          <div class="door-inner-circle"></div>
+          <div class="door-inner-circle"></div>
+        </div>
+        <div class="door-handle"></div>
+      </div>
 
       <!-- Toran Garland (Full Screen Responsive Width) -->
       <svg class="toran" viewBox="0 0 1400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -296,10 +375,10 @@
       const knockBtn = document.getElementById('knockBtn');
 
       function openDoors(){
-        if(!stage || stage.classList.contains('opened')) return;
-        stage.classList.add('opened');
+        if(!stage || stage.classList.contains('opening')) return;
+        stage.classList.add('opening');
         document.body.classList.remove('locked');
-        setTimeout(()=>{ stage.remove(); }, 1800);
+        setTimeout(()=>{ stage.remove(); }, 1600);
       }
 
       if(knockBtn){
