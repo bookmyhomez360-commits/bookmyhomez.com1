@@ -32,37 +32,3 @@
   animation: kenBurns 18s ease-in-out infinite alternate;
 }
 
-/* React Root & Main Layout Alignment */
-#root {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  z-index: 1;
-}
-
-/* Navbar & Header Fix */
-header, .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  width: 100%;
-  z-index: 100;
-}
-
-/* Hero Section & Search Box Overlap Fix */
-.hero-section, .hero-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-/* Search Box Container spacing correction */
-.search-filter-container, .search-box {
-  position: relative;
-  margin-top: 20px;
-  z-index: 50;
-}
-
