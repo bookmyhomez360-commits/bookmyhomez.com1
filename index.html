@@ -45,7 +45,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Complete Door, Serial Lights & Video Player Styles -->
+    <!-- Complete Door, Serial Lights & Fullscreen Video Template Styles -->
     <style>
       :root{
         --wood-dark:#4A2C1A;
@@ -59,7 +59,7 @@
         --mango-leaf:#4F7942;
       }
       *{box-sizing:border-box;margin:0;padding:0;}
-      html,body{height:100%;}
+      html,body{height:100%; width:100%;}
       body.locked{overflow:hidden; height:100vh;}
 
       #door-stage{
@@ -77,28 +77,48 @@
         background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
       }
 
-      /* Inner Background Screen with Video Template Styling */
+      /* Fullscreen Background Website Template Video Styling */
       .inner-screen-bg {
         position: absolute; inset: 0; z-index: 1;
-        background: #2a150b;
+        background: #000;
+        width: 100vw; height: 100vh;
         display: flex; align-items: center; justify-content: center;
-        padding: 0;
+        overflow: hidden;
       }
       .poster {
-        position: relative; width: 100%; height: 100%;
+        position: absolute; inset: 0;
+        width: 100%; height: 100%;
         background: #000; display: flex; align-items: center; justify-content: center;
       }
       .poster video {
-        width: 100%; height: 100%; object-fit: cover; display: block;
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        min-width: 100%; min-height: 100%;
+        width: auto; height: auto;
+        object-fit: cover;
+        z-index: 0;
       }
+      
+      /* Top Controls: Skip & Sound Buttons */
+      .top-controls {
+        position: absolute; top: 16px; right: 16px; z-index: 25;
+        display: flex; gap: 10px; align-items: center;
+      }
+      .control-btn {
+        background: rgba(20,10,45,0.75); backdrop-filter: blur(4px);
+        border: 1px solid rgba(255,255,255,0.4); color: #fff;
+        padding: 8px 16px; border-radius: 20px;
+        font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 500;
+        cursor: pointer; display: flex; align-items: center; gap: 6px;
+        transition: background 0.2s, transform 0.2s;
+      }
+      .control-btn:hover { background: rgba(40,20,70,0.95); transform: scale(1.03); }
       .sound-toggle {
-        position: absolute; top: 14px; right: 14px; z-index: 5;
-        background: rgba(20,10,45,0.6); backdrop-filter: blur(4px);
-        border: 1px solid rgba(255,255,255,0.5); color: #fff;
-        width: 42px; height: 42px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center; cursor: pointer;
+        width: 38px; height: 38px; border-radius: 50%; padding: 0;
+        justify-content: center;
       }
-      .sound-toggle svg { width: 19px; height: 19px; }
+      .sound-toggle svg { width: 18px; height: 18px; }
 
       .frame-pillar{
         position:absolute; top:0; bottom:0; width:26px; z-index:6;
@@ -257,18 +277,27 @@
     <div id="door-stage">
       <div class="door-frame"></div>
 
-      <!-- Inner Background Screen with Responsive Video Template -->
+      <!-- Top Controls: Skip Video & Sound Toggle -->
+      <div class="top-controls">
+        <button class="control-btn" id="skipBtn" type="button">
+          <span>Skip Video</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 4l10 8-10 8V4zM19 4v16"/></svg>
+        </button>
+        <button class="control-btn sound-toggle" id="soundToggle" title="Mute/Unmute" type="button">
+          <svg id="muteIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+        </button>
+      </div>
+
+      <!-- Fullscreen Background Template Video -->
       <div class="inner-screen-bg" id="innerScreenBg">
         <div class="poster">
-          <video id="v" playsinline preload="auto">
+          <video id="v" playsinline webkit-playsinline autoplay muted preload="auto">
             <!-- ల్యాప్‌టాప్/డెస్క్‌టాప్ కోసం వీడియో -->
             <source src="WhatsApp Video 2026-08-07 at 2.00.32 PM.mp4" media="(min-width: 769px)" type="video/mp4">
             <!-- మొబైల్ ఫోన్ల కోసం వీడియో -->
             <source src="WhatsApp Video 2026-08-07 at 2.19.05 PM.mp4" media="(max-width: 768px)" type="video/mp4">
+            మీ బ్రౌజర్ వీడియోను సపోర్ట్ చేయడం లేదు.
           </video>
-          <div class="sound-toggle" id="soundToggle" title="Mute/Unmute">
-            <svg id="muteIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-          </div>
         </div>
       </div>
 
@@ -448,6 +477,7 @@
 
       const stage = document.getElementById('door-stage');
       const knockBtn = document.getElementById('knockBtn');
+      const skipBtn = document.getElementById('skipBtn');
       const v = document.getElementById('v');
       const toggle = document.getElementById('soundToggle');
       const muteIcon = document.getElementById('muteIcon');
@@ -455,18 +485,26 @@
       const iconOn = '<path d="M15.5 8.5a5 5 0 010 7"/><path d="M18.5 5.5a9 9 0 010 13"/><path d="M11 5L6 9H2v6h4l5 4V5z"/>';
       const iconMuted = '<path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
 
+      window.addEventListener('DOMContentLoaded', () => {
+        v.play().catch(() => {
+          console.log("Autoplay blocked, waiting for user interaction");
+        });
+      });
+
+      function closeDoorAndShowWebsite() {
+        stage.style.transition = "opacity 0.6s ease";
+        stage.style.opacity = "0";
+        setTimeout(() => {
+          stage.classList.add('done');
+          document.body.classList.remove('locked');
+          stage.remove();
+        }, 600);
+      }
+
       function openDoors(){
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
-
-        // Play video once doors open
-        setTimeout(() => {
-          v.play().catch(() => { 
-            v.muted = true; 
-            v.play(); 
-            muteIcon.innerHTML = iconMuted;
-          });
-        }, 800);
+        v.play().catch(() => {});
       }
 
       toggle.addEventListener('click', () => {
@@ -475,16 +513,12 @@
         muteIcon.innerHTML = v.muted ? iconMuted : iconOn;
       });
 
-      // When video ends, seamlessly remove stage and open website
-      v.addEventListener('ended', () => {
-        stage.style.transition = "opacity 0.6s ease";
-        stage.style.opacity = "0";
-        setTimeout(() => {
-          stage.classList.add('done');
-          document.body.classList.remove('locked');
-          stage.remove();
-        }, 600);
+      skipBtn.addEventListener('click', () => {
+        openDoors();
+        setTimeout(closeDoorAndShowWebsite, 1000);
       });
+
+      v.addEventListener('ended', closeDoorAndShowWebsite);
 
       if(knockBtn){
         knockBtn.addEventListener('click', openDoors);
