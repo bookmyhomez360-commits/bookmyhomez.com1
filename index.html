@@ -283,10 +283,10 @@
         </button>
       </div>
 
-      <!-- Fullscreen Background Video (Initially Muted) -->
+      <!-- Fullscreen Background Video (Initially Paused) -->
       <div class="inner-screen-bg" id="innerScreenBg">
         <div class="poster">
-          <video id="v" playsinline webkit-playsinline autoplay muted preload="auto">
+          <video id="v" playsinline webkit-playsinline preload="auto">
             <source src="/video-desktop.mp4" media="(min-width: 768px)" type="video/mp4">
             <source src="/video-mobile.mp4" media="(max-width: 767px)" type="video/mp4">
             <source src="/video-desktop.mp4" type="video/mp4">
@@ -466,10 +466,9 @@
       const skipBtn = document.getElementById('skipBtn');
       const v = document.getElementById('v');
 
-      // డోర్ మూసి ఉన్నంత వరకు వీడియో మ్యూట్ లోనే ప్లే అవుతుంది
+      // డోర్ ఓపెన్ అయ్యే వరకు వీడియో ఆగి ఉంటుంది (Play అవ్వదు)
       window.addEventListener('DOMContentLoaded', () => {
-        v.muted = true;
-        v.play().catch(() => {});
+        v.pause();
       });
 
       function closeDoorAndShowWebsite() {
@@ -482,7 +481,7 @@
         }, 600);
       }
 
-      // డోర్ ఓపెన్ కాగానే / స్కిప్ చేయగానే మ్యూట్ తీసేసి సౌండ్ ఆన్ చేస్తాం
+      // డోర్ ఓపెన్ కాగానే వీడియో ప్లే అవుతుంది మరియు సౌండ్ వినిపిస్తుంది
       function openDoors(){
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
