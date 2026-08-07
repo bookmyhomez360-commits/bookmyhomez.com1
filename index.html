@@ -104,9 +104,13 @@
         width: 100vw;
         height: 100vh;
         overflow: hidden;
-        transition: opacity 0.8s ease 2.2s; /* Fade out effect after doors open */
+        transition: opacity 0.8s ease, visibility 0.8s ease;
       }
-      #door-stage.done{display:none;}
+      #door-stage.done{
+        opacity: 0;
+        visibility: hidden;
+        display: none !important;
+      }
 
       .door-frame{
         position:absolute; inset:0;
@@ -115,11 +119,12 @@
 
       /* Slow Opening Transition for Doors */
       .door {
+        position: absolute; top: 0; bottom: 0; width: 50%;
         transition: transform 2.5s cubic-bezier(0.25, 1, 0.5, 1);
         transform-style: preserve-3d;
       }
-      .door-left { transform-origin: left; }
-      .door-right { transform-origin: right; }
+      .door-left { left: 0; transform-origin: left; }
+      .door-right { right: 0; transform-origin: right; }
 
       /* Side Door Vertical Serial Lights */
       .side-serial-light {
@@ -248,7 +253,7 @@
       <div class="door-frame"></div>
 
       <!-- Left Door Leaf -->
-      <div class="door door-left" style="position:absolute; top:0; bottom:0; left:0; width:50%;">
+      <div class="door door-left">
         <div class="side-serial-light" id="leftSideLights"></div>
         <div class="door-panel panel-top">
           <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
@@ -264,7 +269,7 @@
       </div>
 
       <!-- Right Door Leaf -->
-      <div class="door door-right" style="position:absolute; top:0; bottom:0; right:0; width:50%;">
+      <div class="door door-right">
         <div class="side-serial-light" id="rightSideLights"></div>
         <div class="door-panel panel-top">
           <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
@@ -427,10 +432,10 @@
         stage.classList.add('opened');
         document.body.classList.remove('locked');
         
-        // Completely remove the door overlay from DOM after the smooth animation completes
+        // Remove overlay completely from flow after doors open smoothly
         setTimeout(() => {
           stage.classList.add('done');
-        }, 3000);
+        }, 2500);
       }
 
       if(knockBtn){
