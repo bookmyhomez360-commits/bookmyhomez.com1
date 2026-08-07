@@ -190,7 +190,7 @@
       #door-stage.opened .door-right{ transform:rotateY(112deg); }
       #door-stage.opened .knock-wrap { display: none; }
 
-      Center Knob Button with Serial Lights Ring */
+      /* Center Knob Button with Serial Lights Ring */
       .knock-wrap{
         position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
         z-index:20; display:flex; align-items:center; justify-content:center;
@@ -231,8 +231,10 @@
         0% { opacity: 0.8; filter: drop-shadow(0 2px 4px rgba(255,215,0,0.3)); }
         100% { opacity: 1; filter: drop-shadow(0 2px 10px rgba(255,215,0,0.8)); }
       }
-
-      <!-- Door Intro Overlay -->
+    </style>
+  </head>
+  <body>
+    <!-- Door Intro Overlay -->
     <div id="door-stage">
       <div class="door-frame"></div>
 
@@ -313,7 +315,7 @@
       </div>
     </div>
 
-      <!-- React Root -->
+    <!-- React Root -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
@@ -410,18 +412,13 @@
 
       const stage = document.getElementById('door-stage');
       const knockBtn = document.getElementById('knockBtn');
-      const v = document.getElementById('v');
-      const toggle = document.getElementById('soundToggle');
-      const muteIcon = document.getElementById('muteIcon');
-
-      const iconOn = '<path d="M15.5 8.5a5 5 0 010 7"/><path d="M18.5 5.5a9 9 0 010 13"/><path d="M11 5L6 9H2v6h4l5 4V5z"/>';
-      const iconMuted = '<path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
 
       function openDoors(){
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
+      }
 
-        if(knockBtn){
+      if(knockBtn){
         knockBtn.addEventListener('click', openDoors);
         knockBtn.addEventListener('keydown', (e) => {
           if(e.key === 'Enter' || e.key === ' ') {
@@ -433,6 +430,3 @@
     </script>
   </body>
 </html>
-      
-   
-    
