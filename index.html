@@ -107,6 +107,23 @@
         background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
       }
 
+      /* Video Background Behind Doors */
+      .inner-screen-bg {
+        position: absolute; inset: 0; z-index: 1;
+        background: var(--wood-dark);
+        display: flex; align-items: center; justify-content: center;
+        overflow: hidden;
+      }
+      .poster {
+        position: absolute; inset: 0;
+        width: 100%; height: 100%;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .poster video {
+        width: 100%; height: 100%;
+        object-fit: cover;
+      }
+
       .frame-pillar{
         position:absolute; top:0; bottom:0; width:26px; z-index:6;
         background:repeating-linear-gradient(180deg, #6B3E22 0px, #4A2C1A 18px, #6B3E22 36px);
@@ -119,6 +136,7 @@
         background:linear-gradient(90deg, var(--wood-dark) 0%, var(--wood-light) 12%, var(--wood-mid) 30%, var(--wood-light) 55%, var(--wood-mid) 78%, var(--wood-dark) 100%);
         transition: transform 1.6s cubic-bezier(.72,-0.15,.24,1.05);
         will-change: transform;
+        z-index: 10;
       }
       .door-left{ left:0; transform-origin:left center; border-right:2px solid var(--wood-grain); }
       .door-right{ right:0; transform-origin:right center; border-left:2px solid var(--wood-grain); }
@@ -129,7 +147,7 @@
 
       .toran{
         position:absolute; top:0; left:0; width:100%; height:140px;
-        z-index:5; pointer-events:none;
+        z-index:15; pointer-events:none;
         animation: toranSway 4.5s ease-in-out infinite;
         transform-origin: 50% 0%;
       }
@@ -179,6 +197,18 @@
     <!-- Door Intro Overlay -->
     <div id="door-stage">
       <div class="door-frame"></div>
+
+      <!-- Background Video Inside Doors -->
+      <div class="inner-screen-bg" id="innerScreenBg">
+        <div class="poster">
+          <video id="introVideo" playsinline webkit-playsinline muted preload="auto">
+            <source src="/video-desktop.mp4" media="(min-width: 768px)" type="video/mp4">
+            <source src="/video-mobile.mp4" media="(max-width: 767px)" type="video/mp4">
+            <source src="/video-desktop.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+
       <div class="frame-pillar left"></div>
       <div class="frame-pillar right"></div>
 
@@ -217,7 +247,7 @@
     <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
     <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
-    <!-- Dynamic Toran Generator Script -->
+    <!-- Dynamic Toran Generator & Door Script -->
     <script>
       const SVGNS = 'http://www.w3.org/2000/svg';
       function el(tag, attrs){
@@ -294,12 +324,24 @@
 
       const stage = document.getElementById('door-stage');
       const knockBtn = document.getElementById('knockBtn');
+      const introVideo = document.getElementById('introVideo');
 
       function openDoors(){
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
         document.body.classList.remove('locked');
-        setTimeout(()=>{ stage.remove(); }, 1800);
+        
+        if(introVideo) {
+          introVideo.muted = false;
+          introVideo.play().catch(()=>{});
+          introVideo.addEventListener('ended', () => {
+            stage.remove();
+          });
+        }
+        
+        setTimeout(()=>{ 
+          if(stage && stage.parentNode) stage.remove(); 
+        }, 2200);
       }
 
       if(knockBtn){
