@@ -45,7 +45,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Styles for Door Opening & Video Background -->
+    <!-- Styles for Door Opening, Toran, Kolam & Video Background -->
     <style>
       :root{
         --wood-dark:#4A2C1A;
@@ -54,6 +54,9 @@
         --wood-grain:#3B2213;
         --brass:#D4AF37;
         --brass-dark:#9C7A1E;
+        --marigold:#E8871E;
+        --marigold-light:#F4A93F;
+        --mango-leaf:#4F7942;
       }
       *{box-sizing:border-box;margin:0;padding:0;}
       html,body{height:100%; width:100%;}
@@ -74,7 +77,7 @@
         background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
       }
 
-      /* Fullscreen Background Video Styling - Fixed sizing so it doesn't cut */
+      /* Fullscreen Background Video Styling */
       .inner-screen-bg {
         position: absolute; inset: 0; z-index: 1;
         background: #000;
@@ -92,12 +95,12 @@
         top: 50%; left: 50%;
         transform: translate(-50%, -50%);
         width: 100%; height: 100%;
-        object-fit: contain; /* Video cut అవ్వకుండా మొత్తం ఫిట్ అయ్యేలా */
+        object-fit: cover;
         background: #000;
         z-index: 2;
       }
       
-      /* Top Controls: Skip & Sound Buttons */
+      /* Top Controls: Skip Button */
       .top-controls {
         position: absolute; top: 16px; right: 16px; z-index: 25;
         display: flex; gap: 10px; align-items: center;
@@ -105,17 +108,12 @@
       .control-btn {
         background: rgba(20,10,45,0.75); backdrop-filter: blur(4px);
         border: 1px solid rgba(255,255,255,0.4); color: #fff;
-        padding: 8px 16px; border-radius: 20px;
+        padding: 8px 18px; border-radius: 20px;
         font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 500;
         cursor: pointer; display: flex; align-items: center; gap: 6px;
         transition: background 0.2s, transform 0.2s;
       }
       .control-btn:hover { background: rgba(40,20,70,0.95); transform: scale(1.03); }
-      .sound-toggle {
-        width: 38px; height: 38px; border-radius: 50%; padding: 0;
-        justify-content: center;
-      }
-      .sound-toggle svg { width: 18px; height: 18px; }
 
       .frame-pillar{
         position:absolute; top:0; bottom:0; width:26px; z-index:6;
@@ -213,6 +211,38 @@
       #door-stage.opened .door-left{ transform:rotateY(-112deg); }
       #door-stage.opened .door-right{ transform:rotateY(112deg); }
       #door-stage.opened .knock-wrap { display: none; }
+      
+      /* డోర్ తెరుచుకోగానే తోరణం మరియు కోలం మాయం కావడానికి క్లాస్ */
+      #door-stage.opened .toran,
+      #door-stage.opened .door-kolam {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease;
+      }
+
+      /* Moving Toran Garland */
+      .toran{
+        position:absolute; top:0; left:0; width:100%; height:140px;
+        z-index:15; pointer-events:none;
+        animation: toranSway 4.5s ease-in-out infinite; transform-origin: 50% 0%;
+        transition: opacity 0.3s ease;
+      }
+      @keyframes toranSway{ 0%,100%{ transform:rotate(-0.8deg); } 50%{ transform:rotate(0.8deg); } }
+      .garland-line{ stroke-dasharray: 3 9; animation: garlandFlow 2.6s linear infinite; }
+      @keyframes garlandFlow{ to{ stroke-dashoffset:-24; } }
+
+      /* Traditional Door Kolam / Rangoli */
+      .door-kolam {
+        position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+        width: 240px; height: 75px; z-index: 15; pointer-events: none;
+        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7));
+        animation: kolamGlow 3s ease-in-out infinite alternate;
+        transition: opacity 0.3s ease;
+      }
+      @keyframes kolamGlow {
+        0% { opacity: 0.8; filter: drop-shadow(0 2px 4px rgba(255,215,0,0.3)); }
+        100% { opacity: 1; filter: drop-shadow(0 2px 10px rgba(255,215,0,0.8)); }
+      }
 
       /* Center Knob Button with Serial Lights Ring */
       .knock-wrap{
@@ -251,21 +281,18 @@
     <div id="door-stage">
       <div class="door-frame"></div>
 
-      <!-- Top Controls: Skip Video & Sound Toggle -->
+      <!-- Top Controls: Skip Button -->
       <div class="top-controls">
         <button class="control-btn" id="skipBtn" type="button">
-          <span>Skip Video</span>
+          <span>Skip</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 4l10 8-10 8V4zM19 4v16"/></svg>
-        </button>
-        <button class="control-btn sound-toggle" id="soundToggle" title="Mute/Unmute" type="button">
-          <svg id="muteIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
         </button>
       </div>
 
       <!-- Fullscreen Background Video -->
       <div class="inner-screen-bg" id="innerScreenBg">
         <div class="poster">
-          <video id="v" playsinline webkit-playsinline autoplay muted preload="auto">
+          <video id="v" playsinline webkit-playsinline autoplay preload="auto">
             <source src="/video-desktop.mp4" media="(min-width: 768px)" type="video/mp4">
             <source src="/video-mobile.mp4" media="(max-width: 767px)" type="video/mp4">
             <source src="/video-desktop.mp4" type="video/mp4">
@@ -309,6 +336,36 @@
         <div class="door-handle"></div>
       </div>
 
+      <!-- Toran Garland -->
+      <svg class="toran" viewBox="0 0 1400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="2" stdDeviation="1.4" flood-color="#1a1006" flood-opacity="0.45"/>
+          </filter>
+        </defs>
+        <path d="M-50,15 Q350,110 700,50 Q1050,110 1450,15" stroke="#5c3a1e" stroke-width="4" fill="none" opacity="0.55"/>
+        <path class="garland-line" d="M-50,15 Q350,110 700,50 Q1050,110 1450,15" stroke="#D4AF37" stroke-width="3.5" fill="none" opacity="0.9"/>
+        <g id="leaves"></g>
+        <g id="flowers"></g>
+      </svg>
+
+      <!-- Traditional Door Kolam / Rangoli -->
+      <svg class="door-kolam" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#fce8a2" stroke-width="1.8" fill="none" stroke-linecap="round">
+          <path d="M120,65 C105,50 95,35 120,15 C145,35 135,50 120,65 Z" fill="rgba(232, 135, 30, 0.35)" />
+          <path d="M120,65 C105,55 90,45 100,30 C112,35 116,50 120,65 Z" fill="rgba(244, 169, 63, 0.25)" />
+          <path d="M120,65 C135,55 150,45 140,30 C128,35 124,50 120,65 Z" fill="rgba(244, 169, 63, 0.25)" />
+          <path d="M70,55 Q95,25 120,55 Q145,25 170,55" />
+          <path d="M45,65 Q80,15 120,65 Q160,15 195,65" />
+          <path d="M25,72 Q120,30 215,72" stroke-width="1.2" />
+          <circle cx="120" cy="12" r="3.5" fill="#fce8a2" />
+          <circle cx="92" cy="38" r="2.2" fill="#fce8a2" />
+          <circle cx="148" cy="38" r="2.2" fill="#fce8a2" />
+          <circle cx="65" cy="52" r="2" fill="#fce8a2" />
+          <circle cx="175" cy="52" r="2" fill="#fce8a2" />
+        </g>
+      </svg>
+
       <!-- Center Knob Button with Serial Lights Ring -->
       <div class="knock-wrap" id="knockWrap">
         <div class="serial-ring" id="serialRing"></div>
@@ -329,10 +386,40 @@
     <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
     <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
-    <!-- JavaScript for Dynamic Bulbs, Opening Doors, and Website Restoration -->
+    <!-- JavaScript Generator -->
     <script>
+      const SVGNS = 'http://www.w3.org/2000/svg';
+      function el(tag, attrs){
+        const n = document.createElementNS(SVGNS, tag);
+        for(const k in attrs) n.setAttribute(k, attrs[k]);
+        return n;
+      }
+      function mangoLeaf(x,y,rot,scale,shade){
+        const g = el('g',{transform:`translate(${x},${y}) rotate(${rot}) scale(${scale})`});
+        g.appendChild(el('path',{d:'M0,0 C-6,-9 -5,-22 0,-32 C5,-22 6,-9 0,0 Z', fill: shade, stroke:'#26401f', 'stroke-width':'0.5'}));
+        return g;
+      }
+      function marigold(x,y,scale,outer){
+        const g = el('g',{transform:`translate(${x},${y}) scale(${scale})`});
+        for(let i=0;i<10;i++){
+          const a = (i/10)*Math.PI*2;
+          g.appendChild(el('ellipse',{cx:Math.cos(a)*6, cy:Math.sin(a)*6, rx:4, ry:2.5, fill: outer}));
+        }
+        return g;
+      }
+
       (function(){
-        // Side Door Vertical Serial Lights
+        const leavesG = document.getElementById('leaves');
+        const flowersG = document.getElementById('flowers');
+        if(leavesG && flowersG){
+          for(let i=0; i<32; i++){
+            const t = i / 31; const x = -20 + t * 1440;
+            const y = 18 + 55 * (1 - Math.pow(t*2-1, 2));
+            if(i % 2 === 0) leavesG.appendChild(mangoLeaf(x, y, -40+t*80, 1, '#4F7942'));
+            else flowersG.appendChild(marigold(x, y+8, 1, '#E8871E'));
+          }
+        }
+
         ['leftSideLights', 'rightSideLights'].forEach(id => {
           const container = document.getElementById(id);
           if(container){
@@ -344,7 +431,6 @@
           }
         });
 
-        // 4 Boxes Panel Border Serial Lights
         document.querySelectorAll('.door-panel').forEach(panel => {
           const count = 16;
           for(let i=0; i<count; i++){
@@ -364,7 +450,6 @@
           }
         });
 
-        // Center Knob Ring Serial Bulbs
         const ring = document.getElementById('serialRing');
         if(ring){
           const bulbCount = 12;
@@ -386,15 +471,15 @@
       const knockBtn = document.getElementById('knockBtn');
       const skipBtn = document.getElementById('skipBtn');
       const v = document.getElementById('v');
-      const toggle = document.getElementById('soundToggle');
-      const muteIcon = document.getElementById('muteIcon');
-
-      const iconOn = '<path d="M15.5 8.5a5 5 0 010 7"/><path d="M18.5 5.5a9 9 0 010 13"/><path d="M11 5L6 9H2v6h4l5 4V5z"/>';
-      const iconMuted = '<path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
 
       window.addEventListener('DOMContentLoaded', () => {
+        v.muted = false;
         v.play().catch(() => {
-          console.log("Autoplay blocked, waiting for user interaction");
+          // కొన్ని బ్రౌజర్లు ఆటోప్లే సౌండ్‌ని బ్లాక్ చేస్తే మ్యూట్ చేసి ప్లే చేసి, మళ్ళీ అన్‌మ్యూట్ చేయడానికి ప్రయత్నిస్తాం
+          v.muted = true;
+          v.play().then(() => {
+            v.muted = false;
+          }).catch(() => {});
         });
       });
 
@@ -411,28 +496,19 @@
       function openDoors(){
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
+        v.muted = false;
         v.play().catch(() => {});
-        // Doors తెరుచుకున్న 1.6 సెకన్ల తర్వాత వీడియో ప్లే అవుతుంది, వీడియో పూర్తికాగానే లేదా నచ్చినప్పుడు వెబ్‌సైట్ కనిపిస్తుంది
       }
-
-      toggle.addEventListener('click', () => {
-        v.muted = !v.muted;
-        if (!v.muted) { v.play(); }
-        muteIcon.innerHTML = v.muted ? iconMuted : iconOn;
-      });
 
       skipBtn.addEventListener('click', () => {
         openDoors();
         setTimeout(closeDoorAndShowWebsite, 1000);
       });
 
-      // వీడియో ఎప్పుడైతే ఎండ్ అవుతుందో, అప్పుడు ఆటోమేటిక్‌గా మీ ఒరిజినల్ వెబ్‌సైట్ ఓపెన్ అవుతుంది
       v.addEventListener('ended', closeDoorAndShowWebsite);
 
       if(knockBtn){
-        knockBtn.addEventListener('click', () => {
-          openDoors();
-        });
+        knockBtn.addEventListener('click', openDoors);
         knockBtn.addEventListener('keydown', (e) => {
           if(e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
