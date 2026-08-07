@@ -47,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <header className="sticky top-0 z-40 bg-[#090D16]/90 backdrop-blur-xl border-b border-slate-800/80 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-1 sm:gap-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2">
           
           {/* 1. Logo Card (Left Side) */}
           <a
@@ -63,8 +63,8 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </a>
 
-          {/* 2. Central Navigation Pills (Desktop Only) */}
-          <nav className="hidden md:flex items-center gap-1 bg-slate-900/90 p-1.5 rounded-full border border-slate-800">
+          {/* 2. Central Navigation Pills (Desktop & Tablet) */}
+          <nav className="hidden lg:flex items-center gap-1 bg-slate-900/90 p-1.5 rounded-full border border-slate-800">
             <button
               onClick={() => navigateTo('explore')}
               className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
@@ -134,9 +134,9 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           {/* 4. Action Controls (Right Side: Fill Details, List Property + Sign In, Heart, User Dropdown) */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             
-            {/* Fill Details Button - Mobile lo kuda kanipinchela chesam */}
+            {/* Fill Details Button */}
             <button
               onClick={() => setIsModalOpen(true)}
               className="flex items-center gap-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl transition-all shadow-lg shadow-green-500/30 hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0"
@@ -153,7 +153,7 @@ export const Header: React.FC<HeaderProps> = ({
                   openAuthModal();
                 }
               }}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-black px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center gap-1.5 cursor-pointer shrink-0"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-black px-2 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center gap-1 cursor-pointer shrink-0"
             >
               <PlusCircle className="w-4 h-4 hidden md:block" />
               <span className="hidden sm:inline">List Property</span>
@@ -258,6 +258,75 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             )}
           </div>
+        </div>
+
+        {/* Mobile / Tablet Scrollable Navigation Bar (Appears under main header on small screens) */}
+        <div className="flex lg:hidden items-center gap-1.5 overflow-x-auto px-3 py-2 bg-slate-950/80 border-t border-slate-800/60 scrollbar-none">
+          <button
+            onClick={() => navigateTo('explore')}
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              currentTab === 'explore'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'text-slate-300 hover:text-white bg-slate-900 border border-slate-800'
+            }`}
+          >
+            <Home className="w-3 h-3" /> Home
+          </button>
+
+          <button
+            onClick={() => navigateToCategory('Buy')}
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              currentTab === 'listings' && activeFilterCategory === 'Buy'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'text-slate-300 hover:text-white bg-slate-900 border border-slate-800'
+            }`}
+          >
+            <ShoppingBag className="w-3 h-3" /> Buy
+          </button>
+
+          <button
+            onClick={() => navigateToCategory('Rent')}
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              currentTab === 'listings' && activeFilterCategory === 'Rent'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'text-slate-300 hover:text-white bg-slate-900 border border-slate-800'
+            }`}
+          >
+            <Key className="w-3 h-3" /> Rent
+          </button>
+
+          <button
+            onClick={() => navigateToCategory('Short Stay')}
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              currentTab === 'listings' && activeFilterCategory === 'Short Stay'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'text-slate-300 hover:text-white bg-slate-900 border border-slate-800'
+            }`}
+          >
+            <Hotel className="w-3 h-3" /> Short Stay
+          </button>
+
+          <button
+            onClick={() => navigateToCategory('Plots')}
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              currentTab === 'listings' && activeFilterCategory === 'Plots'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'text-slate-300 hover:text-white bg-slate-900 border border-slate-800'
+            }`}
+          >
+            <Layers className="w-3 h-3" /> Land & Plots
+          </button>
+
+          <button
+            onClick={() => navigateTo('blog')}
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              currentTab === 'blog'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800'
+            }`}
+          >
+            Blog
+          </button>
         </div>
       </header>
 
