@@ -79,14 +79,14 @@
       ]
     }
     </script>
-
+   
     <!-- Isolated Door Animation Styles -->
     <style>
       :root {
-        --wood-dark: #3b2010;
-        --wood-mid: #5a3319;
-        --wood-light: #7a4422;
-        --wood-grain: #271408;
+        --wood-dark: #4A2C1A;
+        --wood-mid: #6B3E22;
+        --wood-light: #8B5A34;
+        --wood-grain: #3B2213;
         --brass: #D4AF37;
         --brass-dark: #9C7A1E;
       }
@@ -95,19 +95,19 @@
       #door-stage {
         position: fixed; inset: 0; z-index: 99999;
         perspective: 2200px;
-        background: linear-gradient(180deg, #1f120a, #0d0704);
+        background: linear-gradient(180deg,#2b1a10,#1c1009);
         width: 100vw; height: 100vh; overflow: hidden;
       }
       #door-stage.done { display: none; }
 
       .door-frame {
         position: absolute; inset: 0;
-        background: radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.15), transparent 60%), linear-gradient(180deg,#2b180c,#140b05);
+        background: radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
       }
 
       .frame-pillar {
         position: absolute; top: 0; bottom: 0; width: 26px; z-index: 6;
-        background: repeating-linear-gradient(180deg, #5a3319 0px, #3b2010 18px, #5a3319 36px);
+        background: repeating-linear-gradient(180deg, #6B3E22 0px, #4A2C1A 18px, #6B3E22 36px);
       }
       .frame-pillar.left { left: 0; }
       .frame-pillar.right { right: 0; }
@@ -144,103 +144,82 @@
         to { stroke-dashoffset: -24; }
       }
 
-      /* Serial / Hanging Lights on the Sides & Top */
+      /* Hanging Serial Lights on the Sides */
       .string-lights {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        pointer-events: none; z-index: 11; display: flex; justify-content: space-between;
+        pointer-events: none; z-index: 11;
       }
       .light-strand-side {
-        position: absolute; top: 0; width: 20px; height: 100%;
+        position: absolute; top: 0; width: 30px; height: 100%;
         display: flex; flex-direction: column; align-items: center; justify-content: space-around;
       }
-      .light-strand-side.left { left: 15px; }
-      .light-strand-side.right { right: 15px; }
+      .light-strand-side.left { left: 8px; }
+      .light-strand-side.right { right: 8px; }
       
       .bulb {
         width: 10px; height: 14px; border-radius: 50%;
         animation: bulbGlow 1.2s ease-in-out infinite alternate;
       }
-      .bulb:nth-child(odd) { background-color: #ff3333; box-shadow: 0 0 8px #ff3333; animation-delay: 0.2s; }
-      .bulb:nth-child(even) { background-color: #ffd700; box-shadow: 0 0 8px #ffd700; animation-delay: 0.6s; }
-      .bulb:nth-child(3n) { background-color: #33ccff; box-shadow: 0 0 8px #33ccff; animation-delay: 0.4s; }
+      .bulb:nth-child(odd) { background-color: #ff3333; box-shadow: 0 0 10px #ff3333; animation-delay: 0.2s; }
+      .bulb:nth-child(even) { background-color: #00ffff; box-shadow: 0 0 10px #00ffff; animation-delay: 0.5s; }
+      .bulb:nth-child(3n) { background-color: #33ff33; box-shadow: 0 0 10px #33ff33; animation-delay: 0.8s; }
 
       @keyframes bulbGlow {
         from { opacity: 0.4; transform: scale(0.9); }
-        to { opacity: 1; transform: scale(1.1); filter: brightness(1.4); }
+        to { opacity: 1; transform: scale(1.2); filter: brightness(1.5); }
       }
 
-      /* 4 Boxes Inside Doors with Wood Animation and Gold Edges */
-      .door-boxes-container {
-        position: absolute; inset: 6% 10%;
-        display: grid; grid-template-rows: 1fr 1fr; gap: 20px;
-        pointer-events: none;
+      /* Original Door Panels and Design from First Code */
+      .door-panel {
+        position: absolute;
+        top: 8%; bottom: 8%; width: 70%;
+        left: 15%;
+        border: 3px groove rgba(107, 62, 34, 0.6);
+        box-shadow: inset 0 0 15px rgba(0,0,0,0.4);
+        display: flex; flex-direction: column; justify-content: space-around; align-items: center;
+        padding: 40px 0;
       }
-      .door-box {
-        position: relative;
-        border: 3px solid var(--brass);
-        border-radius: 6px;
-        background: radial-gradient(circle, rgba(90,51,25,0.6) 0%, rgba(39,20,8,0.9) 100%);
-        box-shadow: inset 0 0 12px rgba(0,0,0,0.8), 0 2px 5px rgba(0,0,0,0.5);
+      .door-inner-circle {
+        width: 110px; height: 110px; border-radius: 50%;
+        border: 4px solid var(--brass-dark);
+        background: radial-gradient(circle, rgba(59,34,19,0.8) 40%, var(--wood-dark) 100%);
+        box-shadow: inset 0 4px 8px rgba(0,0,0,0.6), 0 2px 5px rgba(0,0,0,0.3);
         display: flex; align-items: center; justify-content: center;
-        overflow: hidden;
       }
-      .wood-carved-pattern {
-        width: 75%; height: 75%;
-        border: 2px dashed var(--brass-dark);
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        animation: boxPatternPulse 3s ease-in-out infinite;
-      }
-      .wood-carved-pattern::after {
+      .door-inner-circle::after {
         content: '';
-        width: 50%; height: 50%;
-        background: var(--wood-mid);
-        transform: rotate(45deg);
-        border: 1px solid var(--brass);
-        animation: patternRotate 8s linear infinite;
+        width: 70px; height: 70px; border-radius: 50%;
+        border: 2px dashed var(--brass);
+        opacity: 0.7;
       }
-      @keyframes boxPatternPulse {
-        0%, 100% { transform: scale(0.95); opacity: 0.7; }
-        50% { transform: scale(1.02); opacity: 1; }
+      .corner-plate {
+        position: absolute;
+        width: 45px; height: 45px;
+        border: 3px solid var(--brass-dark);
+        background: var(--brass);
       }
-      @keyframes patternRotate {
-        from { transform: rotate(45deg); }
-        to { transform: rotate(405deg); }
-      }
+      .door-left .corner-plate.top-left { top: 0; left: 0; border-right: none; border-bottom: none; }
+      .door-left .corner-plate.bottom-left { bottom: 0; left: 0; border-right: none; border-top: none; }
+      .door-right .corner-plate.top-right { top: 0; right: 0; border-left: none; border-bottom: none; }
+      .door-right .corner-plate.bottom-right { bottom: 0; right: 0; border-left: none; border-top: none; }
 
-      /* Animated Rangoli at Bottom Center */
-      .door-bottom-rangoli {
-        position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
-        width: 110px; height: 55px; pointer-events: none; z-index: 15;
-        display: flex; align-items: center; justify-content: center;
-      }
-      .rangoli-svg {
-        width: 100%; height: 100%;
-        animation: rangoliSpin 10s linear infinite;
-      }
-      @keyframes rangoliSpin {
-        0% { transform: rotate(0deg) scale(1); }
-        50% { transform: rotate(180deg) scale(1.08); filter: drop-shadow(0 0 8px #ffaa00); }
-        100% { transform: rotate(360deg) scale(1); }
-      }
-
-      /* Center House Knob / Button with Glow and Animation */
+      /* Center Knob Button with Glow */
       .knock-wrap {
         position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
         z-index: 20; display: flex; flex-direction: column; align-items: center;
       }
       .knock-btn {
-        width: 95px; height: 95px; border-radius: 50%;
+        width: 90px; height: 90px; border-radius: 50%;
         border: 3px solid var(--brass-dark);
-        background: radial-gradient(circle at 35% 30%, #fff2b2, var(--brass) 55%, var(--brass-dark) 100%);
-        box-shadow: 0 0 20px rgba(212, 175, 55, 0.7), 0 6px 18px rgba(0,0,0,0.55);
+        background: radial-gradient(circle at 35% 30%, #f6e2a0, var(--brass) 55%, var(--brass-dark) 100%);
+        box-shadow: 0 0 25px rgba(212, 175, 55, 0.8), 0 6px 18px rgba(0,0,0,0.55);
         display: flex; align-items: center; justify-content: center;
         cursor: pointer;
-        animation: circleGlowPulse 2s ease-in-out infinite;
+        animation: knobGlow 2s ease-in-out infinite;
       }
-      @keyframes circleGlowPulse {
-        0%, 100% { box-shadow: 0 0 10px rgba(212,175,55,0.4), 0 6px 18px rgba(0,0,0,0.55); }
-        50% { box-shadow: 0 0 25px rgba(212,175,55,0.9), 0 6px 18px rgba(0,0,0,0.55); transform: scale(1.03); }
+      @keyframes knobGlow {
+        0%, 100% { box-shadow: 0 0 15px rgba(212,175,55,0.5), 0 6px 18px rgba(0,0,0,0.55); }
+        50% { box-shadow: 0 0 30px rgba(212,175,55,1), 0 6px 18px rgba(0,0,0,0.55); transform: scale(1.05); }
       }
       .knock-btn svg { animation: iconWiggle 2.6s ease-in-out infinite; transform-origin: 50% 78%; }
       @keyframes iconWiggle {
@@ -271,44 +250,30 @@
       <!-- Hanging Serial Lights on Left & Right Sides -->
       <div class="string-lights">
         <div class="light-strand-side left">
-          <div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div>
+          <div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div>
         </div>
         <div class="light-strand-side right">
-          <div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div>
+          <div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div>
         </div>
       </div>
 
-      <!-- Left Door with 2 Boxes and Bottom Rangoli -->
+      <!-- Left Door -->
       <div class="door door-left">
-        <div class="door-boxes-container">
-          <div class="door-box"><div class="wood-carved-pattern"></div></div>
-          <div class="door-box"><div class="wood-carved-pattern"></div></div>
-        </div>
-        <div class="door-bottom-rangoli">
-          <svg class="rangoli-svg" viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50,25 Q60,5 50,5 Q40,5 50,25 Z" fill="#ff4d4d" opacity="0.85"/>
-            <path d="M50,25 Q95,25 75,35 Q55,45 50,25 Z" fill="#ffb84d" opacity="0.85"/>
-            <path d="M50,25 Q5,25 25,35 Q45,45 50,25 Z" fill="#ff4d4d" opacity="0.85"/>
-            <path d="M50,25 Q40,45 50,48 Q60,45 50,25 Z" fill="#ffb84d" opacity="0.85"/>
-            <circle cx="50" cy="25" r="4" fill="#ffd700"/>
-          </svg>
+        <div class="corner-plate top-left"></div>
+        <div class="corner-plate bottom-left"></div>
+        <div class="door-panel">
+          <div class="door-inner-circle"></div>
+          <div class="door-inner-circle"></div>
         </div>
       </div>
 
-      <!-- Right Door with 2 Boxes and Bottom Rangoli -->
+      <!-- Right Door -->
       <div class="door door-right">
-        <div class="door-boxes-container">
-          <div class="door-box"><div class="wood-carved-pattern"></div></div>
-          <div class="door-box"><div class="wood-carved-pattern"></div></div>
-        </div>
-        <div class="door-bottom-rangoli">
-          <svg class="rangoli-svg" viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50,25 Q60,5 50,5 Q40,5 50,25 Z" fill="#ff4d4d" opacity="0.85"/>
-            <path d="M50,25 Q95,25 75,35 Q55,45 50,25 Z" fill="#ffb84d" opacity="0.85"/>
-            <path d="M50,25 Q5,25 25,35 Q45,45 50,25 Z" fill="#ff4d4d" opacity="0.85"/>
-            <path d="M50,25 Q40,45 50,48 Q60,45 50,25 Z" fill="#ffb84d" opacity="0.85"/>
-            <circle cx="50" cy="25" r="4" fill="#ffd700"/>
-          </svg>
+        <div class="corner-plate top-right"></div>
+        <div class="corner-plate bottom-right"></div>
+        <div class="door-panel">
+          <div class="door-inner-circle"></div>
+          <div class="door-inner-circle"></div>
         </div>
       </div>
 
@@ -325,7 +290,7 @@
         <g id="flowers"></g>
       </svg>
 
-      <!-- Center House Knob Button with Lighting/Glow Animation -->
+      <!-- Center House Knob Button -->
       <div class="knock-wrap" id="knockWrap">
         <div class="knock-btn" id="knockBtn" role="button" tabindex="0">
           <svg viewBox="0 0 24 24" width="40" height="40" stroke="#4A2C1A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
@@ -438,3 +403,5 @@
     </script>
   </body>
 </html>
+
+    
