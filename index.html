@@ -80,7 +80,7 @@
     }
     </script>
 
-    <!-- Complete Door Styles -->
+    <!-- Door Styles (Isolated only to overlay) -->
     <style>
       :root{
         --wood-dark:#4A2C1A;
@@ -93,9 +93,8 @@
         --marigold-light:#F4A93F;
         --mango-leaf:#4F7942;
       }
-      *{box-sizing:border-box;margin:0;padding:0;}
-      html,body{height:100%;}
-      body.locked{overflow:hidden; height:100vh;}
+      
+      body.locked{overflow:hidden;}
 
       #door-stage{
         position:fixed; inset:0; z-index:99999;
@@ -113,6 +112,7 @@
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
+        display: none;
       }
 
       .door-container {
@@ -153,7 +153,6 @@
         border-left: 2px solid var(--wood-grain);
       }
 
-      /* Side Door Vertical Serial Lights */
       .side-serial-light {
         position: absolute; top: 20px; bottom: 20px; width: 8px; z-index: 12;
         pointer-events: none; display: flex; flex-direction: column; justify-content: space-around; align-items: center;
@@ -181,7 +180,6 @@
       .panel-top{ top:6%; height:38%; }
       .panel-bottom{ bottom:6%; height:46%; }
 
-      /* 4 Boxes Panel Border Serial Lights */
       .panel-bulb {
         position: absolute; width: 6px; height: 6px; border-radius: 50%;
         box-shadow: 0 0 5px currentColor; z-index: 5;
@@ -201,7 +199,6 @@
       .brass-corner.bl{ bottom:-5px; left:-5px; border-radius:0 100% 0 0; }
       .brass-corner.br{ bottom:-5px; right:-5px; border-radius:100% 0 0 0; }
 
-      /* Animated Rosette Design inside 4 Boxes */
       .panel-rosette {
         width: 80px; height: 80px; border-radius: 50%;
         background: radial-gradient(circle, rgba(0,0,0,0.5) 0%, rgba(59,34,19,0.85) 70%);
@@ -231,7 +228,6 @@
       #door-stage.opened .door-right{ transform:rotateY(110deg); }
       #door-stage.opened .knock-wrap { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
 
-      /* Center Knob Button with Serial Lights Ring */
       .knock-wrap{
         position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
         z-index:30; display:flex; align-items:center; justify-content:center;
@@ -261,12 +257,10 @@
       .knock-btn svg{ animation: iconWiggle 2.6s ease-in-out infinite; transform-origin:50% 78%; }
       @keyframes iconWiggle{ 0%,100%{ transform:rotate(0deg); } 25%{ transform:rotate(-9deg); } 75%{ transform:rotate(9deg); } }
 
-      /* Toran Garland */
       .toran {
         position: absolute; top: 0; left: 0; width: 100%; height: 120px; z-index: 20; pointer-events: none;
       }
 
-      /* Enhanced Animated Traditional Kolam / Rangoli */
       .door-kolam {
         position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
         width: 240px; height: 75px; z-index: 20; pointer-events: none;
@@ -325,7 +319,7 @@
           <div class="door-handle"></div>
         </div>
 
-        <!-- Enhanced Traditional Animated Door Kolam / Rangoli -->
+        <!-- Door Kolam / Rangoli -->
         <svg class="door-kolam" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
           <g stroke="#fce8a2" stroke-width="1.8" fill="none" stroke-linecap="round">
             <path d="M120,65 C105,50 95,35 120,15 C145,35 135,50 120,65 Z" fill="rgba(232, 135, 30, 0.35)" />
@@ -342,7 +336,7 @@
           </g>
         </svg>
 
-        <!-- Center Knob Button with Serial Lights Ring -->
+        <!-- Center Knob Button -->
         <div class="knock-wrap" id="knockWrap">
           <div class="serial-ring" id="serialRing"></div>
           <div class="knock-btn" id="knockBtn" role="button" tabindex="0">
@@ -355,7 +349,7 @@
       </div>
     </div>
 
-    <!-- React Root -->
+    <!-- React Root (మీ ఒరిజినల్ వెబ్‌సైట్ కంటెంట్ అంతా ఇక్కడే ఉంటుంది) -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
