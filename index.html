@@ -77,7 +77,7 @@
         background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
       }
 
-      /* Fullscreen Background Video Styling */
+      /* Fullscreen Background Video Styling (Contain వాడటం ద్వారా లోగో కట్ అవ్వదు) */
       .inner-screen-bg {
         position: absolute; inset: 0; z-index: 1;
         background: #000;
@@ -95,7 +95,7 @@
         top: 50%; left: 50%;
         transform: translate(-50%, -50%);
         width: 100%; height: 100%;
-        object-fit: cover;
+        object-fit: contain; 
         background: #000;
         z-index: 2;
       }
@@ -283,7 +283,7 @@
         </button>
       </div>
 
-      <!-- Fullscreen Background Video (Initially Paused) -->
+      <!-- Fullscreen Background Video -->
       <div class="inner-screen-bg" id="innerScreenBg">
         <div class="poster">
           <video id="v" playsinline webkit-playsinline preload="auto">
@@ -466,12 +466,12 @@
       const skipBtn = document.getElementById('skipBtn');
       const v = document.getElementById('v');
 
-      // డోర్ ఓపెన్ అయ్యే వరకు వీడియో ఆగి ఉంటుంది (Play అవ్వదు)
       window.addEventListener('DOMContentLoaded', () => {
-        v.pause();
+        if(v) v.pause();
       });
 
       function closeDoorAndShowWebsite() {
+        if(!stage) return;
         stage.style.transition = "opacity 0.6s ease";
         stage.style.opacity = "0";
         setTimeout(() => {
@@ -481,20 +481,25 @@
         }, 600);
       }
 
-      // డోర్ ఓపెన్ కాగానే వీడియో ప్లే అవుతుంది మరియు సౌండ్ వినిపిస్తుంది
       function openDoors(){
         if(!stage || stage.classList.contains('opened')) return;
         stage.classList.add('opened');
-        v.muted = false;
-        v.play().catch(() => {});
+        if(v) {
+          v.muted = false;
+          v.play().catch(() => {});
+        }
       }
 
-      skipBtn.addEventListener('click', () => {
-        openDoors();
-        setTimeout(closeDoorAndShowWebsite, 1000);
-      });
+      if(skipBtn){
+        skipBtn.addEventListener('click', () => {
+          openDoors();
+          setTimeout(closeDoorAndShowWebsite, 1000);
+        });
+      }
 
-      v.addEventListener('ended', closeDoorAndShowWebsite);
+      if(v){
+        v.addEventListener('ended', closeDoorAndShowWebsite);
+      }
 
       if(knockBtn){
         knockBtn.addEventListener('click', openDoors);
