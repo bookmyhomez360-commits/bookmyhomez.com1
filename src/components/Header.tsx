@@ -47,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <header className="sticky top-0 z-40 bg-[#090D16]/90 backdrop-blur-xl border-b border-slate-800/80 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-1 sm:gap-4">
           
           {/* 1. Logo Card (Left Side) */}
           <a
@@ -56,14 +56,14 @@ export const Header: React.FC<HeaderProps> = ({
               navigateTo('explore');
             }}
             href="#"
-            className="flex items-center group transition transform hover:scale-105 cursor-pointer"
+            className="flex items-center group transition transform hover:scale-105 cursor-pointer shrink-0"
           >
-            <div className="h-14 sm:h-16 px-2 py-1 flex items-center justify-center bg-white rounded-xl shadow-lg border border-indigo-500/40 overflow-hidden">
-              <Logo className="h-12 sm:h-14 w-auto max-w-full" />
+            <div className="h-12 sm:h-16 px-1.5 sm:px-2 py-1 flex items-center justify-center bg-white rounded-xl shadow-lg border border-indigo-500/40 overflow-hidden">
+              <Logo className="h-10 sm:h-14 w-auto max-w-full" />
             </div>
           </a>
 
-          {/* 2. Central Navigation Pills (Home, Buy, Rent, Short Stay, Land & Plots) */}
+          {/* 2. Central Navigation Pills (Desktop Only) */}
           <nav className="hidden md:flex items-center gap-1 bg-slate-900/90 p-1.5 rounded-full border border-slate-800">
             <button
               onClick={() => navigateTo('explore')}
@@ -134,14 +134,14 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           {/* 4. Action Controls (Right Side: Fill Details, List Property + Sign In, Heart, User Dropdown) */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
             
-            {/* Fill Details Button */}
+            {/* Fill Details Button - Mobile lo kuda kanipinchela chesam */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-1.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-bold px-3 py-2.5 rounded-xl transition-all shadow-lg shadow-green-500/30 hover:scale-[1.02] active:scale-95 cursor-pointer"
+              className="flex items-center gap-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl transition-all shadow-lg shadow-green-500/30 hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0"
             >
-              <span className="whitespace-nowrap hidden sm:inline">Fill Details</span>
+              <span className="whitespace-nowrap">Fill Details</span>
             </button>
 
             {/* List Property + Sign In Combined Button */}
@@ -153,14 +153,14 @@ export const Header: React.FC<HeaderProps> = ({
                   openAuthModal();
                 }
               }}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-black px-4 py-2.5 rounded-xl text-xs shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center gap-2 cursor-pointer"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-black px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center gap-1.5 cursor-pointer shrink-0"
             >
               <PlusCircle className="w-4 h-4 hidden md:block" />
               <span className="hidden sm:inline">List Property</span>
               <span className="sm:hidden">List</span>
               
               {!currentUser ? (
-                <span className="bg-indigo-900/80 text-white text-[10px] px-1.5 py-0.5 rounded uppercase font-extrabold border border-indigo-400/50">
+                <span className="bg-indigo-900/80 text-white text-[9px] sm:text-[10px] px-1 py-0.5 rounded uppercase font-extrabold border border-indigo-400/50">
                   SIGN IN
                 </span>
               ) : (
@@ -173,14 +173,14 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Favorites Heart Counter Button */}
             <button
               onClick={() => navigateTo('favorites')}
-              className="relative p-2.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition cursor-pointer"
+              className="relative p-2 sm:p-2.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition cursor-pointer shrink-0"
               title="Saved Properties"
             >
               <Heart
                 className={`w-4 h-4 ${savedCount > 0 ? 'text-rose-500 fill-rose-500' : ''}`}
               />
               {savedCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-950">
+                <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center border-2 border-slate-950">
                   {savedCount}
                 </span>
               )}
@@ -191,11 +191,11 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="relative">
                 <button
                   onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                  className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 transition cursor-pointer"
+                  className="flex items-center gap-2 pl-1.5 sm:pl-2 pr-2 sm:pr-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 transition cursor-pointer"
                 >
                   <img
                     src={currentUser.avatar}
-                    className="w-8 h-8 rounded-lg object-cover border border-indigo-500/40"
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg object-cover border border-indigo-500/40"
                     alt="Avatar"
                   />
                   <div className="text-left hidden lg:block">
@@ -206,7 +206,7 @@ export const Header: React.FC<HeaderProps> = ({
                       {currentUser.role}
                     </p>
                   </div>
-                  <ChevronDown className="w-3 h-3 text-slate-400 ml-1" />
+                  <ChevronDown className="w-3 h-3 text-slate-400 ml-0.5 sm:ml-1" />
                 </button>
 
                 {showProfileDropdown && (
