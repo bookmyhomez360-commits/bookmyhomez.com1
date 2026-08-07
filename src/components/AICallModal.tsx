@@ -8,7 +8,7 @@ interface AICallModalProps {
 const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     fullName: '',
-    mobile: '',
+    mobile: '+91 ', // <--- Mobile number lo default ga '+91 ' undela set chesam
     email: ''
   });
   const [loading, setLoading] = useState(false);
@@ -17,7 +17,18 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    // Mobile number field ki '+' remove avvakunda లేదా backspace kottina +91 pothe malli set ayye la chuskovachu
+    if (name === 'mobile') {
+      // User completely delete cheyakunda undataniki
+      if (!value.startsWith('+91')) {
+        setFormData({ ...formData, mobile: '+91 ' + value.replace(/^\+91\s*/, '') });
+        return;
+      }
+    }
+
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,7 +42,10 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          agentId: '233563'
+        }),
       });
 
       if (response.ok) {
@@ -51,13 +65,9 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    // fixed inset-0 z-[99999] పెట్టి స్క్రీన్‌కి ఖచ్చితంగా సెంటర్ చేసేలా flex వాడాం
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      
-      {/* పాపప్ బాక్స్ - ఎట్టి పరిస్థితుల్లోనూ సెంటర్‌లో ఉండేలా max-h మరియు m-auto */}
       <div className="relative w-full max-w-md bg-[#0B0F19] border border-slate-700 rounded-2xl shadow-2xl overflow-hidden my-auto">
         
-        {/* Header - టైటిల్ మరియు X క్లోజ్ బటన్ */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
           <h2 className="text-xl font-bold text-white">Request a Callback</h2>
           <button 
@@ -71,11 +81,9 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Body - ఫారమ్ */}
         <div className="p-6 max-h-[80vh] overflow-y-auto">
           <form onSubmit={handleSubmit} className="space-y-4">
             
-            {/* Full Name */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1">Full Name</label>
               <input
@@ -89,7 +97,6 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
               />
             </div>
 
-            {/* Mobile Number */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1">Mobile Number</label>
               <input
@@ -103,7 +110,6 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
               />
             </div>
 
-            {/* Email Address */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1">Email Address</label>
               <input
@@ -117,14 +123,12 @@ const AICallModal: React.FC<AICallModalProps> = ({ isOpen, onClose }) => {
               />
             </div>
 
-            {/* Message */}
             {message && (
               <div className={`p-3 rounded-lg text-sm ${message.includes('successfully') ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
                 {message}
               </div>
             )}
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
