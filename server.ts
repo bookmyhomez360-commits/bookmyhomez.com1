@@ -8,7 +8,7 @@ let propertiesStore: Property[] = [...INITIAL_PROPERTIES];
 
 async function startServer() {
   const app = express();
-  const PORT = process.env.PORT || 8080;
+  const PORT = Number(process.env.PORT) || 8080;
 
   app.use(express.json({ limit: '10mb' }));
 
@@ -127,8 +127,8 @@ async function startServer() {
   }
 
   // Server listening MUST be at the very end
-  app.listen(PORT_NUM, "0.0.0.0", () => {
-    console.log(`[BookMyHomez] Server running on http://0.0.0.0:${PORT_NUM}`);
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`[BookMyHomez] Server running on http://0.0.0.0:${PORT}`);
   });
 }
 
