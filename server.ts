@@ -97,7 +97,7 @@ async function startServer() {
       const response = await fetch('https://omnidim.io/api/v1/calls/dispatch', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer Ahmni5AcuICUTssvjj28pI07dL8DM1qPwomv-sY9U_M`,
+          'Authorization': `Bearer Ahnmi5AeuICUTssvjj28pHO7dL8EMlqPwomv-sY9U_M`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
