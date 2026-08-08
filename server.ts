@@ -94,7 +94,7 @@ async function startServer() {
         cleanMobile = '+' + cleanMobile;
       }
 
-      const response = await fetch('https://api.omnidimension.io/v1/make-call', {
+      const response = await fetch('https://omnidim.io/api/v1/calls/dispatch', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer Ahmni5AcuICUTssvjj28pI07dL8DM1qPwomv-sY9U_M`,
@@ -102,9 +102,9 @@ async function startServer() {
         },
         body: JSON.stringify({
           agent_id: agentId || agent_id || "233563",
-          customer_number: cleanMobile,
-          customer_name: fullName,
-          customer_email: email
+          phone_number: cleanMobile,
+          user_email: email,
+          metadata: { name: fullName }
         })
       });
 
