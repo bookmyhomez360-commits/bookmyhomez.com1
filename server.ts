@@ -9,7 +9,6 @@ let propertiesStore: Property[] = [...INITIAL_PROPERTIES];
 async function startServer() {
   const app = express();
   
-  // Railway dynamic port extraction fix (falls back to 3000 if not specified)
   const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
   app.use(express.json({ limit: '10mb' }));
@@ -86,7 +85,14 @@ async function startServer() {
   app.post('/api/trigger-ominidim-call', async (req, res) => {
     try {
       const { agentId, agent_id, fullName, mobile, email } = req.body;
-      const formattedMobile = mobile ? mobile.replace(/\s+/g, '') : '';
+      
+      // Clean mobile number and format properly with +91 country code
+      let cleanMobile = mobile ? mobile.replace(/\D/g, '') : '';
+      if (cleanMobile.length === 10) {
+        cleanMobile = '+91' + cleanMobile;
+      } else if (!cleanMobile.startsWith('+') && cleanMobile.length > 0) {
+        cleanMobile = '+' + cleanMobile;
+      }
 
       const response = await fetch('https://api.omnidimension.io/v1/make-call', {
         method: 'POST',
@@ -96,7 +102,7 @@ async function startServer() {
         },
         body: JSON.stringify({
           agent_id: agentId || agent_id || "233563",
-          customer_number: formattedMobile,
+          customer_number: cleanMobile,
           customer_name: fullName,
           customer_email: email
         })
@@ -106,9 +112,11 @@ async function startServer() {
         res.status(200).json({ success: true, message: "AI Agent is calling now!" });
       } else {
         const errorData = await response.json().catch(() => ({}));
+        console.error("Omnidimension Error Response:", errorData);
         res.status(400).json({ success: false, message: "Call failed to connect.", error: errorData });
       }
     } catch (error) {
+      console.error("Server Error:", error);
       res.status(500).json({ success: false, error: "Internal Server Error" });
     }
   });
@@ -128,7 +136,6 @@ async function startServer() {
     });
   }
 
-  // Server listening bound to 0.0.0.0 and correct dynamic PORT (Defaulting to 3000 to match Railway settings)
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`[BookMyHomez] Server running on http://0.0.0.0:${PORT}`);
   });
