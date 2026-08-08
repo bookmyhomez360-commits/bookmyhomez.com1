@@ -126,9 +126,9 @@ async function startServer() {
     });
   }
 
-  // Server listening MUST be at the very end
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[BookMyHomez] Server running on http://0.0.0.0:${PORT}`);
+  // Server listening updated to use PORT cleanly for Railway proxy
+  app.listen(PORT, () => {
+    console.log(`[BookMyHomez] Server running on port ${PORT}`);
   });
 }
 
