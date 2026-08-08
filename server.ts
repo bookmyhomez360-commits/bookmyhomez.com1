@@ -102,7 +102,7 @@ async function startServer() {
         },
         body: JSON.stringify({
           agent_id: agentId || agent_id || "233563",
-          phone_number: cleanMobile,
+          to_number: cleanMobile,
           user_email: email,
           metadata: { name: fullName }
         })
