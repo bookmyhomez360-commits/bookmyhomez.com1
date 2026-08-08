@@ -9,8 +9,8 @@ let propertiesStore: Property[] = [...INITIAL_PROPERTIES];
 async function startServer() {
   const app = express();
   
-  // Railway dynamic port extraction fix
-  const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
+  // Railway dynamic port extraction fix (falls back to 3000 if not specified)
+  const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
   app.use(express.json({ limit: '10mb' }));
 
@@ -128,9 +128,9 @@ async function startServer() {
     });
   }
 
-  // Server listening bound to 0.0.0.0 and correct dynamic PORT
+  // Server listening bound to 0.0.0.0 and correct dynamic PORT (Defaulting to 3000 to match Railway settings)
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[BookMyHomez] Server running on port ${PORT}`);
+    console.log(`[BookMyHomez] Server running on http://0.0.0.0:${PORT}`);
   });
 }
 
