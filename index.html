@@ -265,7 +265,7 @@
     <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
     <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
-    <!-- Dynamic JavaScript Generator for Toran, Side Bulbs, 4-Box Bulbs & Center Ring -->
+    <!-- Dynamic JavaScript Generator for Toran, Side Bulbs, 4-Box Bulbs, Center Ring & Speech Synthesis -->
     <script>
       const SVGNS = 'http://www.w3.org/2000/svg';
       function el(tag, attrs){
@@ -352,20 +352,7 @@
         }
       })();
 
-      const stage = document.getElementById('door-stage');
-      const knockBtn = document.getElementById('knockBtn');
-
-      function openDoors(){
-        if(!stage || stage.classList.contains('opened')) return;
-        stage.classList.add('opened');
-        document.body.classList.remove('locked');
-        setTimeout(() => {
-          stage.classList.add('done');
-          stage.remove();
-        }, 1800);
-      }
-
-     // ===== BROWSER SPEECH SYNTHESIS LOGIC =====
+      // ===== BROWSER SPEECH SYNTHESIS LOGIC =====
       let isDoorClosed = true;
 
       function speakMessage(text, loop = false) {
@@ -404,7 +391,7 @@
         isDoorClosed = false;
         window.speechSynthesis.cancel(); // Stop loop
 
-        const welcomeText = "Welcome to Bookmyhomewebsite. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Bookmyhomez website.";
+        const welcomeText = "Welcome to Bookmyhomez website. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Bookmyhomez.";
         speakMessage(welcomeText, false);
 
         stage.classList.add('opened');
