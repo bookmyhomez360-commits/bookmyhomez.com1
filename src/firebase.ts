@@ -12,6 +12,7 @@ import {
   onSnapshot, 
   query 
 } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage'; // ఇక్కడ గెట్ స్టోరేజ్ ఇంపోర్ట్ చేయబడింది
 import { Property, User } from './types';
 import { INITIAL_PROPERTIES, REGISTERED_USERS } from './data/initialProperties';
 
@@ -29,6 +30,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const storage = getStorage(app); // ఇక్కడ storage ఎక్స్‌పోర్ట్ చేయబడింది
 export const googleProvider = new GoogleAuthProvider();
 
 // Firestore Operations
