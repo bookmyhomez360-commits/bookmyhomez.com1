@@ -294,7 +294,7 @@
     <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
     <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
-    <!-- Dynamic JavaScript Generator with Smart Girl Voice Selector & Autoplay Handler -->
+    <!-- Dynamic JavaScript Generator with Smart Girl Voice Selector & Aggressive Auto-Trigger Handler -->
     <script>
       const SVGNS = 'http://www.w3.org/2000/svg';
       function el(tag, attrs){
@@ -366,14 +366,13 @@
         }
       })();
 
-      // ===== SMART GIRL VOICE SYNTHESIS LOGIC =====
+      // ===== SMART GIRL VOICE SYNTHESIS LOGIC WITH AUTO-TRIGGER =====
       let isDoorClosed = true;
       let selectedVoice = null;
 
       function loadVoices() {
           if (!('speechSynthesis' in window)) return;
           const voices = window.speechSynthesis.getVoices();
-          
           selectedVoice = voices.find(v => 
               (v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Samantha') || v.name.includes('Victoria') || v.name.includes('Google UK English Female') || v.name.includes('Google US English')) && v.lang.startsWith('en')
           ) || voices.find(v => v.lang.startsWith('en')) || voices[0];
@@ -392,7 +391,7 @@
           if (selectedVoice) utterance.voice = selectedVoice;
           
           utterance.rate = 0.95; 
-          utterance.pitch = 1.4; // Higher pitch ensures sweet human feminine tone
+          utterance.pitch = 1.4; // Sweet feminine human tone
           utterance.lang = 'en-US';
 
           if (loop) {
@@ -413,11 +412,12 @@
           }
       }
 
-      window.addEventListener('DOMContentLoaded', () => {
-          setTimeout(startVoicePrompt, 800);
-      });
-
-      ['click', 'touchstart', 'keydown'].forEach(evt => {
+      // Force trigger on multiple lifecycle events to bypass mobile restrictions wherever possible
+      window.addEventListener('DOMContentLoaded', () => { setTimeout(startVoicePrompt, 500); });
+      window.addEventListener('load', () => { setTimeout(startVoicePrompt, 300); });
+      
+      // Additional micro-interaction listener for mobile auto-start on very first scroll/touch
+      ['touchstart', 'pointerdown', 'mousedown'].forEach(evt => {
           window.addEventListener(evt, () => {
               if (isDoorClosed && !window.speechSynthesis.speaking) {
                   startVoicePrompt();
@@ -434,7 +434,7 @@
         isDoorClosed = false;
         window.speechSynthesis.cancel(); 
 
-        const welcomeText = "Welcome to Bookmyhomez website. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Bookmyhomez website.";
+        const welcomeText = "Welcome to Bookmyhomez website. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Bookmyhomez.";
         speakMessage(welcomeText, false);
 
         stage.classList.add('opened');
