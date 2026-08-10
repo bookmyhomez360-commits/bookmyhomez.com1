@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db, storage } from '../firebase'; // firebase.ts నుండి db మరియు storage రెండూ ఇంపోర్ట్ చేయబడ్డాయి
+import { db, storage } from '../firebase';
 import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -7,15 +7,15 @@ export default function Blog() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   
-  // ఫారమ్ స్టేట్స్ (ఇమేజ్ ఫైల్ కోసం)
+  // ఫారమ్ స్టేట్స్ (1 కన్నా ఎక్కువ ఇమేజ్ కోసం 5 ఫైల్స్ వరకు)
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
-  const [newImage, setNewImage] = useState<File | null>(null);
+  const [newImages, setNewImages] = useState<File[]>([]);
   const [newContent, setNewContent] = useState('');
   
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false); // ఇమేజ్ అప్‌లోడ్ అయ్యేటప్పుడు లోడింగ్ చూపించడానికి
+  const [uploading, setUploading] = useState(false);
 
   const fetchBlogs = async () => {
     try {
@@ -41,29 +41,45 @@ export default function Blog() {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  // కొత్త బ్లాగ్ మరియు ఇమేజ్ ఫైల్‌ని ఫైర్‌బేస్‌లో సేవ్ చేయడం
+  // గరిష్టంగా 5 ఇమేజెస్‌ని హ్యాండ్లింగ్ చేయడం
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      if (filesArray.length > 5) {
+        alert("You can upload a maximum of 5 images only!");
+        return;
+      }
+      setNewImages(filesArray);
+    }
+  };
+
+  // కొత్త బ్లాగ్ మరియు ఇమేజెస్‌ని ఫైర్‌బేస్‌లో సేవ్ చేయడం
   const handleAddBlog = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTitle || !newDesc || !newContent) return;
+    if (!newTitle || !newDesc || !newContent) {
+      alert("Please fill all required fields!");
+      return;
+    }
 
     setUploading(true);
-    let imageUrl = "";
+    let imageUrls: string[] = [];
 
     try {
-      // 1. ఇమేజ్ సెలెక్ట్ చేసి ఉంటే ఫైర్‌బేస్ స్టోరేజ్‌కి అప్‌లోడ్ చేయడం
-      if (newImage) {
-        const storageRef = ref(storage, `blog_images/${Date.now()}_${newImage.name}`);
-        const snapshot = await uploadBytes(storageRef, newImage);
-        imageUrl = await getDownloadURL(snapshot.ref);
+      // 1. సెలెక్ట్ చేసిన అన్ని ఇమేజెస్‌ని ఫైర్‌బేస్ స్టోరేజ్‌కి అప్‌లోడ్ చేయడం
+      for (const image of newImages) {
+        const storageRef = ref(storage, `blog_images/${Date.now()}_${image.name}`);
+        const snapshot = await uploadBytes(storageRef, image);
+        const url = await getDownloadURL(snapshot.ref);
+        imageUrls.push(url);
       }
 
-      // 2. Firestore లోకి డేటాతో పాటు ఇమేజ్ URL ని సేవ్ చేయడం
+      // 2. Firestore లోకి డేటాతో పాటు ఇమేజ్ URLs (అర్రే) ని సేవ్ చేయడం
       await addDoc(collection(db, 'blogs'), {
         title: newTitle,
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
         readTime: "4 min read",
         description: newDesc,
-        imageUrl: imageUrl || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800",
+        imageUrls: imageUrls.length > 0 ? imageUrls : ["https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800"],
         fullContent: newContent,
         createdAt: Date.now()
       });
@@ -71,14 +87,14 @@ export default function Blog() {
       // 3. ఫారమ్ రీసెట్ చేయడం
       setNewTitle('');
       setNewDesc('');
-      setNewImage(null);
+      setNewImages([]);
       setNewContent('');
       setShowForm(false);
       fetchBlogs();
       alert("Blog published successfully!");
     } catch (error) {
       console.error("Error adding blog: ", error);
-      alert("Failed to upload image or save blog.");
+      alert("Failed to upload images or publish blog. Please check your connection.");
     } finally {
       setUploading(false);
     }
@@ -150,15 +166,17 @@ export default function Blog() {
               />
             </div>
 
-            {/* URL బదులుగా డైరెక్ట్ ఇమేజ్ ఫైల్ అప్‌లోడ్ ఫీల్డ్ */}
+            {/* 1 నుండి 5 ఇమేజెస్‌ని అప్‌లోడ్ చేసే ఫీల్డ్ */}
             <div>
-              <label className="block text-sm font-medium text-slate-300">Upload Image (Optional)</label>
+              <label className="block text-sm font-medium text-slate-300">Upload Images (Max 5 Optional)</label>
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => setNewImage(e.target.files ? e.target.files[0] : null)}
+                multiple
+                onChange={handleImageChange}
                 className="mt-1 w-full p-2 bg-[#131B2E] border border-slate-700 rounded-lg text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
               />
+              <p className="text-xs text-slate-400 mt-1">You can select up to 5 images at once.</p>
             </div>
 
             <div>
@@ -193,8 +211,22 @@ export default function Blog() {
               blogPosts.map((post) => (
                 <div key={post.id} className="bg-[#0B0F19] border border-slate-800 shadow-xl rounded-2xl overflow-hidden transition hover:border-slate-700 relative">
                   
-                  {/* బ్లాగ్ ఇమేజ్ డిస్‌ప్లే */}
-                  {post.imageUrl && (
+                  {/* బ్లాగ్ ఇమేజెస్‌ని డిస్‌ప్లే చేయడం (ఒకటి కంటే ఎక్కువ ఉంటే గ్రిడ్ లాగా లేదా సింగిల్ అయితే పెద్దదిగా) */}
+                  {post.imageUrls && post.imageUrls.length > 0 && (
+                    <div className={`grid gap-2 p-2 bg-[#131B2E] ${post.imageUrls.length > 1 ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-1'}`}>
+                      {post.imageUrls.map((url: string, index: number) => (
+                        <img 
+                          key={index}
+                          src={url} 
+                          alt={`${post.title} - ${index + 1}`} 
+                          className={`w-full object-cover rounded-lg ${post.imageUrls.length === 1 ? 'h-64' : 'h-40'}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* పాత డేటాలో 'imageUrl' (సింగిల్) ఉంటే దాన్ని కూడా సపోర్ట్ చేయడానికి */}
+                  {(!post.imageUrls || post.imageUrls.length === 0) && post.imageUrl && (
                     <img 
                       src={post.imageUrl} 
                       alt={post.title} 
