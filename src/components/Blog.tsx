@@ -8,7 +8,7 @@ export default function Blog() {
   
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
-  const [newImageUrl, setNewImageUrl] = useState('');
+  const [newImages, setNewImages] = useState<string[]>([]);
   const [newContent, setNewContent] = useState('');
   
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
@@ -39,7 +39,37 @@ export default function Blog() {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  // స్టోరేజ్ తో సంబంధం లేకుండా డైరెక్ట్ గా ఫైర్‌స్టోర్‌లో సేవ్ చేయడం
+  // ఇమేజ్ ఫైల్స్ ని సెలెక్ట్ చేయగానే Base64 రూపంలోకి మార్చడం (గరిష్టంగా 5)
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      if (filesArray.length > 5) {
+        alert("You can upload a maximum of 5 images only!");
+        return;
+      }
+
+      // ప్రతి ఇమేజ్‌ని Base64 string లా కన్వర్ట్ చేయడం
+      const promises = filesArray.map((file) => {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = (error) => reject(error);
+          reader.readAsDataURL(file);
+        });
+      });
+
+      Promise.all(promises)
+        .then((base64Images) => {
+          setNewImages(base64Images);
+        })
+        .catch((error) => {
+          console.error("Error reading images: ", error);
+          alert("Failed to process images.");
+        });
+    }
+  };
+
+  // బ్లాగ్ మరియు ఇమేజెస్‌ని డైరెక్ట్ గా ఫైర్‌స్టోర్‌లో సేవ్ చేయడం
   const handleAddBlog = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle || !newDesc || !newContent) {
@@ -55,14 +85,14 @@ export default function Blog() {
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
         readTime: "4 min read",
         description: newDesc,
-        imageUrl: newImageUrl.trim() || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800",
+        imageUrls: newImages.length > 0 ? newImages : ["https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800"],
         fullContent: newContent,
         createdAt: Date.now()
       });
 
       setNewTitle('');
       setNewDesc('');
-      setNewImageUrl('');
+      setNewImages([]);
       setNewContent('');
       setShowForm(false);
       fetchBlogs();
@@ -140,14 +170,15 @@ export default function Blog() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300">Image URL (Optional)</label>
+              <label className="block text-sm font-medium text-slate-300">Upload Images (Max 5)</label>
               <input
-                type="url"
-                value={newImageUrl}
-                onChange={(e) => setNewImageUrl(e.target.value)}
-                placeholder="Paste image link here (or leave blank for default)"
-                className="mt-1 w-full p-3 bg-[#131B2E] border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+                className="mt-1 w-full p-2 bg-[#131B2E] border border-slate-700 rounded-lg text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
               />
+              <p className="text-xs text-slate-400 mt-1">You can select up to 5 images directly from your device.</p>
             </div>
 
             <div>
@@ -182,7 +213,22 @@ export default function Blog() {
               blogPosts.map((post) => (
                 <div key={post.id} className="bg-[#0B0F19] border border-slate-800 shadow-xl rounded-2xl overflow-hidden transition hover:border-slate-700 relative">
                   
-                  {post.imageUrl && (
+                  {/* అప్‌లోడ్ చేసిన ఇమేజెస్‌ని గ్రిడ్ లాగా డిస్‌ప్లే చేయడం */}
+                  {post.imageUrls && post.imageUrls.length > 0 && (
+                    <div className={`grid gap-2 p-2 bg-[#131B2E] ${post.imageUrls.length > 1 ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-1'}`}>
+                      {post.imageUrls.map((url: string, index: number) => (
+                        <img 
+                          key={index}
+                          src={url} 
+                          alt={`${post.title} - ${index + 1}`} 
+                          className={`w-full object-cover rounded-lg ${post.imageUrls.length === 1 ? 'h-64' : 'h-40'}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* పాత సింగిల్ ఇమేజ్ ఉంటే సపోర్ట్ చేయడానికి */}
+                  {(!post.imageUrls || post.imageUrls.length === 0) && post.imageUrl && (
                     <img 
                       src={post.imageUrl} 
                       alt={post.title} 
