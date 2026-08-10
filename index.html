@@ -145,14 +145,14 @@
       .garland-line{ stroke-dasharray: 3 9; animation: garlandFlow 2.6s linear infinite; }
       @keyframes garlandFlow{ to{ stroke-dashoffset:-24; } }
 
-      /* Centered Serial Ring & Button */
+      /* Centered Serial Ring & Button Container */
       .knock-wrap{
         position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
         z-index:20; display:flex; flex-direction:column; align-items:center; justify-content:center;
-        width: 300px; height: 220px;
+        width: 160px; height: 160px;
       }
       .serial-ring {
-        position: absolute; top: 0; left: 80px; width: 140px; height: 140px; border-radius: 50%;
+        position: absolute; top: 10px; left: 10px; width: 140px; height: 140px; border-radius: 50%;
         animation: ringSpin 10s linear infinite; pointer-events: none;
       }
       @keyframes ringSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -175,17 +175,18 @@
       .knock-btn svg{ animation: iconWiggle 2.6s ease-in-out infinite; transform-origin:50% 78%; }
       @keyframes iconWiggle{ 0%,100%{ transform:rotate(0deg); } 25%{ transform:rotate(-9deg); } 75%{ transform:rotate(9deg); } }
 
-      /* Key-Shape Gold Badge for Text */
+      /* Key-Shape Gold Badge for Text perfectly positioned below */
       .door-hint-text {
-        margin-top: 14px;
-        padding: 8px 20px;
+        position: absolute;
+        top: 175px;
+        padding: 8px 18px;
         font-family: 'Poppins', sans-serif;
         font-size: 12px;
         font-weight: 700;
-        color: #3b2213; /* Dark contrast text */
+        color: #3b2213;
         background: linear-gradient(135deg, #f6e2a0, var(--brass), var(--brass-dark));
         border: 2px solid #fff2b2;
-        border-radius: 30px; /* Key-shape pill badge */
+        border-radius: 30px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.6);
         letter-spacing: 0.5px;
         text-align: center;
@@ -268,7 +269,7 @@
         </g>
       </svg>
 
-      <!-- Center Knob Button with Serial Lights Ring & Key-Shape Gold Badge -->
+      <!-- Center Knob Button with Corrected Ring & Key-Shape Badge -->
       <div class="knock-wrap" id="knockWrap">
         <div class="serial-ring" id="serialRing"></div>
         <div class="knock-btn" id="knockBtn" role="button" tabindex="0">
@@ -362,7 +363,7 @@
         const ring = document.getElementById('serialRing');
         if(ring){
           const bulbCount = 12;
-          const radius = 55;
+          const radius = 60;
           for(let i=0; i<bulbCount; i++){
             const angle = (i / bulbCount) * 2 * Math.PI;
             const bx = 70 + radius * Math.cos(angle) - 5;
@@ -399,6 +400,11 @@
 
           window.speechSynthesis.speak(utterance);
       }
+
+      // Page load avvagane voice loop start avvadaniki
+      window.addEventListener('DOMContentLoaded', () => {
+          speakMessage("Please tap on door. If you tap on door, our website will come.", true);
+      });
 
       const stage = document.getElementById('door-stage');
       const knockBtn = document.getElementById('knockBtn');
