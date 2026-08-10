@@ -376,9 +376,22 @@
           window.speechSynthesis.speak(utterance);
       }
 
-      // 1. Page load avvagane ee voice repeat avtuntadi
+      function startVoicePrompt() {
+          if (isDoorClosed) {
+              speakMessage("Please tap on door. If you tap on door, our website will come.", true);
+          }
+      }
+
       window.addEventListener('DOMContentLoaded', () => {
-          speakMessage("Please tap on door. If you tap on door, our website will come.", true);
+          startVoicePrompt();
+          setTimeout(startVoicePrompt, 500);
+      });
+
+      window.addEventListener('load', () => {
+          if ('speechSynthesis' in window) {
+              window.speechSynthesis.getVoices();
+              startVoicePrompt();
+          }
       });
 
       const stage = document.getElementById('door-stage');
@@ -387,11 +400,10 @@
       function openDoors(){
         if(!stage || stage.classList.contains('opened')) return;
         
-        // 2. Door open chesinapudu idi call avvali
         isDoorClosed = false;
-        window.speechSynthesis.cancel(); // Stop loop
+        window.speechSynthesis.cancel(); 
 
-        const welcomeText = "Welcome to Bookmyhomez website. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Bookmyhomez.";
+        const welcomeText = "Welcome to Book my homies website. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Book my homies.";
         speakMessage(welcomeText, false);
 
         stage.classList.add('opened');
