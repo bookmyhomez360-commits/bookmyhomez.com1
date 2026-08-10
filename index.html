@@ -145,7 +145,7 @@
       .garland-line{ stroke-dasharray: 3 9; animation: garlandFlow 2.6s linear infinite; }
       @keyframes garlandFlow{ to{ stroke-dashoffset:-24; } }
 
-      /* Centered Serial Ring & Button (Original Layout Intact) */
+      /* Centered Serial Ring & Button */
       .knock-wrap{
         position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
         z-index:20; display:flex; align-items:center; justify-content:center;
@@ -175,7 +175,7 @@
       .knock-btn svg{ animation: iconWiggle 2.6s ease-in-out infinite; transform-origin:50% 78%; }
       @keyframes iconWiggle{ 0%,100%{ transform:rotate(0deg); } 25%{ transform:rotate(-9deg); } 75%{ transform:rotate(9deg); } }
 
-      /* Key-Shape Golden Badge Style for Text (Placed right below the icon without touching lights) */
+      /* Key-Shape Golden Badge Style for Text */
       .door-hint-text {
         position: absolute;
         top: 155px;
@@ -282,7 +282,7 @@
         </div>
       </div>
 
-      <!-- Key Shape Gold Badge Text placed right below the center knob -->
+      <!-- Key Shape Gold Badge Text -->
       <div class="door-hint-text">Tap on door to see bookmyhomez website</div>
     </div>
 
@@ -294,28 +294,13 @@
     <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
     <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
-    <!-- Dynamic JavaScript Generator for Toran, Side Bulbs, 4-Box Bulbs, Center Ring & Speech Synthesis -->
+    <!-- Dynamic JavaScript Generator with Smart Girl Voice Selector & Autoplay Handler -->
     <script>
       const SVGNS = 'http://www.w3.org/2000/svg';
       function el(tag, attrs){
         const n = document.createElementNS(SVGNS, tag);
         for(const k in attrs) n.setAttribute(k, attrs[k]);
         return n;
-      }
-      function rnd(min,max){ return min + Math.random()*(max-min); }
-      
-      function mangoLeaf(x,y,rot,scale,shade){
-        const g = el('g',{transform:`translate(${x},${y}) rotate(${rot}) scale(${scale})`});
-        g.appendChild(el('path',{d:'M0,0 C-6,-9 -5,-22 0,-32 C5,-22 6,-9 0,0 Z', fill: shade, stroke:'#26401f', 'stroke-width':'0.5'}));
-        return g;
-      }
-      function marigold(x,y,scale,outer){
-        const g = el('g',{transform:`translate(${x},${y}) scale(${scale})`});
-        for(let i=0;i<10;i++){
-          const a = (i/10)*Math.PI*2;
-          g.appendChild(el('ellipse',{cx:Math.cos(a)*6, cy:Math.sin(a)*6, rx:4, ry:2.5, fill: outer}));
-        }
-        return g;
       }
 
       (function(){
@@ -326,8 +311,15 @@
           for(let i=0; i<32; i++){
             const t = i / 31; const x = -20 + t * 1440;
             const y = 18 + 55 * (1 - Math.pow(t*2-1, 2));
-            if(i % 2 === 0) leavesG.appendChild(mangoLeaf(x, y, -40+t*80, 1, '#4F7942'));
-            else flowersG.appendChild(marigold(x, y+8, 1, '#E8871E'));
+            if(i % 2 === 0) leavesG.appendChild(el('g',{transform:`translate(${x},${y}) rotate(${-40+t*80}) scale(1)`}).appendChild(el('path',{d:'M0,0 C-6,-9 -5,-22 0,-32 C5,-22 6,-9 0,0 Z', fill:'#4F7942', stroke:'#26401f', 'stroke-width':'0.5'})) || leavesG.lastChild);
+            else {
+              const fg = el('g',{transform:`translate(${x},${y+8}) scale(1)`});
+              for(let j=0;j<10;j++){
+                const a = (j/10)*Math.PI*2;
+                fg.appendChild(el('ellipse',{cx:Math.cos(a)*6, cy:Math.sin(a)*6, rx:4, ry:2.5, fill:'#E8871E'}));
+              }
+              flowersG.appendChild(fg);
+            }
           }
         }
 
@@ -336,9 +328,7 @@
           const container = document.getElementById(id);
           if(container){
             for(let i=0; i<10; i++){
-              const bulb = document.createElement('div');
-              bulb.className = 'side-bulb';
-              container.appendChild(bulb);
+              container.appendChild(document.createElement('div')).className = 'side-bulb';
             }
           }
         });
@@ -350,15 +340,10 @@
             const bulb = document.createElement('div');
             bulb.className = 'panel-bulb';
             let p = i / count;
-            if(p < 0.25){
-              bulb.style.top = '-3px'; bulb.style.left = (p * 4 * 100) + '%';
-            } else if(p < 0.5){
-              bulb.style.top = ((p - 0.25) * 4 * 100) + '%'; bulb.style.right = '-3px';
-            } else if(p < 0.75){
-              bulb.style.bottom = '-3px'; bulb.style.right = ((p - 0.5) * 4 * 100) + '%';
-            } else {
-              bulb.style.bottom = ((p - 0.75) * 4 * 100) + '%'; bulb.style.left = '-3px';
-            }
+            if(p < 0.25){ bulb.style.top = '-3px'; bulb.style.left = (p * 4 * 100) + '%'; }
+            else if(p < 0.5){ bulb.style.top = ((p - 0.25) * 4 * 100) + '%'; bulb.style.right = '-3px'; }
+            else if(p < 0.75){ bulb.style.bottom = '-3px'; bulb.style.right = ((p - 0.5) * 4 * 100) + '%'; }
+            else { bulb.style.bottom = ((p - 0.75) * 4 * 100) + '%'; bulb.style.left = '-3px'; }
             panel.appendChild(bulb);
           }
         });
@@ -381,23 +366,39 @@
         }
       })();
 
-      // ===== BROWSER SPEECH SYNTHESIS LOGIC =====
+      // ===== SMART GIRL VOICE SYNTHESIS LOGIC =====
       let isDoorClosed = true;
+      let selectedVoice = null;
+
+      function loadVoices() {
+          if (!('speechSynthesis' in window)) return;
+          const voices = window.speechSynthesis.getVoices();
+          
+          selectedVoice = voices.find(v => 
+              (v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Samantha') || v.name.includes('Victoria') || v.name.includes('Google UK English Female') || v.name.includes('Google US English')) && v.lang.startsWith('en')
+          ) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+      }
+
+      if ('speechSynthesis' in window) {
+          window.speechSynthesis.onvoiceschanged = loadVoices;
+          loadVoices();
+      }
 
       function speakMessage(text, loop = false) {
           if (!('speechSynthesis' in window)) return;
-          
-          window.speechSynthesis.cancel(); // Stop any ongoing speech
+          window.speechSynthesis.cancel();
 
           const utterance = new SpeechSynthesisUtterance(text);
-          utterance.rate = 0.95; // Speed adjustment
-          utterance.pitch = 1.3; // Sweet girl voice pitch
+          if (selectedVoice) utterance.voice = selectedVoice;
+          
+          utterance.rate = 0.95; 
+          utterance.pitch = 1.4; // Higher pitch ensures sweet human feminine tone
           utterance.lang = 'en-US';
 
           if (loop) {
               utterance.onend = function() {
                   if (isDoorClosed) {
-                      setTimeout(() => speakMessage(text, true), 2000); // 2 seconds delay
+                      setTimeout(() => speakMessage(text, true), 2000); 
                   }
               };
           }
@@ -406,21 +407,22 @@
       }
 
       function startVoicePrompt() {
+          loadVoices();
           if (isDoorClosed) {
               speakMessage("Please tap on door. If you tap on door, our website will come.", true);
           }
       }
 
       window.addEventListener('DOMContentLoaded', () => {
-          startVoicePrompt();
-          setTimeout(startVoicePrompt, 500);
+          setTimeout(startVoicePrompt, 800);
       });
 
-      window.addEventListener('load', () => {
-          if ('speechSynthesis' in window) {
-              window.speechSynthesis.getVoices();
-              startVoicePrompt();
-          }
+      ['click', 'touchstart', 'keydown'].forEach(evt => {
+          window.addEventListener(evt, () => {
+              if (isDoorClosed && !window.speechSynthesis.speaking) {
+                  startVoicePrompt();
+              }
+          }, { once: true });
       });
 
       const stage = document.getElementById('door-stage');
@@ -432,7 +434,7 @@
         isDoorClosed = false;
         window.speechSynthesis.cancel(); 
 
-        const welcomeText = "Welcome to Book my homies website. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Book my homies.";
+        const welcomeText = "Welcome to Bookmyhomez website. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Bookmyhomez website.";
         speakMessage(welcomeText, false);
 
         stage.classList.add('opened');
