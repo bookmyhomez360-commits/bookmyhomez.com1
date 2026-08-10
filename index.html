@@ -374,6 +374,66 @@
           }
         });
       }
+
+      // ===== BROWSER SPEECH SYNTHESIS LOGIC =====
+      let isDoorClosed = true;
+
+      function speakMessage(text, loop = false) {
+          if (!('speechSynthesis' in window)) return;
+          
+          window.speechSynthesis.cancel(); // Stop any ongoing speech
+
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = 0.9;
+          utterance.pitch = 1.0;
+          utterance.lang = 'en-US';
+
+          if (loop) {
+              utterance.onend = function() {
+                  if (isDoorClosed) {
+                      setTimeout(() => speakMessage(text, true), 2000); // 2 seconds delay
+                  }
+              };
+          }
+
+          window.speechSynthesis.speak(utterance);
+      }
+
+      // 1. Page load avvagane ee voice repeat avtuntadi
+      window.addEventListener('DOMContentLoaded', () => {
+          speakMessage("Please tap on door. If you tap on door, our website will come.", true);
+      });
+
+      const stage = document.getElementById('door-stage');
+      const knockBtn = document.getElementById('knockBtn');
+
+      function openDoors(){
+        if(!stage || stage.classList.contains('opened')) return;
+        
+        // 2. Door open chesinapudu idi call avvali
+        isDoorClosed = false;
+        window.speechSynthesis.cancel(); // Stop loop
+
+        const welcomeText = "Welcome to Book my homies website. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Book my homies.";
+        speakMessage(welcomeText, false);
+
+        stage.classList.add('opened');
+        document.body.classList.remove('locked');
+        setTimeout(() => {
+          stage.classList.add('done');
+          stage.remove();
+        }, 1800);
+      }
+
+      if(knockBtn){
+        knockBtn.addEventListener('click', openDoors);
+        knockBtn.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openDoors();
+          }
+        });
+      }
     </script>
   </body>
 </html>
