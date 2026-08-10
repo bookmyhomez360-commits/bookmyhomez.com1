@@ -13,6 +13,9 @@
   </head>
   <body>
 
+    <!-- Hidden Audio Element for Real Human Voice -->
+    <audio id="welcomeAudio" src="/welcome.mp3" preload="auto"></audio>
+
     <!-- React Root -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
@@ -21,51 +24,28 @@
     <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
     <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
-    <!-- Direct Welcome Voice Logic -->
+    <!-- Real Human Voice Autoplay Logic -->
     <script>
-      let selectedVoice = null;
+      const audio = document.getElementById('welcomeAudio');
 
-      function loadVoices() {
-          if (!('speechSynthesis' in window)) return;
-          const voices = window.speechSynthesis.getVoices();
-          selectedVoice = voices.find(v => 
-              (v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Samantha') || v.name.includes('Victoria') || v.name.includes('Google UK English Female') || v.name.includes('Google US English')) && v.lang.startsWith('en')
-          ) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+      function playHumanVoice() {
+          if (audio) {
+              audio.play().catch(error => {
+                  console.log("Autoplay blocked, waiting for user interaction.");
+              });
+          }
       }
 
-      if ('speechSynthesis' in window) {
-          window.speechSynthesis.onvoiceschanged = loadVoices;
-          loadVoices();
-      }
-
-      function speakWelcomeMessage() {
-          if (!('speechSynthesis' in window)) return;
-          window.speechSynthesis.cancel();
-
-          const welcomeText = "Welcome to Bookmyhomez website. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Bookmyhomez.";
-          
-          const utterance = new SpeechSynthesisUtterance(welcomeText);
-          if (selectedVoice) utterance.voice = selectedVoice;
-          
-          utterance.rate = 0.95; 
-          utterance.pitch = 1.4; // Sweet feminine human tone
-          utterance.lang = 'en-US';
-
-          window.speechSynthesis.speak(utterance);
-      }
-
-      // Website open avvagane automatic ga welcome voice play avtundi
+      // Website open avvagane voice play cheyyadaniki try chestundi
       window.addEventListener('DOMContentLoaded', () => {
-          loadVoices();
-          setTimeout(speakWelcomeMessage, 1000);
+          setTimeout(playHumanVoice, 800);
       });
 
-      // Mobile / Laptop interaction fallback in case browser delays autoplay
+      // Mobile lo touch cheyగానే voice play avvadaniki instant fallback
       ['click', 'touchstart', 'keydown'].forEach(evt => {
           window.addEventListener(evt, () => {
-              if (!window.speechSynthesis.speaking && !window.hasWelcomed) {
-                  window.hasWelcomed = true;
-                  speakWelcomeMessage();
+              if (audio && audio.paused) {
+                  audio.play();
               }
           }, { once: true });
       });
