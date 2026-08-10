@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
+import { db, storage } from '../firebase'; // firebase.ts నుండి db మరియు storage రెండూ ఇంపోర్ట్ చేయబడ్డాయి
 import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function Blog() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   
-  // ఫారమ్ స్టేట్స్ (ఇమేజ్ లింక్‌తో కలిపి)
+  // ఫారమ్ స్టేట్స్ (ఇమేజ్ ఫైల్ కోసం)
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
-  const [newImage, setNewImage] = useState('');
+  const [newImage, setNewImage] = useState<File | null>(null);
   const [newContent, setNewContent] = useState('');
   
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false); // ఇమేజ్ అప్‌లోడ్ అయ్యేటప్పుడు లోడింగ్ చూపించడానికి
 
   const fetchBlogs = async () => {
     try {
@@ -39,30 +41,46 @@ export default function Blog() {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  // కొత్త బ్లాగ్ మరియు ఇమేజ్ లింక్‌ని ఫైర్‌బేస్‌లో సేవ్ చేయడం
+  // కొత్త బ్లాగ్ మరియు ఇమేజ్ ఫైల్‌ని ఫైర్‌బేస్‌లో సేవ్ చేయడం
   const handleAddBlog = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle || !newDesc || !newContent) return;
 
+    setUploading(true);
+    let imageUrl = "";
+
     try {
+      // 1. ఇమేజ్ సెలెక్ట్ చేసి ఉంటే ఫైర్‌బేస్ స్టోరేజ్‌కి అప్‌లోడ్ చేయడం
+      if (newImage) {
+        const storageRef = ref(storage, `blog_images/${Date.now()}_${newImage.name}`);
+        const snapshot = await uploadBytes(storageRef, newImage);
+        imageUrl = await getDownloadURL(snapshot.ref);
+      }
+
+      // 2. Firestore లోకి డేటాతో పాటు ఇమేజ్ URL ని సేవ్ చేయడం
       await addDoc(collection(db, 'blogs'), {
         title: newTitle,
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
         readTime: "4 min read",
         description: newDesc,
-        imageUrl: newImage || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800",
+        imageUrl: imageUrl || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800",
         fullContent: newContent,
         createdAt: Date.now()
       });
 
+      // 3. ఫారమ్ రీసెట్ చేయడం
       setNewTitle('');
       setNewDesc('');
-      setNewImage('');
+      setNewImage(null);
       setNewContent('');
       setShowForm(false);
       fetchBlogs();
+      alert("Blog published successfully!");
     } catch (error) {
       console.error("Error adding blog: ", error);
+      alert("Failed to upload image or save blog.");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -103,7 +121,7 @@ export default function Blog() {
           </button>
         </div>
 
-        {/* బ్లాగ్ క్రియేట్ చేసే ఫారమ్ (డార్క్ థీమ్ కార్డ్) */}
+        {/* బ్లాగ్ క్రియేట్ చేసే ఫారమ్ */}
         {showForm && (
           <form onSubmit={handleAddBlog} className="bg-[#0B0F19] p-6 rounded-2xl shadow-2xl mb-8 space-y-4 border border-slate-800">
             <h2 className="text-xl font-bold text-white">Create a New Blog Post</h2>
@@ -132,14 +150,14 @@ export default function Blog() {
               />
             </div>
 
+            {/* URL బదులుగా డైరెక్ట్ ఇమేజ్ ఫైల్ అప్‌లోడ్ ఫీల్డ్ */}
             <div>
-              <label className="block text-sm font-medium text-slate-300">Image URL (Optional)</label>
+              <label className="block text-sm font-medium text-slate-300">Upload Image (Optional)</label>
               <input
-                type="url"
-                value={newImage}
-                onChange={(e) => setNewImage(e.target.value)}
-                placeholder="Paste image web link (URL) here..."
-                className="mt-1 w-full p-3 bg-[#131B2E] border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setNewImage(e.target.files ? e.target.files[0] : null)}
+                className="mt-1 w-full p-2 bg-[#131B2E] border border-slate-700 rounded-lg text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
               />
             </div>
 
@@ -157,9 +175,10 @@ export default function Blog() {
 
             <button
               type="submit"
-              className="bg-green-600 text-white px-4 py-2.5 rounded-lg font-semibold hover:bg-green-500 transition cursor-pointer shadow-lg shadow-green-600/30"
+              disabled={uploading}
+              className="bg-green-600 text-white px-4 py-2.5 rounded-lg font-semibold hover:bg-green-500 transition cursor-pointer shadow-lg shadow-green-600/30 disabled:opacity-50"
             >
-              Publish Blog
+              {uploading ? 'Uploading & Publishing...' : 'Publish Blog'}
             </button>
           </form>
         )}
