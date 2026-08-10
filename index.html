@@ -1,457 +1,428 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- BookMyHomez — Complete On-Page SEO Code -->
-    <title>BookMyHomez — Vacation Home Rentals, Luxury Villas & Holiday Homes</title>
-    <meta name="description" content="Find and book verified holiday homes, luxury beach villas, heritage havelis, and cozy apartments across India. Enjoy 100% verified hosts, best rate guarantee, and 24/7 guest support at BookMyHomez." />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="canonical" href="https://bookmyhomez.com/" />
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <head>
+    <!-- BookMyHomez — Complete On-Page SEO Code -->
+    <title>BookMyHomez — Vacation Home Rentals, Luxury Villas & Holiday Homes</title>
+    <meta name="description" content="Find and book verified holiday homes, luxury beach villas, heritage havelis, and cozy apartments across India. Enjoy 100% verified hosts, best rate guarantee, and 24/7 guest support at BookMyHomez." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href="https://bookmyhomez.com/" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Complete Door Animation & Serial Lights Styles -->
-    <style>
-      :root{
-        --wood-dark:#4A2C1A;
-        --wood-mid:#6B3E22;
-        --wood-light:#8B5A34;
-        --wood-grain:#3B2213;
-        --brass:#D4AF37;
-        --brass-dark:#9C7A1E;
-        --marigold:#E8871E;
-        --marigold-light:#F4A93F;
-        --mango-leaf:#4F7942;
-      }
-      body.locked{overflow:hidden; height:100vh;}
+    <!-- Complete Door Animation & Serial Lights Styles -->
+    <style>
+      :root{
+        --wood-dark:#4A2C1A;
+        --wood-mid:#6B3E22;
+        --wood-light:#8B5A34;
+        --wood-grain:#3B2213;
+        --brass:#D4AF37;
+        --brass-dark:#9C7A1E;
+        --marigold:#E8871E;
+        --marigold-light:#F4A93F;
+        --mango-leaf:#4F7942;
+      }
+      body.locked{overflow:hidden; height:100vh;}
 
-      #door-stage{
-        position:fixed; inset:0; z-index:99999;
-        perspective:2200px;
-        background:linear-gradient(180deg,#2b1a10,#1c1009);
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden;
-        transition: opacity 0.6s ease-in-out 1.2s;
-      }
-      #door-stage.done{opacity:0; pointer-events:none; display:none;}
+      #door-stage{
+        position:fixed; inset:0; z-index:99999;
+        perspective:2200px;
+        background:linear-gradient(180deg,#2b1a10,#1c1009);
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        transition: opacity 0.6s ease-in-out 1.2s;
+      }
+      #door-stage.done{opacity:0; pointer-events:none; display:none;}
 
-      .door-frame{
-        position:absolute; inset:0;
-        background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
-      }
+      .door-frame{
+        position:absolute; inset:0;
+        background:radial-gradient(ellipse at 50% 30%, rgba(255,200,120,0.10), transparent 60%), linear-gradient(180deg,#3a2415,#241407);
+      }
 
-      .frame-pillar{
-        position:absolute; top:0; bottom:0; width:26px; z-index:6;
-        background:repeating-linear-gradient(180deg, #6B3E22 0px, #4A2C1A 18px, #6B3E22 36px);
-      }
-      .frame-pillar.left{ left:0; }
-      .frame-pillar.right{ right:0; }
+      .frame-pillar{
+        position:absolute; top:0; bottom:0; width:26px; z-index:6;
+        background:repeating-linear-gradient(180deg, #6B3E22 0px, #4A2C1A 18px, #6B3E22 36px);
+      }
+      .frame-pillar.left{ left:0; }
+      .frame-pillar.right{ right:0; }
 
-      .door{
-        position:absolute; top:0; bottom:0; width:50%;
-        background:
-          repeating-linear-gradient(90deg, rgba(0,0,0,0.10) 0px, transparent 2px, transparent 9px, rgba(0,0,0,0.10) 11px, transparent 13px, transparent 22px),
-          linear-gradient(90deg, var(--wood-dark) 0%, var(--wood-light) 12%, var(--wood-mid) 30%, var(--wood-light) 55%, var(--wood-mid) 78%, var(--wood-dark) 100%);
-        box-shadow: inset 0 0 90px rgba(0,0,0,0.6);
-        transition: transform 1.6s cubic-bezier(.72,-0.15,.24,1.05);
-        will-change: transform;
-      }
-      .door-left{ left:0; transform-origin:left center; border-right:2px solid var(--wood-grain); }
-      .door-right{ right:0; transform-origin:right center; border-left:2px solid var(--wood-grain); }
+      .door{
+        position:absolute; top:0; bottom:0; width:50%;
+        background:
+          repeating-linear-gradient(90deg, rgba(0,0,0,0.10) 0px, transparent 2px, transparent 9px, rgba(0,0,0,0.10) 11px, transparent 13px, transparent 22px),
+          linear-gradient(90deg, var(--wood-dark) 0%, var(--wood-light) 12%, var(--wood-mid) 30%, var(--wood-light) 55%, var(--wood-mid) 78%, var(--wood-dark) 100%);
+        box-shadow: inset 0 0 90px rgba(0,0,0,0.6);
+        transition: transform 1.6s cubic-bezier(.72,-0.15,.24,1.05);
+        will-change: transform;
+      }
+      .door-left{ left:0; transform-origin:left center; border-right:2px solid var(--wood-grain); }
+      .door-right{ right:0; transform-origin:right center; border-left:2px solid var(--wood-grain); }
 
-      /* Side Door Vertical Serial Lights */
-      .side-serial-light {
-        position: absolute; top: 20px; bottom: 20px; width: 8px; z-index: 12;
-        pointer-events: none; display: flex; flex-direction: column; justify-content: space-around; align-items: center;
-      }
-      .door-left .side-serial-light { left: 12px; }
-      .door-right .side-serial-light { right: 12px; }
+      /* Side Door Vertical Serial Lights */
+      .side-serial-light {
+        position: absolute; top: 20px; bottom: 20px; width: 8px; z-index: 12;
+        pointer-events: none; display: flex; flex-direction: column; justify-content: space-around; align-items: center;
+      }
+      .door-left .side-serial-light { left: 12px; }
+      .door-right .side-serial-light { right: 12px; }
 
-      .side-bulb {
-        width: 8px; height: 8px; border-radius: 50%;
-        box-shadow: 0 0 6px currentColor; animation: bulbGlow 1.2s ease-in-out infinite alternate;
-      }
-      .side-bulb:nth-child(4n+1) { background: #ff3333; color: #ff3333; }
-      .side-bulb:nth-child(4n+2) { background: #33ff33; color: #33ff33; animation-delay: 0.3s; }
-      .side-bulb:nth-child(4n+3) { background: #33ccff; color: #33ccff; animation-delay: 0.6s; }
-      .side-bulb:nth-child(4n+4) { background: #ff33cc; color: #ff33cc; animation-delay: 0.9s; }
+      .side-bulb {
+        width: 8px; height: 8px; border-radius: 50%;
+        box-shadow: 0 0 6px currentColor; animation: bulbGlow 1.2s ease-in-out infinite alternate;
+      }
+      .side-bulb:nth-child(4n+1) { background: #ff3333; color: #ff3333; }
+      .side-bulb:nth-child(4n+2) { background: #33ff33; color: #33ff33; animation-delay: 0.3s; }
+      .side-bulb:nth-child(4n+3) { background: #33ccff; color: #33ccff; animation-delay: 0.6s; }
+      .side-bulb:nth-child(4n+4) { background: #ff33cc; color: #ff33cc; animation-delay: 0.9s; }
 
-      .door-panel{
-        position:absolute; left:10%; right:10%;
-        border-radius:4px;
-        background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(0,0,0,0.12) 55%), var(--wood-mid);
-        border: 5px solid var(--wood-grain);
-        box-shadow: inset 0 3px 6px rgba(255,255,255,0.10), inset 0 -6px 14px rgba(0,0,0,0.65);
-        display: flex; align-items: center; justify-content: center;
-      }
-      .panel-top{ top:6%; height:38%; }
-      .panel-bottom{ bottom:6%; height:46%; }
+      .door-panel{
+        position:absolute; left:10%; right:10%;
+        border-radius:4px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(0,0,0,0.12) 55%), var(--wood-mid);
+        border: 5px solid var(--wood-grain);
+        box-shadow: inset 0 3px 6px rgba(255,255,255,0.10), inset 0 -6px 14px rgba(0,0,0,0.65);
+        display: flex; align-items: center; justify-content: center;
+      }
+      .panel-top{ top:6%; height:38%; }
+      .panel-bottom{ bottom:6%; height:46%; }
 
-      /* 4 Boxes Panel Border Serial Lights */
-      .panel-bulb {
-        position: absolute; width: 6px; height: 6px; border-radius: 50%;
-        box-shadow: 0 0 5px currentColor; z-index: 5;
-        animation: bulbGlow 1s ease-in-out infinite alternate;
-      }
-      .panel-bulb:nth-child(3n+1) { background: #ffeb3b; color: #ffeb3b; }
-      .panel-bulb:nth-child(3n+2) { background: #00e5ff; color: #00e5ff; animation-delay: 0.4s; }
-      .panel-bulb:nth-child(3n+3) { background: #ff4081; color: #ff4081; animation-delay: 0.8s; }
+      /* 4 Boxes Panel Border Serial Lights */
+      .panel-bulb {
+        position: absolute; width: 6px; height: 6px; border-radius: 50%;
+        box-shadow: 0 0 5px currentColor; z-index: 5;
+        animation: bulbGlow 1s ease-in-out infinite alternate;
+      }
+      .panel-bulb:nth-child(3n+1) { background: #ffeb3b; color: #ffeb3b; }
+      .panel-bulb:nth-child(3n+2) { background: #00e5ff; color: #00e5ff; animation-delay: 0.4s; }
+      .panel-bulb:nth-child(3n+3) { background: #ff4081; color: #ff4081; animation-delay: 0.8s; }
 
-      .brass-corner{
-        position:absolute; width:26px; height:26px;
-        background:radial-gradient(circle at 32% 30%, #fbe9ab, var(--brass) 50%, var(--brass-dark) 100%);
-        box-shadow:0 2px 4px rgba(0,0,0,0.55); z-index: 6;
-      }
-      .brass-corner.tl{ top:-5px; left:-5px; border-radius:0 0 100% 0; }
-      .brass-corner.tr{ top:-5px; right:-5px; border-radius:0 0 0 100%; }
-      .brass-corner.bl{ bottom:-5px; left:-5px; border-radius:0 100% 0 0; }
-      .brass-corner.br{ bottom:-5px; right:-5px; border-radius:100% 0 0 0; }
+      .brass-corner{
+        position:absolute; width:26px; height:26px;
+        background:radial-gradient(circle at 32% 30%, #fbe9ab, var(--brass) 50%, var(--brass-dark) 100%);
+        box-shadow:0 2px 4px rgba(0,0,0,0.55); z-index: 6;
+      }
+      .brass-corner.tl{ top:-5px; left:-5px; border-radius:0 0 100% 0; }
+      .brass-corner.tr{ top:-5px; right:-5px; border-radius:0 0 0 100%; }
+      .brass-corner.bl{ bottom:-5px; left:-5px; border-radius:0 100% 0 0; }
+      .brass-corner.br{ bottom:-5px; right:-5px; border-radius:100% 0 0 0; }
 
-      .panel-rosette {
-        width: 75px; height: 75px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(59,34,19,0.8) 70%);
-        border: 2px dashed rgba(212, 175, 55, 0.3);
-        box-shadow: inset 0 3px 6px rgba(0,0,0,0.8);
-        display: flex; align-items: center; justify-content: center;
-        animation: rosetteSpin 20s linear infinite;
-      }
-      .panel-rosette::before {
-        content: ""; width: 45px; height: 45px; border-radius: 50%;
-        background: repeating-radial-gradient(circle, var(--wood-grain), var(--wood-dark) 4px, transparent 4px, transparent 8px);
-        border: 1px solid rgba(212, 175, 55, 0.4);
-      }
-      @keyframes rosetteSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      .panel-rosette {
+        width: 75px; height: 75px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(59,34,19,0.8) 70%);
+        border: 2px dashed rgba(212, 175, 55, 0.3);
+        box-shadow: inset 0 3px 6px rgba(0,0,0,0.8);
+        display: flex; align-items: center; justify-content: center;
+        animation: rosetteSpin 20s linear infinite;
+      }
+      .panel-rosette::before {
+        content: ""; width: 45px; height: 45px; border-radius: 50%;
+        background: repeating-radial-gradient(circle, var(--wood-grain), var(--wood-dark) 4px, transparent 4px, transparent 8px);
+        border: 1px solid rgba(212, 175, 55, 0.4);
+      }
+      @keyframes rosetteSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-      .door-handle{
-        position:absolute; top:44%; width:14px; height:110px; border-radius:7px;
-        background:linear-gradient(90deg, var(--brass-dark), var(--brass) 35%, #f6e2a0 50%, var(--brass) 65%, var(--brass-dark));
-        box-shadow:0 3px 8px rgba(0,0,0,0.6); z-index: 10;
-      }
-      .door-left .door-handle{ right:5%; }
-      .door-right .door-handle{ left:5%; }
+      .door-handle{
+        position:absolute; top:44%; width:14px; height:110px; border-radius:7px;
+        background:linear-gradient(90deg, var(--brass-dark), var(--brass) 35%, #f6e2a0 50%, var(--brass) 65%, var(--brass-dark));
+        box-shadow:0 3px 8px rgba(0,0,0,0.6); z-index: 10;
+      }
+      .door-left .door-handle{ right:5%; }
+      .door-right .door-handle{ left:5%; }
 
-      #door-stage.opened .door-left{ transform:rotateY(-112deg); }
-      #door-stage.opened .door-right{ transform:rotateY(112deg); }
-      #door-stage.opened .knock-wrap { display: none; }
+      #door-stage.opened .door-left{ transform:rotateY(-112deg); }
+      #door-stage.opened .door-right{ transform:rotateY(112deg); }
+      #door-stage.opened .knock-wrap { display: none; }
 
-      .toran{
-        position:absolute; top:0; left:0; width:100%; height:140px;
-        z-index:5; pointer-events:none;
-        animation: toranSway 4.5s ease-in-out infinite; transform-origin: 50% 0%;
-      }
-      @keyframes toranSway{ 0%,100%{ transform:rotate(-0.8deg); } 50%{ transform:rotate(0.8deg); } }
-      .garland-line{ stroke-dasharray: 3 9; animation: garlandFlow 2.6s linear infinite; }
-      @keyframes garlandFlow{ to{ stroke-dashoffset:-24; } }
+      .toran{
+        position:absolute; top:0; left:0; width:100%; height:140px;
+        z-index:5; pointer-events:none;
+        animation: toranSway 4.5s ease-in-out infinite; transform-origin: 50% 0%;
+      }
+      @keyframes toranSway{ 0%,100%{ transform:rotate(-0.8deg); } 50%{ transform:rotate(0.8deg); } }
+      .garland-line{ stroke-dasharray: 3 9; animation: garlandFlow 2.6s linear infinite; }
+      @keyframes garlandFlow{ to{ stroke-dashoffset:-24; } }
 
-      /* Centered Serial Ring & Button (Original Layout Intact) */
-      .knock-wrap{
-        position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-        z-index:20; display:flex; align-items:center; justify-content:center;
-        width: 140px; height: 140px;
-      }
-      .serial-ring {
-        position: absolute; inset: 0; border-radius: 50%;
-        animation: ringSpin 10s linear infinite; pointer-events: none;
-      }
-      @keyframes ringSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      .serial-bulb {
-        position: absolute; width: 10px; height: 10px; border-radius: 50%;
-        box-shadow: 0 0 8px currentColor; animation: bulbGlow 1.2s ease-in-out infinite alternate;
-      }
-      .serial-bulb:nth-child(4n+1) { background: #ff3333; color: #ff3333; }
-      .serial-bulb:nth-child(4n+2) { background: #33ff33; color: #33ff33; animation-delay: 0.3s; }
-      .serial-bulb:nth-child(4n+3) { background: #33ccff; color: #33ccff; animation-delay: 0.6s; }
-      .serial-bulb:nth-child(4n+4) { background: #ff33cc; color: #ff33cc; animation-delay: 0.9s; }
-      @keyframes bulbGlow { 0% { opacity: 0.3; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
+      /* Centered Serial Ring & Button */
+      .knock-wrap{
+        position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+        z-index:20; display:flex; align-items:center; justify-content:center;
+        width: 140px; height: 140px;
+      }
+      .serial-ring {
+        position: absolute; inset: 0; border-radius: 50%;
+        animation: ringSpin 10s linear infinite; pointer-events: none;
+      }
+      @keyframes ringSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      .serial-bulb {
+        position: absolute; width: 10px; height: 10px; border-radius: 50%;
+        box-shadow: 0 0 8px currentColor; animation: bulbGlow 1.2s ease-in-out infinite alternate;
+      }
+      .serial-bulb:nth-child(4n+1) { background: #ff3333; color: #ff3333; }
+      .serial-bulb:nth-child(4n+2) { background: #33ff33; color: #33ff33; animation-delay: 0.3s; }
+      .serial-bulb:nth-child(4n+3) { background: #33ccff; color: #33ccff; animation-delay: 0.6s; }
+      .serial-bulb:nth-child(4n+4) { background: #ff33cc; color: #ff33cc; animation-delay: 0.9s; }
+      @keyframes bulbGlow { 0% { opacity: 0.3; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
 
-      .knock-btn{
-        width:90px; height:90px; border-radius:50%; border:3px solid var(--brass-dark);
-        background:radial-gradient(circle at 35% 30%, #f6e2a0, var(--brass) 55%, var(--brass-dark) 100%);
-        box-shadow:0 6px 18px rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center;
-        cursor:pointer; z-index: 5; position: relative;
-      }
-      .knock-btn svg{ animation: iconWiggle 2.6s ease-in-out infinite; transform-origin:50% 78%; }
-      @keyframes iconWiggle{ 0%,100%{ transform:rotate(0deg); } 25%{ transform:rotate(-9deg); } 75%{ transform:rotate(9deg); } }
+      .knock-btn{
+        width:90px; height:90px; border-radius:50%; border:3px solid var(--brass-dark);
+        background:radial-gradient(circle at 35% 30%, #f6e2a0, var(--brass) 55%, var(--brass-dark) 100%);
+        box-shadow:0 6px 18px rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center;
+        cursor:pointer; z-index: 5; position: relative;
+      }
+      .knock-btn svg{ animation: iconWiggle 2.6s ease-in-out infinite; transform-origin:50% 78%; }
+      @keyframes iconWiggle{ 0%,100%{ transform:rotate(0deg); } 25%{ transform:rotate(-9deg); } 75%{ transform:rotate(9deg); } }
 
-      /* Key-Shape Golden Badge Style for Text (Placed right below the icon without touching lights) */
-      .door-hint-text {
-        position: absolute;
-        top: 155px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 6px 16px;
-        font-family: 'Poppins', sans-serif;
-        font-size: 11px;
-        font-weight: 700;
-        color: #3b2213;
-        background: linear-gradient(135deg, #f6e2a0, var(--brass), var(--brass-dark));
-        border: 2px solid #fff2b2;
-        border-radius: 16px 16px 6px 6px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.6);
-        letter-spacing: 0.3px;
-        text-align: center;
-        white-space: nowrap;
-        z-index: 25;
-        animation: textPulse 1.5s ease-in-out infinite alternate;
-      }
-      @keyframes textPulse {
-        0% { transform: translateX(-50%) scale(1); }
-        100% { transform: translateX(-50%) scale(1.03); }
-      }
+      .door-kolam {
+        position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+        width: 180px; height: 60px; z-index: 15; pointer-events: none; opacity: 0.85;
+      }
+    </style>
+  </head>
+  <body class="locked">
 
-      .door-kolam {
-        position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
-        width: 180px; height: 60px; z-index: 15; pointer-events: none; opacity: 0.85;
-      }
-    </style>
-  </head>
-  <body class="locked">
+    <!-- Door Intro Overlay -->
+    <div id="door-stage">
+      <div class="door-frame"></div>
+      <div class="frame-pillar left"></div>
+      <div class="frame-pillar right"></div>
 
-    <!-- Door Intro Overlay -->
-    <div id="door-stage">
-      <div class="door-frame"></div>
-      <div class="frame-pillar left"></div>
-      <div class="frame-pillar right"></div>
+      <!-- Left Door Leaf -->
+      <div class="door door-left">
+        <div class="side-serial-light" id="leftSideLights"></div>
+        <div class="door-panel panel-top">
+          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
+          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
+          <div class="panel-rosette"></div>
+        </div>
+        <div class="door-panel panel-bottom">
+          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
+          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
+          <div class="panel-rosette"></div>
+        </div>
+        <div class="door-handle"></div>
+      </div>
 
-      <!-- Left Door Leaf -->
-      <div class="door door-left">
-        <div class="side-serial-light" id="leftSideLights"></div>
-        <div class="door-panel panel-top">
-          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
-          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
-          <div class="panel-rosette"></div>
-        </div>
-        <div class="door-panel panel-bottom">
-          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
-          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
-          <div class="panel-rosette"></div>
-        </div>
-        <div class="door-handle"></div>
-      </div>
+      <!-- Right Door Leaf -->
+      <div class="door door-right">
+        <div class="side-serial-light" id="rightSideLights"></div>
+        <div class="door-panel panel-top">
+          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
+          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
+          <div class="panel-rosette"></div>
+        </div>
+        <div class="door-panel panel-bottom">
+          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
+          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
+          <div class="panel-rosette"></div>
+        </div>
+        <div class="door-handle"></div>
+      </div>
 
-      <!-- Right Door Leaf -->
-      <div class="door door-right">
-        <div class="side-serial-light" id="rightSideLights"></div>
-        <div class="door-panel panel-top">
-          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
-          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
-          <div class="panel-rosette"></div>
-        </div>
-        <div class="door-panel panel-bottom">
-          <div class="brass-corner tl"></div><div class="brass-corner tr"></div>
-          <div class="brass-corner bl"></div><div class="brass-corner br"></div>
-          <div class="panel-rosette"></div>
-        </div>
-        <div class="door-handle"></div>
-      </div>
+      <!-- Toran Garland -->
+      <svg class="toran" viewBox="0 0 1400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="2" stdDeviation="1.4" flood-color="#1a1006" flood-opacity="0.45"/>
+          </filter>
+        </defs>
+        <path d="M-50,15 Q350,110 700,50 Q1050,110 1450,15" stroke="#5c3a1e" stroke-width="4" fill="none" opacity="0.55"/>
+        <path class="garland-line" d="M-50,15 Q350,110 700,50 Q1050,110 1450,15" stroke="#D4AF37" stroke-width="3.5" fill="none" opacity="0.9"/>
+        <g id="leaves"></g>
+        <g id="flowers"></g>
+      </svg>
 
-      <!-- Toran Garland -->
-      <svg class="toran" viewBox="0 0 1400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="2" stdDeviation="1.4" flood-color="#1a1006" flood-opacity="0.45"/>
-          </filter>
-        </defs>
-        <path d="M-50,15 Q350,110 700,50 Q1050,110 1450,15" stroke="#5c3a1e" stroke-width="4" fill="none" opacity="0.55"/>
-        <path class="garland-line" d="M-50,15 Q350,110 700,50 Q1050,110 1450,15" stroke="#D4AF37" stroke-width="3.5" fill="none" opacity="0.9"/>
-        <g id="leaves"></g>
-        <g id="flowers"></g>
-      </svg>
+      <!-- Traditional Door Kolam -->
+      <svg class="door-kolam" viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#f5d682" stroke-width="1.8" fill="none" stroke-linecap="round">
+          <path d="M100,55 C90,45 85,35 100,20 C115,35 110,45 100,55 Z" fill="rgba(232, 135, 30, 0.3)" />
+          <path d="M60,50 Q80,25 100,50 Q120,25 140,50" />
+          <circle cx="100" cy="18" r="3" fill="#f5d682" />
+          <circle cx="75" cy="35" r="2" fill="#f5d682" />
+          <circle cx="125" cy="35" r="2" fill="#f5d682" />
+        </g>
+      </svg>
 
-      <!-- Traditional Door Kolam -->
-      <svg class="door-kolam" viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg">
-        <g stroke="#f5d682" stroke-width="1.8" fill="none" stroke-linecap="round">
-          <path d="M100,55 C90,45 85,35 100,20 C115,35 110,45 100,55 Z" fill="rgba(232, 135, 30, 0.3)" />
-          <path d="M60,50 Q80,25 100,50 Q120,25 140,50" />
-          <circle cx="100" cy="18" r="3" fill="#f5d682" />
-          <circle cx="75" cy="35" r="2" fill="#f5d682" />
-          <circle cx="125" cy="35" r="2" fill="#f5d682" />
-        </g>
-      </svg>
+      <!-- Center Knob Button with Serial Lights Ring -->
+      <div class="knock-wrap" id="knockWrap">
+        <div class="serial-ring" id="serialRing"></div>
+        <div class="knock-btn" id="knockBtn" role="button" tabindex="0">
+          <svg viewBox="0 0 24 24" width="40" height="40" stroke="#4A2C1A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M3 11.5 12 4l9 7.5"/>
+            <path d="M5 10v9.5a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/>
+          </svg>
+        </div>
+      </div>
+    </div>
 
-      <!-- Center Knob Button with Serial Lights Ring -->
-      <div class="knock-wrap" id="knockWrap">
-        <div class="serial-ring" id="serialRing"></div>
-        <div class="knock-btn" id="knockBtn" role="button" tabindex="0">
-          <svg viewBox="0 0 24 24" width="40" height="40" stroke="#4A2C1A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
-            <path d="M3 11.5 12 4l9 7.5"/>
-            <path d="M5 10v9.5a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/>
-          </svg>
-        </div>
-      </div>
+    <!-- React Root -->
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
 
-      <!-- Key Shape Gold Badge Text placed right below the center knob -->
-      <div class="door-hint-text">Tap on door to see bookmyhomez website</div>
-    </div>
+    <!-- ElevenLabs Voice Widget -->
+    <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
-    <!-- React Root -->
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <!-- Dynamic JavaScript Generator for Toran, Side Bulbs, 4-Box Bulbs, Center Ring & Speech Synthesis -->
+    <script>
+      const SVGNS = 'http://www.w3.org/2000/svg';
+      function el(tag, attrs){
+        const n = document.createElementNS(SVGNS, tag);
+        for(const k in attrs) n.setAttribute(k, attrs[k]);
+        return n;
+      }
+      function rnd(min,max){ return min + Math.random()*(max-min); }
+      
+      function mangoLeaf(x,y,rot,scale,shade){
+        const g = el('g',{transform:`translate(${x},${y}) rotate(${rot}) scale(${scale})`});
+        g.appendChild(el('path',{d:'M0,0 C-6,-9 -5,-22 0,-32 C5,-22 6,-9 0,0 Z', fill: shade, stroke:'#26401f', 'stroke-width':'0.5'}));
+        return g;
+      }
+      function marigold(x,y,scale,outer){
+        const g = el('g',{transform:`translate(${x},${y}) scale(${scale})`});
+        for(let i=0;i<10;i++){
+          const a = (i/10)*Math.PI*2;
+          g.appendChild(el('ellipse',{cx:Math.cos(a)*6, cy:Math.sin(a)*6, rx:4, ry:2.5, fill: outer}));
+        }
+        return g;
+      }
 
-    <!-- ElevenLabs Voice Widget -->
-    <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
-    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+      (function(){
+        // Toran Garland
+        const leavesG = document.getElementById('leaves');
+        const flowersG = document.getElementById('flowers');
+        if(leavesG && flowersG){
+          for(let i=0; i<32; i++){
+            const t = i / 31; const x = -20 + t * 1440;
+            const y = 18 + 55 * (1 - Math.pow(t*2-1, 2));
+            if(i % 2 === 0) leavesG.appendChild(mangoLeaf(x, y, -40+t*80, 1, '#4F7942'));
+            else flowersG.appendChild(marigold(x, y+8, 1, '#E8871E'));
+          }
+        }
 
-    <!-- Dynamic JavaScript Generator for Toran, Side Bulbs, 4-Box Bulbs, Center Ring & Speech Synthesis -->
-    <script>
-      const SVGNS = 'http://www.w3.org/2000/svg';
-      function el(tag, attrs){
-        const n = document.createElementNS(SVGNS, tag);
-        for(const k in attrs) n.setAttribute(k, attrs[k]);
-        return n;
-      }
-      function rnd(min,max){ return min + Math.random()*(max-min); }
-      
-      function mangoLeaf(x,y,rot,scale,shade){
-        const g = el('g',{transform:`translate(${x},${y}) rotate(${rot}) scale(${scale})`});
-        g.appendChild(el('path',{d:'M0,0 C-6,-9 -5,-22 0,-32 C5,-22 6,-9 0,0 Z', fill: shade, stroke:'#26401f', 'stroke-width':'0.5'}));
-        return g;
-      }
-      function marigold(x,y,scale,outer){
-        const g = el('g',{transform:`translate(${x},${y}) scale(${scale})`});
-        for(let i=0;i<10;i++){
-          const a = (i/10)*Math.PI*2;
-          g.appendChild(el('ellipse',{cx:Math.cos(a)*6, cy:Math.sin(a)*6, rx:4, ry:2.5, fill: outer}));
-        }
-        return g;
-      }
+        // Side Door Vertical Serial Lights
+        ['leftSideLights', 'rightSideLights'].forEach(id => {
+          const container = document.getElementById(id);
+          if(container){
+            for(let i=0; i<10; i++){
+              const bulb = document.createElement('div');
+              bulb.className = 'side-bulb';
+              container.appendChild(bulb);
+            }
+          }
+        });
 
-      (function(){
-        // Toran Garland
-        const leavesG = document.getElementById('leaves');
-        const flowersG = document.getElementById('flowers');
-        if(leavesG && flowersG){
-          for(let i=0; i<32; i++){
-            const t = i / 31; const x = -20 + t * 1440;
-            const y = 18 + 55 * (1 - Math.pow(t*2-1, 2));
-            if(i % 2 === 0) leavesG.appendChild(mangoLeaf(x, y, -40+t*80, 1, '#4F7942'));
-            else flowersG.appendChild(marigold(x, y+8, 1, '#E8871E'));
-          }
-        }
+        // 4 Boxes Panel Border Serial Lights
+        document.querySelectorAll('.door-panel').forEach(panel => {
+          const count = 16;
+          for(let i=0; i<count; i++){
+            const bulb = document.createElement('div');
+            bulb.className = 'panel-bulb';
+            let p = i / count;
+            if(p < 0.25){
+              bulb.style.top = '-3px'; bulb.style.left = (p * 4 * 100) + '%';
+            } else if(p < 0.5){
+              bulb.style.top = ((p - 0.25) * 4 * 100) + '%'; bulb.style.right = '-3px';
+            } else if(p < 0.75){
+              bulb.style.bottom = '-3px'; bulb.style.right = ((p - 0.5) * 4 * 100) + '%';
+            } else {
+              bulb.style.bottom = ((p - 0.75) * 4 * 100) + '%'; bulb.style.left = '-3px';
+            }
+            panel.appendChild(bulb);
+          }
+        });
 
-        // Side Door Vertical Serial Lights
-        ['leftSideLights', 'rightSideLights'].forEach(id => {
-          const container = document.getElementById(id);
-          if(container){
-            for(let i=0; i<10; i++){
-              const bulb = document.createElement('div');
-              bulb.className = 'side-bulb';
-              container.appendChild(bulb);
-            }
-          }
-        });
+        // Center Knob Ring Serial Bulbs
+        const ring = document.getElementById('serialRing');
+        if(ring){
+          const bulbCount = 12;
+          const radius = 55;
+          for(let i=0; i<bulbCount; i++){
+            const angle = (i / bulbCount) * 2 * Math.PI;
+            const bx = 70 + radius * Math.cos(angle) - 5;
+            const by = 70 + radius * Math.sin(angle) - 5;
+            const bulb = document.createElement('div');
+            bulb.className = 'serial-bulb';
+            bulb.style.left = bx + 'px';
+            bulb.style.top = by + 'px';
+            ring.appendChild(bulb);
+          }
+        }
+      })();
 
-        // 4 Boxes Panel Border Serial Lights
-        document.querySelectorAll('.door-panel').forEach(panel => {
-          const count = 16;
-          for(let i=0; i<count; i++){
-            const bulb = document.createElement('div');
-            bulb.className = 'panel-bulb';
-            let p = i / count;
-            if(p < 0.25){
-              bulb.style.top = '-3px'; bulb.style.left = (p * 4 * 100) + '%';
-            } else if(p < 0.5){
-              bulb.style.top = ((p - 0.25) * 4 * 100) + '%'; bulb.style.right = '-3px';
-            } else if(p < 0.75){
-              bulb.style.bottom = '-3px'; bulb.style.right = ((p - 0.5) * 4 * 100) + '%';
-            } else {
-              bulb.style.bottom = ((p - 0.75) * 4 * 100) + '%'; bulb.style.left = '-3px';
-            }
-            panel.appendChild(bulb);
-          }
-        });
+      // ===== BROWSER SPEECH SYNTHESIS LOGIC =====
+      let isDoorClosed = true;
 
-        // Center Knob Ring Serial Bulbs
-        const ring = document.getElementById('serialRing');
-        if(ring){
-          const bulbCount = 12;
-          const radius = 55;
-          for(let i=0; i<bulbCount; i++){
-            const angle = (i / bulbCount) * 2 * Math.PI;
-            const bx = 70 + radius * Math.cos(angle) - 5;
-            const by = 70 + radius * Math.sin(angle) - 5;
-            const bulb = document.createElement('div');
-            bulb.className = 'serial-bulb';
-            bulb.style.left = bx + 'px';
-            bulb.style.top = by + 'px';
-            ring.appendChild(bulb);
-          }
-        }
-      })();
+      function speakMessage(text, loop = false) {
+          if (!('speechSynthesis' in window)) return;
+          
+          window.speechSynthesis.cancel(); // Stop any ongoing speech
 
-      // ===== BROWSER SPEECH SYNTHESIS LOGIC =====
-      let isDoorClosed = true;
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = 0.95; // Speed adjustment
+          utterance.pitch = 1.3; // Sweet girl voice pitch
+          utterance.lang = 'en-US';
 
-      function speakMessage(text, loop = false) {
-          if (!('speechSynthesis' in window)) return;
-          
-          window.speechSynthesis.cancel(); // Stop any ongoing speech
+          if (loop) {
+              utterance.onend = function() {
+                  if (isDoorClosed) {
+                      setTimeout(() => speakMessage(text, true), 2000); // 2 seconds delay
+                  }
+              };
+          }
 
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.rate = 0.95; // Speed adjustment
-          utterance.pitch = 1.3; // Sweet girl voice pitch
-          utterance.lang = 'en-US';
+          window.speechSynthesis.speak(utterance);
+      }
 
-          if (loop) {
-              utterance.onend = function() {
-                  if (isDoorClosed) {
-                      setTimeout(() => speakMessage(text, true), 2000); // 2 seconds delay
-                  }
-              };
-          }
+      function startVoicePrompt() {
+          if (isDoorClosed) {
+              speakMessage("Please tap on door. If you tap on door, our website will come.", true);
+          }
+      }
 
-          window.speechSynthesis.speak(utterance);
-      }
+      window.addEventListener('DOMContentLoaded', () => {
+          startVoicePrompt();
+          setTimeout(startVoicePrompt, 500);
+      });
 
-      function startVoicePrompt() {
-          if (isDoorClosed) {
-              speakMessage("Please tap on door. If you tap on door, our website will come.", true);
-          }
-      }
+      window.addEventListener('load', () => {
+          if ('speechSynthesis' in window) {
+              window.speechSynthesis.getVoices();
+              startVoicePrompt();
+          }
+      });
 
-      window.addEventListener('DOMContentLoaded', () => {
-          startVoicePrompt();
-          setTimeout(startVoicePrompt, 500);
-      });
+      const stage = document.getElementById('door-stage');
+      const knockBtn = document.getElementById('knockBtn');
 
-      window.addEventListener('load', () => {
-          if ('speechSynthesis' in window) {
-              window.speechSynthesis.getVoices();
-              startVoicePrompt();
-          }
-      });
+      function openDoors(){
+        if(!stage || stage.classList.contains('opened')) return;
+        
+        isDoorClosed = false;
+        window.speechSynthesis.cancel(); 
 
-      const stage = document.getElementById('door-stage');
-      const knockBtn = document.getElementById('knockBtn');
+        const welcomeText = "Welcome to Bookmyhomez website. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Bookmyhomez website.";
+        speakMessage(welcomeText, false);
 
-      function openDoors(){
-        if(!stage || stage.classList.contains('opened')) return;
-        
-        isDoorClosed = false;
-        window.speechSynthesis.cancel(); 
+        stage.classList.add('opened');
+        document.body.classList.remove('locked');
+        setTimeout(() => {
+          stage.classList.add('done');
+          stage.remove();
+        }, 1800);
+      }
 
-        const welcomeText = "Welcome to Bookmyhomez website. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Bookmyhomez website.";
-        speakMessage(welcomeText, false);
-
-        stage.classList.add('opened');
-        document.body.classList.remove('locked');
-        setTimeout(() => {
-          stage.classList.add('done');
-          stage.remove();
-        }, 1800);
-      }
-
-      if(knockBtn){
-        knockBtn.addEventListener('click', openDoors);
-        knockBtn.addEventListener('keydown', (e) => {
-          if(e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            openDoors();
-          }
-        });
-      }
-    </script>
-  </body>
-</html>
+      if(knockBtn){
+        knockBtn.addEventListener('click', openDoors);
+        knockBtn.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openDoors();
+          }
+        });
+      }
+    </script>
+  </body>
+</html>                             
