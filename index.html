@@ -365,27 +365,17 @@
         }, 1800);
       }
 
-      if(knockBtn){
-        knockBtn.addEventListener('click', openDoors);
-        knockBtn.addEventListener('keydown', (e) => {
-          if(e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            openDoors();
-          }
-        });
-      }
-
-      // ===== BROWSER SPEECH SYNTHESIS LOGIC =====
+     // ===== BROWSER SPEECH SYNTHESIS LOGIC =====
       let isDoorClosed = true;
 
-     function speakMessage(text, loop = false) {
+      function speakMessage(text, loop = false) {
           if (!('speechSynthesis' in window)) return;
           
           window.speechSynthesis.cancel(); // Stop any ongoing speech
 
           const utterance = new SpeechSynthesisUtterance(text);
           utterance.rate = 0.95; // Speed adjustment
-          utterance.pitch = 1.3; // Pitch ni 1.3 ki set chesthe sweet girl voice la vinapaduthundi
+          utterance.pitch = 1.3; // Sweet girl voice pitch
           utterance.lang = 'en-US';
 
           if (loop) {
@@ -395,9 +385,6 @@
                   }
               };
           }
-
-          window.speechSynthesis.speak(utterance);
-      }
 
           window.speechSynthesis.speak(utterance);
       }
@@ -417,7 +404,7 @@
         isDoorClosed = false;
         window.speechSynthesis.cancel(); // Stop loop
 
-        const welcomeText = "Welcome to Bookmyhomez website. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Bookmyhomez website.";
+        const welcomeText = "Welcome to Bookmyhomewebsite. Here you can search for the property you need, or list your properties for free if you have any. Also, you can see a fill details option at the top. If you fill your details there, our agent will call you. Tell the agent your required property details, and we will contact you. Thanks for visiting Bookmyhomez website.";
         speakMessage(welcomeText, false);
 
         stage.classList.add('opened');
