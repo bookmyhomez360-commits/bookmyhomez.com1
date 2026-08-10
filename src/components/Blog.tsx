@@ -39,8 +39,49 @@ export default function Blog() {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  // ఇమేజ్ ఫైల్స్ ని సెలెక్ట్ చేయగానే Base64 రూపంలోకి మార్చడం (గరిష్టంగా 5)
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // ఇమేజ్‌ని కంప్రెస్ చేసి సైజ్ తగ్గించి Base64 లోకి మార్చే ఫంక్షన్
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          // Quality 0.7 (70%) పెడితే సైజ్ చాలా తక్కువగా వస్తుంది
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          resolve(dataUrl);
+        };
+        img.onerror = (error) => reject(error);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
       if (filesArray.length > 5) {
@@ -48,28 +89,18 @@ export default function Blog() {
         return;
       }
 
-      // ప్రతి ఇమేజ్‌ని Base64 string లా కన్వర్ట్ చేయడం
-      const promises = filesArray.map((file) => {
-        return new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = (error) => reject(error);
-          reader.readAsDataURL(file);
-        });
-      });
-
-      Promise.all(promises)
-        .then((base64Images) => {
-          setNewImages(base64Images);
-        })
-        .catch((error) => {
-          console.error("Error reading images: ", error);
-          alert("Failed to process images.");
-        });
+      try {
+        const compressedImages = await Promise.all(
+          filesArray.map((file) => compressImage(file))
+        );
+        setNewImages(compressedImages);
+      } catch (error) {
+        console.error("Error compressing images: ", error);
+        alert("Failed to process images.");
+      }
     }
   };
 
-  // బ్లాగ్ మరియు ఇమేజెస్‌ని డైరెక్ట్ గా ఫైర్‌స్టోర్‌లో సేవ్ చేయడం
   const handleAddBlog = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle || !newDesc || !newContent) {
@@ -178,7 +209,7 @@ export default function Blog() {
                 onChange={handleImageChange}
                 className="mt-1 w-full p-2 bg-[#131B2E] border border-slate-700 rounded-lg text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
               />
-              <p className="text-xs text-slate-400 mt-1">You can select up to 5 images directly from your device.</p>
+              <p className="text-xs text-slate-400 mt-1">Images will be automatically optimized to fit storage limits.</p>
             </div>
 
             <div>
@@ -213,7 +244,6 @@ export default function Blog() {
               blogPosts.map((post) => (
                 <div key={post.id} className="bg-[#0B0F19] border border-slate-800 shadow-xl rounded-2xl overflow-hidden transition hover:border-slate-700 relative">
                   
-                  {/* అప్‌లోడ్ చేసిన ఇమేజెస్‌ని గ్రిడ్ లాగా డిస్‌ప్లే చేయడం */}
                   {post.imageUrls && post.imageUrls.length > 0 && (
                     <div className={`grid gap-2 p-2 bg-[#131B2E] ${post.imageUrls.length > 1 ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-1'}`}>
                       {post.imageUrls.map((url: string, index: number) => (
@@ -227,7 +257,6 @@ export default function Blog() {
                     </div>
                   )}
 
-                  {/* పాత సింగిల్ ఇమేజ్ ఉంటే సపోర్ట్ చేయడానికి */}
                   {(!post.imageUrls || post.imageUrls.length === 0) && post.imageUrl && (
                     <img 
                       src={post.imageUrl} 
