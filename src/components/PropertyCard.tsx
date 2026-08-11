@@ -29,15 +29,26 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   formatCurrency,
 }) => {
   const [isQuickEditing, setIsQuickEditing] = useState(false);
+  
+  // All Editable States
   const [editTitle, setEditTitle] = useState(property.title);
   const [editPrice, setEditPrice] = useState(property.price);
   const [editStatus, setEditStatus] = useState(property.status);
   const [editLocality, setEditLocality] = useState(property.locality);
   const [editCity, setEditCity] = useState(property.city);
-  const [editBhk, setEditBhk] = useState(property.bhk || '');
-  const [editArea, setEditArea] = useState(property.area || '');
-  const [editFurnishing, setEditFurnishing] = useState(property.furnishing || 'Semi Furnished');
   const [editRentType, setEditRentType] = useState(property.rentType || 'Monthly');
+  const [editSubType, setEditSubType] = useState(property.subType || 'Apartment');
+  const [editBhk, setEditBhk] = useState(property.bhk || '');
+  const [editBedrooms, setEditBedrooms] = useState(property.bedrooms || '');
+  const [editBathrooms, setEditBathrooms] = useState(property.bathrooms || '');
+  const [editBalconies, setEditBalconies] = useState(property.balconies || '');
+  const [editArea, setEditArea] = useState(property.area || '');
+  const [editFacing, setEditFacing] = useState(property.facing || '');
+  const [editPropertyAge, setEditPropertyAge] = useState(property.propertyAge || '');
+  const [editFurnishing, setEditFurnishing] = useState(property.furnishing || 'Semi Furnished');
+  const [editDeposit, setEditDeposit] = useState(property.deposit || 0);
+  const [editAvailDate, setEditAvailDate] = useState(property.availDate || '');
+  const [editDescription, setEditDescription] = useState(property.description || '');
 
   const propertyId = (property as any).id || (property as any)._id;
   const isOwnerOrAdmin = currentUser && (currentUser.role === 'Administrator' || property.ownerId === currentUser.id);
@@ -51,10 +62,19 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       status: editStatus as any,
       locality: editLocality,
       city: editCity,
-      bhk: editBhk,
-      area: Number(editArea),
-      furnishing: editFurnishing,
       rentType: editRentType as any,
+      subType: editSubType,
+      bhk: editBhk,
+      bedrooms: editBedrooms,
+      bathrooms: editBathrooms,
+      balconies: editBalconies,
+      area: Number(editArea),
+      facing: editFacing,
+      propertyAge: editPropertyAge,
+      furnishing: editFurnishing,
+      deposit: Number(editDeposit),
+      availDate: editAvailDate,
+      description: editDescription,
     };
     onEdit(updated);
     setIsQuickEditing(false);
@@ -94,7 +114,11 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           <div className="text-xl font-black text-white drop-shadow-md flex items-center">
             <IndianRupee className="w-4 h-4 mr-0.5" />
             {formatCurrency(property.price)}
-            {property.category === 'Rent' && <span className="text-[10px] text-slate-300 font-normal ml-1">/mo</span>}
+            {property.category === 'Rent' && (
+              <span className="text-[10px] text-slate-300 font-normal ml-1">
+                {property.rentType === 'Daily' ? '/ day' : '/mo'}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -144,7 +168,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
               <button
                 onClick={() => setIsQuickEditing(!isQuickEditing)}
-                title="Quick Edit"
+                title="Edit Property Details"
                 className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-indigo-400 transition cursor-pointer border border-slate-700"
               >
                 <Edit3 className="w-4 h-4" />
@@ -162,25 +186,25 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         </div>
       </div>
 
-      {/* Quick Edit Overlay / Drawer Inside Card (All Details Added) */}
+      {/* Complete Edit Drawer Inside Card */}
       {isQuickEditing && (
-        <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-xl p-5 z-20 flex flex-col overflow-y-auto">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-            <h4 className="text-xs font-black uppercase tracking-wider text-indigo-400">Edit Property Details</h4>
+        <div className="absolute inset-0 bg-slate-950/98 backdrop-blur-xl p-5 z-20 flex flex-col overflow-y-auto">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4 sticky top-0 bg-slate-950 z-10">
+            <h4 className="text-xs font-black uppercase tracking-wider text-indigo-400">Edit All Property Details</h4>
             <button onClick={() => setIsQuickEditing(false)} className="text-slate-400 hover:text-white cursor-pointer">
               <X className="w-4 h-4" />
             </button>
           </div>
 
           <form onSubmit={handleSaveQuickEdit} className="space-y-3 flex-1 flex flex-col justify-between">
-            <div className="space-y-3">
+            <div className="space-y-3 text-xs">
               <div>
                 <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Title</label>
                 <input
                   type="text"
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -191,30 +215,83 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                     type="number"
                     value={editPrice}
                     onChange={(e) => setEditPrice(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Status</label>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Rent Type</label>
                   <select
-                    value={editStatus}
-                    onChange={(e) => setEditStatus(e.target.value as any)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-bold"
+                    value={editRentType}
+                    onChange={(e) => setEditRentType(e.target.value as any)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none font-bold"
                   >
-                    <option value="Available">Available</option>
-                    <option value="Booked">Booked</option>
+                    <option value="Monthly">Monthly (/mo)</option>
+                    <option value="Daily">Daily (/ day)</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">BHK Config</label>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Status</label>
+                  <select
+                    value={editStatus}
+                    onChange={(e) => setEditStatus(e.target.value as any)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none font-bold"
+                  >
+                    <option value="Available">Available</option>
+                    <option value="Booked">Booked</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Sub-Type</label>
+                  <input
+                    type="text"
+                    value={editSubType}
+                    onChange={(e) => setEditSubType(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">BHK</label>
                   <input
                     type="text"
                     value={editBhk}
                     onChange={(e) => setEditBhk(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-2 text-white focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Bedrooms</label>
+                  <input
+                    type="text"
+                    value={editBedrooms}
+                    onChange={(e) => setEditBedrooms(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-2 text-white focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Bathrooms</label>
+                  <input
+                    type="text"
+                    value={editBathrooms}
+                    onChange={(e) => setEditBathrooms(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-2 text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Balconies</label>
+                  <input
+                    type="text"
+                    value={editBalconies}
+                    onChange={(e) => setEditBalconies(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-2 text-white focus:outline-none"
                   />
                 </div>
                 <div>
@@ -223,7 +300,16 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                     type="number"
                     value={editArea}
                     onChange={(e) => setEditArea(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-2 text-white focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Facing</label>
+                  <input
+                    type="text"
+                    value={editFacing}
+                    onChange={(e) => setEditFacing(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-2 text-white focus:outline-none"
                   />
                 </div>
               </div>
@@ -234,7 +320,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                   <select
                     value={editFurnishing}
                     onChange={(e) => setEditFurnishing(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none"
                   >
                     <option value="Furnished">Furnished</option>
                     <option value="Semi Furnished">Semi Furnished</option>
@@ -242,23 +328,65 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                   </select>
                 </div>
                 <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Property Age</label>
+                  <input
+                    type="text"
+                    value={editPropertyAge}
+                    onChange={(e) => setEditPropertyAge(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Deposit (₹)</label>
+                  <input
+                    type="number"
+                    value={editDeposit}
+                    onChange={(e) => setEditDeposit(Number(e.target.value))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Available Date</label>
+                  <input
+                    type="text"
+                    value={editAvailDate}
+                    onChange={(e) => setEditAvailDate(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
                   <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Locality</label>
                   <input
                     type="text"
                     value={editLocality}
                     onChange={(e) => setEditLocality(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">City</label>
+                  <input
+                    type="text"
+                    value={editCity}
+                    onChange={(e) => setEditCity(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">City</label>
-                <input
-                  type="text"
-                  value={editCity}
-                  onChange={(e) => setEditCity(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Description</label>
+                <textarea
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  rows={2}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-white focus:outline-none resize-none"
                 />
               </div>
             </div>
