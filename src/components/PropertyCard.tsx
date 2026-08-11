@@ -34,6 +34,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const [editStatus, setEditStatus] = useState(property.status);
   const [editLocality, setEditLocality] = useState(property.locality);
   const [editCity, setEditCity] = useState(property.city);
+  const [editBhk, setEditBhk] = useState(property.bhk || '');
+  const [editArea, setEditArea] = useState(property.area || '');
+  const [editFurnishing, setEditFurnishing] = useState(property.furnishing || 'Semi Furnished');
   const [editRentType, setEditRentType] = useState(property.rentType || 'Monthly');
 
   const propertyId = (property as any).id || (property as any)._id;
@@ -48,6 +51,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       status: editStatus as any,
       locality: editLocality,
       city: editCity,
+      bhk: editBhk,
+      area: Number(editArea),
+      furnishing: editFurnishing,
       rentType: editRentType as any,
     };
     onEdit(updated);
@@ -71,7 +77,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             {property.category}
           </span>
           <span className={`px-3 py-1 rounded-xl backdrop-blur-md text-[11px] font-extrabold border ${
-            property.status === 'Booked' ? 'bg-rose-500/80 text-white border-rose-400' : 'bg-emerald-500/80 text-white border-emerald-400'
+            property.status === 'Booked' ? 'bg-rose-600 text-white border-rose-400' : 'bg-emerald-500 text-slate-950 border-emerald-300'
           }`}>
             {property.status || 'Available'}
           </span>
@@ -156,11 +162,11 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         </div>
       </div>
 
-      {/* Quick Edit Overlay / Drawer Inside Card */}
+      {/* Quick Edit Overlay / Drawer Inside Card (All Details Added) */}
       {isQuickEditing && (
         <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-xl p-5 z-20 flex flex-col overflow-y-auto">
           <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-            <h4 className="text-xs font-black uppercase tracking-wider text-indigo-400">Quick Edit Property</h4>
+            <h4 className="text-xs font-black uppercase tracking-wider text-indigo-400">Edit Property Details</h4>
             <button onClick={() => setIsQuickEditing(false)} className="text-slate-400 hover:text-white cursor-pointer">
               <X className="w-4 h-4" />
             </button>
@@ -203,6 +209,39 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">BHK Config</label>
+                  <input
+                    type="text"
+                    value={editBhk}
+                    onChange={(e) => setEditBhk(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Area (sq.ft)</label>
+                  <input
+                    type="number"
+                    value={editArea}
+                    onChange={(e) => setEditArea(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Furnishing</label>
+                  <select
+                    value={editFurnishing}
+                    onChange={(e) => setEditFurnishing(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                  >
+                    <option value="Furnished">Furnished</option>
+                    <option value="Semi Furnished">Semi Furnished</option>
+                    <option value="Unfurnished">Unfurnished</option>
+                  </select>
+                </div>
+                <div>
                   <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Locality</label>
                   <input
                     type="text"
@@ -211,15 +250,16 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
                   />
                 </div>
-                <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">City</label>
-                  <input
-                    type="text"
-                    value={editCity}
-                    onChange={(e) => setEditCity(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
-                  />
-                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">City</label>
+                <input
+                  type="text"
+                  value={editCity}
+                  onChange={(e) => setEditCity(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                />
               </div>
             </div>
 
