@@ -113,46 +113,6 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
     }
   };
 
-  // --- Firebase Save Helper Function ---
-  const handleSaveToFirebase = async (propertyId: string, updatedFields: object) => {
-    try {
-      const propertyRef = doc(db, "properties", propertyId);
-      await updateDoc(propertyRef, updatedFields);
-      console.log("Successfully updated in Firebase!");
-    } catch (error) {
-      console.error("Error updating document: ", error);
-    }
-  };
-
-  // --- General Update Handler using Firebase ---
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const propertyId = (property as any).id || (property as any)._id;
-      
-      const updatedData = {
-        title: property.title,
-        price: Number(property.price),
-        status: property.status, 
-        bhk: property.bhk,
-        furnishing: property.furnishing,
-        description: property.description,
-      };
-
-      const propertyRef = doc(db, "properties", propertyId);
-      await updateDoc(propertyRef, updatedData);
-
-      onClose();
-    } catch (error) {
-      console.error("Failed to save changes:", error);
-      alert("Failed to update in database!");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // --- Handle Review Submit ---
   const handleReviewSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -378,7 +338,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           </div>
           <div>
             <span className="text-slate-500 block">Status:</span>
-            <span className="font-bold text-emerald-400 mt-0.5 block">
+            <span className={`font-bold mt-0.5 block ${property.status === 'Booked' ? 'text-rose-400' : 'text-emerald-400'}`}>
               {property.status || 'Available'}
             </span>
           </div>
