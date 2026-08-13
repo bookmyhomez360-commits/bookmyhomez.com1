@@ -4,6 +4,7 @@ import {
   Heart, MapPin, Bed, Maximize2, IndianRupee, 
   Edit3, Trash2, Clock, X, Save 
 } from 'lucide-react';
+import { doc, setDoc, getFirestore } from "firebase/firestore";
 
 interface PropertyCardProps {
   property: Property;
@@ -28,6 +29,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   onDelete,
   formatCurrency,
 }) => {
+  const db = getFirestore();
   const [isQuickEditing, setIsQuickEditing] = useState(false);
   
   // All Editable States
@@ -53,7 +55,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const propertyId = (property as any).id || (property as any)._id;
   const isOwnerOrAdmin = currentUser && (currentUser.role === 'Administrator' || property.ownerId === currentUser.id);
 
-  const handleSaveQuickEdit = (e: React.FormEvent) => {
+  const handleSaveQuickEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     const updated: Property = {
       ...property,
@@ -76,8 +78,17 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       availDate: editAvailDate,
       description: editDescription,
     };
-    onEdit(updated);
-    setIsQuickEditing(false);
+
+    try {
+      const propertyRef = doc(db, "properties", String(propertyId));
+      await setDoc(propertyRef, updated, { merge: true });
+      
+      onEdit(updated);
+      setIsQuickEditing(false);
+    } catch (error) {
+      console.error("Error updating document:", error);
+      alert("Failed to update property. Check console for details.");
+    }
   };
 
   return (
