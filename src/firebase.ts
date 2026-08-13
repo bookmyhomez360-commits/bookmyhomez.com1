@@ -66,8 +66,13 @@ export function subscribeToProperties(callback: (properties: Property[]) => void
   const q = query(collection(db, 'properties'));
   return onSnapshot(q, (querySnapshot) => {
     const properties: Property[] = [];
-    querySnapshot.forEach((doc) => {
-      properties.push(doc.data() as Property);
+    querySnapshot.forEach((document) => {
+      // ఇక్కడ doc.id ని property object కి add చేస్తున్నాము
+      const data = document.data() as Property;
+      properties.push({
+        ...data,
+        id: document.id // <--- ఇది చాలా ముఖ్యం! Firestore యొక్క original ID ఇక్కడ సెట్ అవుతుంది
+      });
     });
     callback(properties);
   }, (error) => {
