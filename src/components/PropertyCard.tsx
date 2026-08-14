@@ -7,7 +7,7 @@ import {
 import { doc, setDoc, getFirestore } from "firebase/firestore";
 
 interface PropertyCardProps {
-  property: Property;
+  property: Property & { videoUrl?: string }; // added videoUrl support
   currentUser: User | null;
   isSaved: boolean;
   onToggleSave: (id: number | string) => void;
@@ -51,13 +51,14 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const [editDeposit, setEditDeposit] = useState(property.deposit || 0);
   const [editAvailDate, setEditAvailDate] = useState(property.availDate || '');
   const [editDescription, setEditDescription] = useState(property.description || '');
+  const [editVideoUrl, setEditVideoUrl] = useState(property.videoUrl || ''); // Video state
 
   const propertyId = (property as any).id || (property as any)._id;
   const isOwnerOrAdmin = currentUser && (currentUser.role === 'Administrator' || property.ownerId === currentUser.id);
 
   const handleSaveQuickEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const updated: Property = {
+    const updated: Property & { videoUrl?: string } = {
       ...property,
       title: editTitle,
       price: Number(editPrice),
@@ -77,6 +78,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       deposit: Number(editDeposit),
       availDate: editAvailDate,
       description: editDescription,
+      videoUrl: editVideoUrl, // Saving video URL
     };
 
     try {
@@ -94,14 +96,24 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   return (
     <div className="bg-slate-900/90 rounded-3xl border border-slate-800 overflow-hidden shadow-xl hover:border-indigo-500/50 transition duration-300 flex flex-col relative group">
       
-      {/* Image & Badges */}
+      {/* Media & Badges (Image or Video) */}
       <div className="relative h-52 overflow-hidden bg-slate-950">
-        <img 
-          src={property.images?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'} 
-          alt={property.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+        {property.videoUrl ? (
+          <video 
+            src={property.videoUrl} 
+            className="w-full h-full object-cover" 
+            controls 
+            preload="metadata"
+          />
+        ) : (
+          <img 
+            src={property.images?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'} 
+            alt={property.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+          />
+        )}
+        
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80 pointer-events-none"></div>
         
         <div className="absolute top-3 left-3 flex gap-2">
           <span className="px-3 py-1 rounded-xl bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-extrabold border border-slate-700">
@@ -116,12 +128,12 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
         <button
           onClick={() => onToggleSave(propertyId)}
-          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-slate-900/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-slate-800 transition cursor-pointer border border-slate-700"
+          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-slate-900/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-slate-800 transition cursor-pointer border border-slate-700 z-10"
         >
           <Heart className={`w-4 h-4 ${isSaved ? 'text-rose-500 fill-rose-500' : 'text-slate-300'}`} />
         </button>
 
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between pointer-events-none">
           <div className="text-xl font-black text-white drop-shadow-md flex items-center">
             <IndianRupee className="w-4 h-4 mr-0.5" />
             {formatCurrency(property.price)}
@@ -215,6 +227,18 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                   type="text"
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              {/* Video URL Field Added to Quick Edit Drawer */}
+              <div>
+                <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Video URL (Optional)</label>
+                <input
+                  type="text"
+                  value={editVideoUrl}
+                  onChange={(e) => setEditVideoUrl(e.target.value)}
+                  placeholder="Paste video link here"
                   className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
