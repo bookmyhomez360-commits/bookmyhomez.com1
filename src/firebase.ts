@@ -12,7 +12,7 @@ import {
   onSnapshot, 
   query 
 } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage'; // ఇక్కడ గెట్ స్టోరేజ్ ఇంపోర్ట్ చేయబడింది
+import { getStorage } from 'firebase/storage';
 import { Property, User } from './types';
 import { INITIAL_PROPERTIES, REGISTERED_USERS } from './data/initialProperties';
 
@@ -30,10 +30,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const storage = getStorage(app); // ఇక్కడ storage ఎక్స్‌పోర్ట్ చేయబడింది
+export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
 
-// Firestore Operations
+// Firestore Operations - Seed Initial Properties
 export async function seedInitialPropertiesIfEmpty() {
   try {
     const querySnapshot = await getDocs(collection(db, 'properties'));
@@ -47,6 +47,7 @@ export async function seedInitialPropertiesIfEmpty() {
   }
 }
 
+// Firestore Operations - Seed Initial Users
 export async function seedInitialUsersIfEmpty() {
   try {
     const querySnapshot = await getDocs(collection(db, 'users'));
@@ -62,16 +63,16 @@ export async function seedInitialUsersIfEmpty() {
   }
 }
 
+// Subscribe to Realtime Properties
 export function subscribeToProperties(callback: (properties: Property[]) => void) {
   const q = query(collection(db, 'properties'));
   return onSnapshot(q, (querySnapshot) => {
     const properties: Property[] = [];
     querySnapshot.forEach((document) => {
-      // ఇక్కడ doc.id ని property object కి add చేస్తున్నాము
       const data = document.data() as Property;
       properties.push({
         ...data,
-        id: document.id // <--- ఇది చాలా ముఖ్యం! Firestore యొక్క original ID ఇక్కడ సెట్ అవుతుంది
+        id: document.id 
       });
     });
     callback(properties);
@@ -80,6 +81,7 @@ export function subscribeToProperties(callback: (properties: Property[]) => void
   });
 }
 
+// Save Property To Firestore
 export async function savePropertyToFirestore(property: Property) {
   try {
     await setDoc(doc(db, 'properties', String(property.id)), property);
@@ -89,7 +91,8 @@ export async function savePropertyToFirestore(property: Property) {
   }
 }
 
-export async function updatePropertyInFirestore(id: number, updatedData: Partial<Property>) {
+// Update Property In Firestore
+export async function updatePropertyInFirestore(id: string | number, updatedData: Partial<Property>) {
   try {
     const docRef = doc(db, 'properties', String(id));
     await updateDoc(docRef, updatedData);
@@ -99,7 +102,8 @@ export async function updatePropertyInFirestore(id: number, updatedData: Partial
   }
 }
 
-export async function deletePropertyFromFirestore(id: number) {
+// Delete Property From Firestore
+export async function deletePropertyFromFirestore(id: string | number) {
   try {
     await deleteDoc(doc(db, 'properties', String(id)));
   } catch (error) {
@@ -108,6 +112,7 @@ export async function deletePropertyFromFirestore(id: number) {
   }
 }
 
+// Save User To Firestore
 export async function saveUserToFirestore(user: User & { password?: string }) {
   try {
     if (user.id) {
