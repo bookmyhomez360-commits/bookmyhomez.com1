@@ -44,7 +44,6 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
-  const [loading, setLoading] = useState(false);
 
   // --- Reviews State ---
   const [reviews, setReviews] = useState<Review[]>(
@@ -68,8 +67,15 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
   const directVideo = property.videoUrl || (property as any).video;
   const mediaList = directVideo ? [...images, directVideo] : images;
 
+  // Enhanced check for video items
   const isVideoItem = (url: string) => {
-    return url === directVideo && (!url.includes('youtube.com') && !url.includes('youtu.be'));
+    return (
+      url === directVideo ||
+      url.endsWith('.mp4') ||
+      url.endsWith('.webm') ||
+      url.endsWith('.ogg') ||
+      (!url.includes('youtube.com') && !url.includes('youtu.be') && url === directVideo)
+    );
   };
 
   const handlePrevMedia = () => {
@@ -157,6 +163,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
             <video
               src={currentMedia}
               controls
+              muted
               className="w-full h-full object-contain bg-black"
             />
           ) : currentMedia.includes('youtube.com') || currentMedia.includes('youtu.be') ? (
@@ -376,7 +383,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           </div>
         )}
 
-        {/* --- Customer Reviews & Ratings Section (With Admin Delete Option) --- */}
+        {/* --- Customer Reviews & Ratings Section --- */}
         <div className="mt-6 border-t border-slate-800 pt-6">
           <h4 className="text-sm font-bold text-white mb-4">Customer Reviews & Ratings</h4>
           
@@ -394,7 +401,6 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
                     <p className="text-xs text-slate-300">{rev.comment}</p>
                   </div>
 
-                  {/* Only Admin can delete reviews */}
                   {currentUser && currentUser.role === 'Administrator' && (
                     <button
                       onClick={() => handleDeleteReview(idx)}
