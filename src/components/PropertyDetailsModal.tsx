@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { Property, User } from '../types';
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from '../firebase';
 import {
   X,
   MapPin,
@@ -257,14 +255,26 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           </div>
         )}
 
-        {/* Title & Location */}
+        {/* Title & Location with View on Map Integration */}
         <h2 className="text-2xl font-black text-white mb-1">{property.title}</h2>
-        <p className="text-xs text-slate-400 mb-3 flex items-center gap-1">
-          <MapPin className="w-4 h-4 text-indigo-400 shrink-0" />
-          <span>
-            {property.locality}, {property.city}
-          </span>
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <p className="text-xs text-slate-400 flex items-center gap-1">
+            <MapPin className="w-4 h-4 text-indigo-400 shrink-0" />
+            <span>
+              {property.locality}, {property.city}
+            </span>
+          </p>
+
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${property.title}, ${property.locality}, ${property.city}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition border border-indigo-500/30 cursor-pointer shadow-md"
+          >
+            <MapPin className="w-3.5 h-3.5" />
+            <span>View on Map</span>
+          </a>
+        </div>
 
         <div className="text-3xl font-black text-emerald-400 mb-6">
             ₹{formatCurrency(property.price)}
