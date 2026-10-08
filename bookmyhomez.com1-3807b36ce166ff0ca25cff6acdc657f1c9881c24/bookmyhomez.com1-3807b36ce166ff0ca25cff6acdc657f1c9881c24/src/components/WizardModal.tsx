@@ -60,45 +60,6 @@ const AMENITY_OPTIONS = [
   'Intercom',
 ];
 
-// Canvas Image Compressor: Runs locally in browser so photos ALWAYS save even if Cloudinary fails
-const compressImageToDataUrl = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target?.result as string;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 1200;
-        const MAX_HEIGHT = 1200;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', 0.8));
-      };
-      img.onerror = (err) => reject(err);
-    };
-    reader.onerror = (err) => reject(err);
-  });
-};
-
 export const WizardModal: React.FC<WizardModalProps> = ({
   isOpen,
   isEditing,
@@ -189,112 +150,102 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     });
   };
 
-  // Robust Image Upload: Tries Cloudinary first; seamlessly falls back to base64 compression if network/preset fails
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Instant In-Browser Image Processing: Completely offline, zero network blocking, never freezes
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     setIsUploadingMedia(true);
+    const fileList = Array.from(files);
+    let processedCount = 0;
     const newImageUrls: string[] = [];
 
-    for (const file of Array.from(files)) {
-      let uploadedUrl = '';
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', 'ztgcemri');
+    fileList.forEach((file) => {
+      const reader = new FileReader();
 
-        const response = await fetch(
-          'https://api.cloudinary.com/v1_1/kl6agwow/image/upload',
-          {
-            method: 'POST',
-            body: formData,
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 900;
+          const MAX_HEIGHT = 900;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
           }
-        );
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data.secure_url) {
-            uploadedUrl = data.secure_url;
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          newImageUrls.push(compressedDataUrl);
+
+          processedCount++;
+          if (processedCount === fileList.length) {
+            setWizardData((prev) => {
+              const updated = [...(prev.images || []), ...newImageUrls];
+              return { ...prev, images: updated.slice(0, 30) };
+            });
+            setIsUploadingMedia(false);
           }
-        }
-      } catch (err) {
-        console.warn('Cloudinary upload unsuccessful, applying fast client-side fallback:', err);
-      }
+        };
 
-      // Safe fallback ensures image is NEVER lost
-      if (!uploadedUrl) {
-        try {
-          uploadedUrl = await compressImageToDataUrl(file);
-        } catch (compressionErr) {
-          console.error('Image processing failed:', compressionErr);
-        }
-      }
+        img.onerror = () => {
+          processedCount++;
+          if (processedCount === fileList.length) setIsUploadingMedia(false);
+        };
+      };
 
-      if (uploadedUrl) {
-        newImageUrls.push(uploadedUrl);
-      }
-    }
+      reader.onerror = () => {
+        processedCount++;
+        if (processedCount === fileList.length) setIsUploadingMedia(false);
+      };
 
-    setWizardData((prev) => {
-      const updatedImages = [...(prev.images || []), ...newImageUrls];
-      if (updatedImages.length > 30) {
-        alert('Maximum 30 images allowed.');
-        return { ...prev, images: updatedImages.slice(0, 30) };
-      }
-      return { ...prev, images: updatedImages };
+      reader.readAsDataURL(file);
     });
 
-    setIsUploadingMedia(false);
     if (photoInputRef.current) photoInputRef.current.value = '';
   };
 
-  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    setIsUploadingMedia(true);
-    const newVideoUrls: string[] = [];
+    const fileList = Array.from(files);
+    const validVideos: string[] = [];
 
-    for (const file of Array.from(files)) {
-      if (file.size > 50 * 1024 * 1024) {
-        alert(`Video "${file.name}" is too large. Please upload under 50MB.`);
-        continue;
+    fileList.forEach((file) => {
+      if (file.size > 20 * 1024 * 1024) {
+        alert(`Video "${file.name}" is over 20MB. Please use smaller videos or video links.`);
+        return;
       }
-
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', 'ztgcemri');
-
-        const response = await fetch(
-          'https://api.cloudinary.com/v1_1/kl6agwow/video/upload',
-          {
-            method: 'POST',
-            body: formData,
-          }
-        );
-
-        const data = await response.json();
-        if (data.secure_url) {
-          newVideoUrls.push(data.secure_url);
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          validVideos.push(reader.result);
+          setWizardData((prev) => {
+            const updated = [...(prev.videos || []), ...validVideos];
+            return { ...prev, videos: updated.slice(0, 2) };
+          });
         }
-      } catch (err) {
-        console.error('Video upload failed:', err);
-      }
-    }
-
-    setWizardData((prev) => {
-      const existingVideos = prev.videos || [];
-      const updatedVideos = [...existingVideos, ...newVideoUrls];
-      if (updatedVideos.length > 2) {
-        alert('Maximum 2 videos allowed.');
-        return { ...prev, videos: updatedVideos.slice(0, 2) };
-      }
-      return { ...prev, videos: updatedVideos };
+      };
+      reader.readAsDataURL(file);
     });
 
-    setIsUploadingMedia(false);
     if (videoInputRef.current) videoInputRef.current.value = '';
   };
 
@@ -908,7 +859,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                 </div>
               </div>
 
-              {/* Price, Deposit & Available Date with Easy Quick Selectors */}
+              {/* Price, Deposit & Available Date with Immediate / Custom Selection */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-slate-800">
                 <div>
                   <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">
@@ -946,7 +897,6 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                   />
                 </div>
 
-                {/* Available Date Fix: Supports both Instant button and Date Input */}
                 <div className="bg-slate-950/80 p-2.5 rounded-2xl border border-indigo-500/40">
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="text-[10px] uppercase font-bold text-indigo-400 flex items-center gap-1">
@@ -980,7 +930,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
             </div>
           )}
 
-          {/* STEP 5 - PHOTO & VIDEO UPLOADS */}
+          {/* STEP 5 - INSTANT PHOTO & VIDEO UPLOADS */}
           {wizardStep === 5 && (
             <div className="space-y-6">
               <div>
@@ -990,12 +940,12 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                   </h4>
                   {isUploadingMedia && (
                     <span className="text-xs text-indigo-400 font-bold flex items-center gap-1">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Processing & Optimizing...
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Adding Photos...
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-slate-400 mb-4">
-                  Select and upload multiple photos. The first image automatically serves as the primary Cover Photo.
+                  Select and upload photos from your device. First photo will be the main Cover Photo.
                 </p>
 
                 {/* Photos Grid */}
@@ -1048,7 +998,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
               {/* Video Walkthrough Section */}
               <div className="pt-4 border-t border-slate-800">
                 <label className="block text-xs font-bold text-slate-300 mb-2">
-                  Video Walkthrough (Max 2 videos, up to 50MB each)
+                  Video Walkthrough (Max 2 videos, under 20MB each)
                 </label>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
