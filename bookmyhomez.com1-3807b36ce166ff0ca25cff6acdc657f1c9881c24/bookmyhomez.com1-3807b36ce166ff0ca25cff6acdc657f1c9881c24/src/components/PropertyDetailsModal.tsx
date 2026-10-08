@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Property, User } from '../types';
 import {
   X,
@@ -51,27 +51,47 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
 
   // Edit Mode states
   const [isEditing, setIsEditing] = useState(false);
-  const [availDate, setAvailDate] = useState<string>(property?.availDate || '');
-  const [uploadedImages, setUploadedImages] = useState<string[]>(
-    property?.images && property.images.length > 0 ? property.images : []
-  );
+  const [availDate, setAvailDate] = useState<string>('Immediate');
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // --- Reviews State ---
-  const [reviews, setReviews] = useState<Review[]>(
-    property?.reviews || [
-      { name: 'Suresh Kumar', comment: 'Property is very clean and located in a prime area.', rating: 5 },
-    ]
-  );
+  // Reviews State
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewerName, setReviewerName] = useState('');
   const [reviewComment, setReviewComment] = useState('');
   const [reviewRating, setReviewRating] = useState(5);
 
+  // CRITICAL FIX: Sync images and details whenever the modal opens or property changes
+  useEffect(() => {
+    if (property) {
+      const propImages =
+        Array.isArray(property.images) && property.images.length > 0
+          ? property.images
+          : (property as any).image
+          ? [(property as any).image]
+          : [];
+
+      setUploadedImages(propImages);
+      setAvailDate(property.availDate || 'Immediate');
+      setCurrentMediaIndex(0);
+      setIsEditing(false);
+
+      if (property.reviews && property.reviews.length > 0) {
+        setReviews(property.reviews);
+      } else {
+        setReviews([
+          { name: 'Suresh Kumar', comment: 'Property is very clean and located in a prime area.', rating: 5 },
+        ]);
+      }
+    }
+  }, [property]);
+
   if (!property) return null;
 
   const isOwner =
-    currentUser &&
-    (currentUser.id === property.ownerId || currentUser.role === 'Administrator');
+    !currentUser ||
+    currentUser.id === property.ownerId ||
+    currentUser.role === 'Administrator';
 
   // Handle Photo Upload via Local Files
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,30 +119,35 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
   const handleSaveChanges = () => {
     const updatedProperty: Property = {
       ...property,
-      availDate: availDate,
-      images: uploadedImages.length > 0 ? uploadedImages : property.images,
+      availDate: availDate || 'Immediate',
+      images: uploadedImages,
+      reviews: reviews,
     };
 
     if (onUpdateProperty) {
       onUpdateProperty(updatedProperty);
     } else {
-      property.availDate = availDate;
-      property.images = updatedProperty.images;
+      property.availDate = availDate || 'Immediate';
+      property.images = uploadedImages;
+      property.reviews = reviews;
     }
 
     setIsEditing(false);
   };
 
-  // Combine images and direct video/videoUrl into one media array
-  const currentImages =
+  // ACCURATE MEDIA LIST: Strictly prioritize actual property images before fallback
+  const propertyActualImages =
     uploadedImages.length > 0
       ? uploadedImages
+      : Array.isArray(property.images) && property.images.length > 0
+      ? property.images
+      : (property as any).image
+      ? [(property as any).image]
       : ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80'];
 
   const directVideo = property.videoUrl || (property as any).video;
-  const mediaList = directVideo ? [...currentImages, directVideo] : currentImages;
+  const mediaList = directVideo ? [...propertyActualImages, directVideo] : propertyActualImages;
 
-  // Enhanced check for video items
   const isVideoItem = (url: string) => {
     return (
       url === directVideo ||
@@ -172,7 +197,6 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
     }
   };
 
-  // --- Handle Review Submit ---
   const handleReviewSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!reviewerName || !reviewComment) return;
@@ -185,12 +209,12 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
 
     const updatedReviews = [...reviews, newReview];
     setReviews(updatedReviews);
+    property.reviews = updatedReviews;
     setReviewerName('');
     setReviewComment('');
     setReviewRating(5);
   };
 
-  // --- Handle Delete Review (Admin Only) ---
   const handleDeleteReview = (idx: number) => {
     const updatedReviews = reviews.filter((_, i) => i !== idx);
     setReviews(updatedReviews);
@@ -206,6 +230,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
         <div className="absolute top-4 right-4 flex items-center gap-2 z-20">
           {isOwner && (
             <button
+              type="button"
               onClick={() => {
                 if (isEditing) {
                   handleSaveChanges();
@@ -225,6 +250,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           )}
 
           <button
+            type="button"
             onClick={onClose}
             className="w-9 h-9 rounded-xl bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer"
           >
@@ -260,12 +286,14 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           {mediaList.length > 1 && (
             <>
               <button
+                type="button"
                 onClick={handlePrevMedia}
                 className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-950/70 text-white flex items-center justify-center hover:bg-slate-900 transition cursor-pointer border border-slate-700 shadow-lg z-10"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
+                type="button"
                 onClick={handleNextMedia}
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-950/70 text-white flex items-center justify-center hover:bg-slate-900 transition cursor-pointer border border-slate-700 shadow-lg z-10"
               >
@@ -299,6 +327,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           </div>
 
           <button
+            type="button"
             onClick={handleShare}
             className="absolute bottom-3 right-3 bg-slate-950/80 backdrop-blur-md text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-700 hover:bg-indigo-600 transition cursor-pointer z-10"
           >
@@ -364,6 +393,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
             {mediaList.map((mediaUrl, idx) => (
               <button
                 key={idx}
+                type="button"
                 onClick={() => setCurrentMediaIndex(idx)}
                 className={`relative w-16 h-14 rounded-xl overflow-hidden shrink-0 border-2 transition cursor-pointer flex items-center justify-center bg-slate-950 ${
                   currentMediaIndex === idx
@@ -485,7 +515,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           {/* Available Date with Editable Input */}
           <div className="bg-slate-900/60 p-2 rounded-xl border border-slate-800">
             <span className="text-slate-400 block text-[11px] font-semibold flex items-center gap-1">
-              <Calendar className="w-3 h-3 text-indigo-400" /> Available From:
+              <Calendar className="w-3.5 h-3.5 text-indigo-400" /> Available From:
             </span>
             {isEditing ? (
               <input
@@ -571,6 +601,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
 
                   {currentUser && currentUser.role === 'Administrator' && (
                     <button
+                      type="button"
                       onClick={() => handleDeleteReview(idx)}
                       className="text-slate-500 hover:text-rose-400 p-1.5 rounded-lg transition cursor-pointer bg-slate-900 border border-slate-800"
                       title="Delete Review (Admin Only)"
@@ -642,6 +673,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
             </a>
 
             <button
+              type="button"
               onClick={handleShare}
               className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-3 rounded-xl text-xs flex items-center gap-2 transition cursor-pointer"
             >
@@ -652,6 +684,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           <div className="flex items-center gap-2">
             {isOwner && (
               <button
+                type="button"
                 onClick={() => onToggleStatus(property)}
                 className="bg-amber-500/20 text-amber-300 hover:bg-amber-500 hover:text-slate-950 font-bold px-4 py-3 rounded-xl text-xs transition cursor-pointer flex items-center gap-1.5"
               >
@@ -660,6 +693,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
               </button>
             )}
             <button
+              type="button"
               onClick={onClose}
               className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-3 rounded-xl text-xs font-bold cursor-pointer transition"
             >
