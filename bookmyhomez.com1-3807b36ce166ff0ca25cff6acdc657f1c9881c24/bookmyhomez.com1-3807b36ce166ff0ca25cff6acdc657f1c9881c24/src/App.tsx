@@ -19,6 +19,9 @@ import { PropertyShowcase } from './components/PropertyShowcase';
 import { Mascot } from './components/Mascot';
 import { BannerCarousel } from './components/BannerCarousel';
 import { Ticker } from './components/Ticker';
+import { HeroBanners } from './components/HeroBanners';
+import { PromoStrip } from './components/PromoStrip';
+import { CtaBanner } from './components/CtaBanner';
 import { PropertyDetailsModal } from './components/PropertyDetailsModal';
 import WizardModal from './components/WizardModal';
 import { AuthModal } from './components/AuthModal';
@@ -522,6 +525,8 @@ export default function App() {
           logout={() => setCurrentUser(null)}
         />
 
+        <PromoStrip />
+
         <main className="flex-1">
           {currentTab === 'blog' && (
             <Blog />
@@ -553,6 +558,12 @@ export default function App() {
           )}
           {currentTab === 'explore' && (
             <div>
+              <HeroBanners
+                properties={showcaseProperties}
+                rentalsHref={CATEGORY_PATHS['Rent']}
+                onRentals={() => navigateToCategory('Rent')}
+              />
+
               <section className="relative min-h-[540px] lg:min-h-[620px] flex items-center justify-center px-4 py-16 overflow-hidden">
                 <div className="absolute inset-0 z-0 pointer-events-none">
                   <div className="absolute inset-0 bg-gradient-to-t from-[#090D16] via-transparent to-transparent"></div>
@@ -1148,6 +1159,8 @@ export default function App() {
             setShowAuthModal(false);
           }}
         />
+
+        <CtaBanner rentalsHref={CATEGORY_PATHS['Rent']} onRentals={() => navigateToCategory('Rent')} />
 
         <Footer
           navigateToCategory={navigateToCategory}
