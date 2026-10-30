@@ -12,7 +12,7 @@ import {
   CATEGORY_PATHS,
   Tab,
 } from './seo';
-import { SplashScreen } from './components/SplashScreen';
+import { LogoIntro } from './components/LogoIntro';
 import { Header } from './components/Header';
 import { PropertyCard } from './components/PropertyCard';
 import { PropertyShowcase } from './components/PropertyShowcase';
@@ -63,6 +63,9 @@ import {
 
 export default function App() {
   const [showSplashScreen, setShowSplashScreen] = useState(true);
+  // Logo moment on every page change (bumped by navigation; 0 = none showing)
+  const [navIntro, setNavIntro] = useState(0);
+  const playNavIntro = () => setNavIntro((n) => n + 1);
   const [activeVillaIndex, setActiveVillaIndex] = useState(0);
   // The page shown comes from the URL, so every page has its own address (/rentals, /property/<id>, ...)
   const initialRoute = useMemo(() => parseLocation(window.location.pathname, window.location.search), []);
@@ -140,6 +143,7 @@ export default function App() {
   useEffect(() => {
     const onPop = () => {
       const route = parseLocation(window.location.pathname, window.location.search);
+      if (!route.propertyId) playNavIntro();
       setCurrentTab(route.tab);
       if (route.tab === 'listings') setActiveFilterCategory(route.category);
       setRequestedPropertyId(route.propertyId);
@@ -171,9 +175,10 @@ export default function App() {
     applyMeta(metaFor({ tab: currentTab, category: activeFilterCategory, propertyId: null }, selectedProperty));
   }, [currentTab, activeFilterCategory, selectedProperty]);
 
-  const pushPath = (path: string) => {
+  const pushPath = (path: string, withIntro = false) => {
     if (window.location.pathname + window.location.search !== path) {
       window.history.pushState({}, '', path);
+      if (withIntro) playNavIntro();
     }
   };
 
@@ -240,7 +245,7 @@ export default function App() {
     setCurrentTab(tab);
     setSelectedProperty(null);
     setRequestedPropertyId(null);
-    pushPath(pathForTab(tab, activeFilterCategory));
+    pushPath(pathForTab(tab, activeFilterCategory), true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -250,14 +255,14 @@ export default function App() {
     setCurrentTab('listings');
     setSelectedProperty(null);
     setRequestedPropertyId(null);
-    pushPath(pathForTab('listings', cat));
+    pushPath(pathForTab('listings', cat), true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const filterByLocation = (city: string) => {
     setFilterCity(city);
     setCurrentTab('listings');
-    pushPath(pathForTab('listings', activeFilterCategory));
+    pushPath(pathForTab('listings', activeFilterCategory), true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -491,7 +496,10 @@ export default function App() {
 
       <div className="flex flex-col flex-1 min-h-screen relative z-10">
         {showSplashScreen && (
-          <SplashScreen onDismiss={() => setShowSplashScreen(false)} />
+          <LogoIntro variant="first" onDone={() => setShowSplashScreen(false)} />
+        )}
+        {!showSplashScreen && navIntro > 0 && (
+          <LogoIntro key={navIntro} variant="nav" onDone={() => setNavIntro(0)} />
         )}
 
         {isUrlLoading && (

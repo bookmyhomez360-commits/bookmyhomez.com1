@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import bodyImg from '../assets/images/mascot-body.webp';
+import bodyImg from '../assets/images/brand/logo-mascot.webp';
 
-// The BookMyHomez logo as a little walking mascot: cartoon arms + legs drawn in SVG
-// around the real logo image. It walks in, waves, and walks along the bottom of the
+// The BookMyHomez logo as a little walking mascot: arms + legs drawn in SVG in the logo's own
+// colours (purple with the gold outline) around the real logo artwork, shown exactly as it is
+// on a white card. It walks in, waves, and walks along the bottom of the
 // screen while the page scrolls. Purely decorative (aria-hidden); still for
 // prefers-reduced-motion; small on phones; never covers modals (z-40).
 type Pose = 'walk' | 'wave' | 'idle';
@@ -76,28 +77,33 @@ export const Mascot: React.FC<MascotProps> = ({ href, onNavigate }) => {
         Your Happy Home Partner 👋
       </span>
       <span className="bmh-masc-in" aria-hidden="true">
-        <svg className="bmh-masc-svg" viewBox="0 0 260 330" focusable="false">
+        <svg className="bmh-masc-svg" viewBox="0 0 300 345" focusable="false">
           {/* legs (behind the body) */}
           <g className="bmh-leg bmh-leg--l">
-            <path d="M112 236 C110 262 108 284 104 302" />
-            <ellipse className="bmh-shoe" cx="94" cy="308" rx="22" ry="11" />
+            <path className="bmh-limb-o" d="M118 250 C116 274 114 296 110 314" />
+            <path className="bmh-limb" d="M118 250 C116 274 114 296 110 314" />
+            <path className="bmh-shoe" d="M84 328 C84 312 98 306 112 308 C124 310 130 318 130 328 Z" />
           </g>
           <g className="bmh-leg bmh-leg--r">
-            <path d="M152 236 C154 262 156 284 160 302" />
-            <ellipse className="bmh-shoe" cx="170" cy="308" rx="22" ry="11" />
+            <path className="bmh-limb-o" d="M182 250 C184 274 186 296 190 314" />
+            <path className="bmh-limb" d="M182 250 C184 274 186 296 190 314" />
+            <path className="bmh-shoe" d="M170 328 C170 318 176 310 188 308 C202 306 216 312 216 328 Z" />
           </g>
           {/* arms */}
           <g className="bmh-arm bmh-arm--l">
-            <path d="M58 132 C40 146 28 164 22 186" />
-            <circle className="bmh-glove" cx="21" cy="192" r="12" />
+            <path className="bmh-limb-o" d="M40 132 C26 148 18 168 14 190" />
+            <path className="bmh-limb" d="M40 132 C26 148 18 168 14 190" />
+            <circle className="bmh-glove" cx="13" cy="198" r="13" />
           </g>
           <g className="bmh-arm bmh-arm--r">
-            <path d="M208 120 C226 134 238 152 244 174" />
-            <circle className="bmh-glove" cx="245" cy="180" r="12" />
+            <path className="bmh-limb-o" d="M260 132 C274 148 282 168 286 190" />
+            <path className="bmh-limb" d="M260 132 C274 148 282 168 286 190" />
+            <circle className="bmh-glove" cx="287" cy="198" r="13" />
           </g>
-          {/* body = the real BookMyHomez logo */}
+          {/* body = the real BookMyHomez logo, exactly as it is, on a white card */}
           <g className="bmh-body">
-            <image href={bodyImg} x="27" y="0" width="206" height="260" />
+            <rect className="bmh-card" x="34" y="20" width="232" height="236" rx="26" />
+            <image href={bodyImg} x="44" y="40" width="212" height="196" />
           </g>
         </svg>
       </span>

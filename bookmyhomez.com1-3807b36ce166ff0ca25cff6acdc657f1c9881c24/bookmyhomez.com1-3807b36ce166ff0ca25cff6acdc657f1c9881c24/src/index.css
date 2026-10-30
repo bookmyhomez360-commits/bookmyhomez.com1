@@ -133,7 +133,7 @@ html.bmh-reveal [data-reveal] {
 
 /* ---------- BookMyHomez logo mascot (hands + legs, walks along the bottom) ---------- */
 .bmh-masc {
-  --masc-w: 92px;
+  --masc-w: 104px;
   --masc-x: 0;
   position: fixed;
   right: 16px;
@@ -161,21 +161,19 @@ html.bmh-reveal [data-reveal] {
   overflow: visible;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
 }
-.bmh-masc-svg path {
-  fill: none;
-  stroke: #f5b301;
-  stroke-width: 12;
-  stroke-linecap: round;
-}
-.bmh-shoe { fill: #5b2a91; stroke: #fff; stroke-width: 4; }
-.bmh-glove { fill: #fff; stroke: #5b2a91; stroke-width: 4; }
-.bmh-body image { filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95)); }
+.bmh-masc-svg path { fill: none; stroke-linecap: round; }
+/* limbs in the logo's own colours: purple with the gold outline */
+.bmh-masc-svg .bmh-limb-o { stroke: #f2b705; stroke-width: 17; }
+.bmh-masc-svg .bmh-limb { stroke: #5a24c8; stroke-width: 10; }
+.bmh-masc-svg .bmh-shoe { fill: #5a24c8; stroke: #f2b705; stroke-width: 4; stroke-linejoin: round; }
+.bmh-glove { fill: #5a24c8; stroke: #f2b705; stroke-width: 4; }
+.bmh-card { fill: #fff; stroke: #f2b705; stroke-width: 5; }
 .bmh-leg, .bmh-arm, .bmh-body { transform-box: view-box; }
-.bmh-leg--l { transform-origin: 112px 236px; }
-.bmh-leg--r { transform-origin: 152px 236px; }
-.bmh-arm--l { transform-origin: 58px 132px; }
-.bmh-arm--r { transform-origin: 208px 120px; }
-.bmh-body { transform-origin: 130px 250px; }
+.bmh-leg--l { transform-origin: 118px 250px; }
+.bmh-leg--r { transform-origin: 182px 250px; }
+.bmh-arm--l { transform-origin: 40px 132px; }
+.bmh-arm--r { transform-origin: 260px 132px; }
+.bmh-body { transform-origin: 150px 250px; }
 
 .bmh-masc--walk .bmh-leg--l { animation: bmhLeg 0.5s ease-in-out infinite alternate; }
 .bmh-masc--walk .bmh-leg--r { animation: bmhLeg 0.5s ease-in-out infinite alternate-reverse; }
@@ -217,11 +215,85 @@ html.bmh-reveal [data-reveal] {
 
 @media (max-width: 640px) {
   /* phones: stay on the right, above the bottom bars (featured-home strip, call widget) */
-  .bmh-masc { --masc-w: 68px; right: 8px; bottom: 92px; transform: none; }
+  .bmh-masc { --masc-w: 82px; right: 8px; bottom: 92px; transform: none; }
   .bmh-masc-bubble { font-size: 11px; }
 }
 
+/* ---------- Logo intro: first load + every page change (purely visual overlay) ---------- */
+.bmh-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647; /* above the floating call widget too */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(60% 45% at 50% 48%, rgba(124, 58, 237, 0.55), rgba(76, 29, 149, 0.25) 55%, transparent 80%),
+    #0b0820;
+  cursor: pointer;
+  animation: bmhIntroIn 0.18s ease-out both;
+  transition: opacity 0.26s ease, visibility 0.26s;
+}
+.bmh-intro--nav { background: radial-gradient(60% 45% at 50% 48%, rgba(124, 58, 237, 0.5), rgba(11, 8, 32, 0.92) 70%), rgba(11, 8, 32, 0.9); }
+.bmh-intro.is-leaving { opacity: 0; visibility: hidden; }
+.bmh-intro-on elevenlabs-convai { visibility: hidden; }
+@keyframes bmhIntroIn { from { opacity: 0; } to { opacity: 1; } }
+.bmh-intro-card {
+  position: relative;
+  width: min(72vw, 330px);
+  aspect-ratio: 560 / 517;
+  box-sizing: content-box;
+  padding: 14px 16px;
+  background: #fff;
+  border-radius: 24px;
+  border: 3px solid #f2b705;
+  box-shadow: 0 0 0 6px rgba(242, 183, 5, 0.18), 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 90px rgba(124, 58, 237, 0.55);
+  overflow: hidden;
+  animation: bmhIntroCard 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.bmh-intro.is-leaving .bmh-intro-card { transform: scale(0.94); transition: transform 0.26s ease; }
+.bmh-intro-layer {
+  position: absolute;
+  top: 14px; left: 16px;
+  width: calc(100% - 32px);
+  height: calc(100% - 28px);
+  object-fit: contain;
+  display: block;
+}
+.bmh-intro-mark { animation: bmhIntroMark 0.62s cubic-bezier(0.25, 1.5, 0.45, 1) 0.08s both; transform-origin: 50% 60%; }
+.bmh-intro-word { animation: bmhIntroWord 0.42s cubic-bezier(0.2, 1.2, 0.4, 1) 0.42s both; }
+.bmh-intro-tag { animation: bmhIntroTag 0.38s ease-out 0.68s both; }
+.bmh-intro-shine {
+  position: absolute;
+  inset: -20% auto -20% -60%;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  transform: skewX(-18deg);
+  animation: bmhIntroShine 0.6s ease-in-out 0.82s both;
+  pointer-events: none;
+}
+/* page changes: the same build-up, quicker */
+.bmh-intro--nav .bmh-intro-card { animation-duration: 0.34s; }
+.bmh-intro--nav .bmh-intro-mark { animation-duration: 0.4s; animation-delay: 0s; }
+.bmh-intro--nav .bmh-intro-word { animation-duration: 0.3s; animation-delay: 0.18s; }
+.bmh-intro--nav .bmh-intro-tag { animation-duration: 0.28s; animation-delay: 0.32s; }
+.bmh-intro--nav .bmh-intro-shine { animation-duration: 0.42s; animation-delay: 0.36s; }
+@keyframes bmhIntroCard { from { opacity: 0; transform: scale(0.7) translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes bmhIntroMark {
+  0% { opacity: 0; transform: translateY(-38%) scale(0.6) rotate(-8deg); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes bmhIntroWord {
+  from { opacity: 0; transform: translateY(14%); clip-path: inset(0 100% 0 0); }
+  to { opacity: 1; transform: none; clip-path: inset(0 0 0 0); }
+}
+@keyframes bmhIntroTag { from { opacity: 0; transform: translateY(6%); letter-spacing: 0; } to { opacity: 1; transform: none; } }
+@keyframes bmhIntroShine { from { left: -60%; } to { left: 130%; } }
+
 @media (prefers-reduced-motion: reduce) {
+  .bmh-intro { display: none; }
   .bmh-masc, .bmh-masc * { animation: none !important; transition: none !important; }
   .bmh-masc { transform: none; }
   .bmh-show-track { animation: none !important; }
