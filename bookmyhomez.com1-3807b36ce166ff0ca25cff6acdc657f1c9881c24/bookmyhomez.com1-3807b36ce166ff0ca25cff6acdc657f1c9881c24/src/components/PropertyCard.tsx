@@ -18,6 +18,7 @@ interface PropertyCardProps {
   onEdit: (property: Property) => void;
   onDelete: (id: number | string) => void;
   formatCurrency: (val: number) => string;
+  revealIndex?: number; // position in its grid: staggers the scroll-in animation
 }
 
 export const PropertyCard: React.FC<PropertyCardProps> = ({
@@ -30,6 +31,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   onEdit,
   onDelete,
   formatCurrency,
+  revealIndex,
 }) => {
   const db = getFirestore();
   const [isQuickEditing, setIsQuickEditing] = useState(false);
@@ -96,7 +98,11 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   };
 
   return (
-    <div className="bg-slate-900/90 rounded-3xl border border-slate-800 overflow-hidden shadow-xl hover:border-indigo-500/50 transition duration-300 flex flex-col relative group">
+    <div
+      data-reveal=""
+      style={{ '--reveal-delay': `${((revealIndex ?? 0) % 3) * 90}ms` } as React.CSSProperties}
+      className="bg-slate-900/90 rounded-3xl border border-slate-800 overflow-hidden shadow-xl hover:border-indigo-500/50 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-indigo-950/60 transition duration-300 flex flex-col relative group"
+    >
       
       {/* Media & Badges (Image or Video) */}
       <div className="relative h-52 overflow-hidden bg-slate-950">

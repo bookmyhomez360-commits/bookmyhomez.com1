@@ -32,3 +32,376 @@
   animation: kenBurns 18s ease-in-out infinite alternate;
 }
 
+
+
+/* ================= Animations added Oct 30 2026 ================= */
+
+/* Scroll reveal: elements with data-reveal fade/slide in when they enter the screen.
+   Only active when JS + IntersectionObserver are available and motion is allowed. */
+html.bmh-reveal [data-reveal]:not(.is-in) {
+  opacity: 0;
+  transform: translateY(26px) scale(0.985);
+}
+html.bmh-reveal [data-reveal] {
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Home: "Homes available now" gliding strip */
+.bmh-show {
+  position: relative;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+}
+.bmh-show.is-static {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-mask-image: none;
+  mask-image: none;
+  scrollbar-width: thin;
+}
+.bmh-show-track {
+  display: flex;
+  gap: 16px;
+  width: max-content;
+  padding: 6px 2px 14px;
+}
+.bmh-show.is-marquee .bmh-show-track {
+  animation: bmhMarquee 40s linear infinite;
+}
+.bmh-show.is-marquee:hover .bmh-show-track,
+.bmh-show.is-marquee:focus-within .bmh-show-track,
+.bmh-show.is-marquee:active .bmh-show-track {
+  animation-play-state: paused;
+}
+@keyframes bmhMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 8px)); }
+}
+.bmh-show-card {
+  display: block;
+  width: 240px;
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgb(30, 41, 59);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: translate 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.bmh-show-card:hover,
+.bmh-show-card:focus-visible {
+  translate: 0 -6px;
+  border-color: rgba(99, 102, 241, 0.6);
+  box-shadow: 0 18px 36px -12px rgba(79, 70, 229, 0.45);
+  outline: none;
+}
+.bmh-show-img {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: #0b1120;
+}
+.bmh-show-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.bmh-show-card:hover .bmh-show-img img { transform: scale(1.07); }
+.bmh-show-badge {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #052e16;
+  background: #34d399;
+}
+.bmh-show-skel .bmh-show-img,
+.bmh-show-skel > span:last-child {
+  animation: bmhPulse 1.4s ease-in-out infinite;
+}
+@keyframes bmhPulse { 50% { opacity: 0.45; } }
+@media (max-width: 640px) {
+  .bmh-show-card { width: 200px; flex-basis: 200px; }
+}
+
+/* ---------- BookMyHomez logo mascot (hands + legs, walks along the bottom) ---------- */
+.bmh-masc {
+  --masc-w: 92px;
+  --masc-x: 0;
+  position: fixed;
+  right: 16px;
+  bottom: 12px;
+  z-index: 40;
+  width: var(--masc-w);
+  display: block;
+  transform: translateX(calc(var(--masc-x) * -1 * min(38vw, 420px)));
+  transition: transform 0.18s linear;
+  -webkit-tap-highlight-color: transparent;
+}
+.bmh-masc:focus-visible { outline: 2px solid #818cf8; outline-offset: 4px; border-radius: 12px; }
+.bmh-masc-in {
+  display: block;
+  animation: bmhWalkIn 2.3s cubic-bezier(0.3, 0.1, 0.3, 1) both;
+}
+@keyframes bmhWalkIn {
+  from { transform: translateX(calc(100% + 40px)); }
+  to { transform: translateX(0); }
+}
+.bmh-masc-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+}
+.bmh-masc-svg path {
+  fill: none;
+  stroke: #f5b301;
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+.bmh-shoe { fill: #5b2a91; stroke: #fff; stroke-width: 4; }
+.bmh-glove { fill: #fff; stroke: #5b2a91; stroke-width: 4; }
+.bmh-body image { filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95)); }
+.bmh-leg, .bmh-arm, .bmh-body { transform-box: view-box; }
+.bmh-leg--l { transform-origin: 112px 236px; }
+.bmh-leg--r { transform-origin: 152px 236px; }
+.bmh-arm--l { transform-origin: 58px 132px; }
+.bmh-arm--r { transform-origin: 208px 120px; }
+.bmh-body { transform-origin: 130px 250px; }
+
+.bmh-masc--walk .bmh-leg--l { animation: bmhLeg 0.5s ease-in-out infinite alternate; }
+.bmh-masc--walk .bmh-leg--r { animation: bmhLeg 0.5s ease-in-out infinite alternate-reverse; }
+.bmh-masc--walk .bmh-arm--l { animation: bmhArm 0.5s ease-in-out infinite alternate-reverse; }
+.bmh-masc--walk .bmh-arm--r { animation: bmhArm 0.5s ease-in-out infinite alternate; }
+.bmh-masc--walk .bmh-body { animation: bmhBob 0.25s ease-in-out infinite alternate; }
+.bmh-masc--wave .bmh-arm--r { animation: bmhWave 0.45s ease-in-out infinite alternate; }
+.bmh-masc--wave .bmh-body,
+.bmh-masc--idle .bmh-body { animation: bmhBreathe 2.4s ease-in-out infinite; }
+.bmh-masc--idle .bmh-arm--l { animation: bmhIdleArm 2.4s ease-in-out infinite; }
+.bmh-masc:hover .bmh-arm--r { animation: bmhWave 0.45s ease-in-out infinite alternate; }
+
+@keyframes bmhLeg { from { transform: rotate(-22deg); } to { transform: rotate(22deg); } }
+@keyframes bmhArm { from { transform: rotate(-26deg); } to { transform: rotate(26deg); } }
+@keyframes bmhBob { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+@keyframes bmhWave { from { transform: rotate(-165deg); } to { transform: rotate(-125deg); } }
+@keyframes bmhBreathe { 50% { transform: translateY(-4px) scale(1.015); } }
+@keyframes bmhIdleArm { 50% { transform: rotate(8deg); } }
+
+.bmh-masc-bubble {
+  position: absolute;
+  right: 70%;
+  bottom: 88%;
+  white-space: nowrap;
+  background: #fff;
+  color: #3b0764;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 14px 14px 2px 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translateY(6px) scale(0.9);
+  transform-origin: bottom right;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+.bmh-masc-bubble.is-on { opacity: 1; transform: none; }
+
+@media (max-width: 640px) {
+  /* phones: stay on the right, above the bottom bars (featured-home strip, call widget) */
+  .bmh-masc { --masc-w: 68px; right: 8px; bottom: 92px; transform: none; }
+  .bmh-masc-bubble { font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bmh-masc, .bmh-masc * { animation: none !important; transition: none !important; }
+  .bmh-masc { transform: none; }
+  .bmh-show-track { animation: none !important; }
+  .animate-hero-text-stagger { animation: none; opacity: 1; }
+  .animate-ken-burns { animation: none; }
+}
+
+
+/* Home: sliding banner carousel (real listing photos + factual CTA lines) */
+.bmh-banner {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgb(30, 41, 59);
+  height: 300px;
+  background: #0b1120;
+  box-shadow: 0 24px 48px -20px rgba(0, 0, 0, 0.6);
+}
+.bmh-banner-skel { animation: bmhPulse 1.4s ease-in-out infinite; }
+.bmh-banner-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.bmh-banner-slide {
+  position: relative;
+  flex: 0 0 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.bmh-banner-slide img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.12);
+  transition: transform 6s ease-out;
+}
+.bmh-banner-slide.is-active img { transform: scale(1); }
+.bmh-banner-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(9, 13, 22, 0.92) 0%, rgba(9, 13, 22, 0.6) 45%, rgba(9, 13, 22, 0.05) 100%);
+}
+.bmh-banner-copy {
+  position: absolute;
+  left: 68px;
+  right: 68px;
+  bottom: 28px;
+  max-width: 520px;
+}
+.bmh-banner-copy > * {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bmh-banner-slide.is-active .bmh-banner-copy > * { opacity: 1; transform: none; }
+.bmh-banner-slide.is-active .bmh-banner-copy > *:nth-child(2) { transition-delay: 0.12s; }
+.bmh-banner-slide.is-active .bmh-banner-copy > *:nth-child(3) { transition-delay: 0.24s; }
+.bmh-banner-slide.is-active .bmh-banner-copy > *:nth-child(4) { transition-delay: 0.36s; }
+.bmh-banner-kicker {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #1e1b4b;
+  background: #fbbf24;
+}
+.bmh-banner-title {
+  margin-top: 10px;
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+.bmh-banner-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #c7d2fe;
+}
+.bmh-banner-home:hover { color: #fff; text-decoration: underline; }
+.bmh-banner-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  transition: translate 0.2s ease, filter 0.2s ease;
+}
+.bmh-banner-btn:hover { translate: 0 -2px; filter: brightness(1.1); }
+.bmh-banner-btn--call { background: #4f46e5; color: #fff; }
+.bmh-banner-btn--wa { background: #22c55e; color: #052e16; }
+.bmh-banner-arrow {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  cursor: pointer;
+}
+.bmh-banner-arrow:hover { background: rgba(79, 70, 229, 0.85); }
+.bmh-banner-arrow--l { left: 12px; }
+.bmh-banner-arrow--r { right: 12px; }
+.bmh-banner-dots {
+  position: absolute;
+  right: 20px;
+  bottom: 18px;
+  display: flex;
+  gap: 6px;
+}
+.bmh-banner-dots button {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  transition: width 0.3s ease, background 0.3s ease;
+  cursor: pointer;
+}
+.bmh-banner-dots button.is-on { width: 24px; background: #fbbf24; }
+@media (max-width: 640px) {
+  .bmh-banner { height: 330px; border-radius: 20px; }
+  .bmh-banner-copy { left: 18px; right: 18px; bottom: 40px; }
+  .bmh-banner-title { font-size: 22px; }
+  .bmh-banner-shade { background: linear-gradient(0deg, rgba(9, 13, 22, 0.95) 0%, rgba(9, 13, 22, 0.55) 55%, rgba(9, 13, 22, 0.1) 100%); }
+  .bmh-banner-arrow { display: none; }
+  .bmh-banner-dots { left: 0; right: 0; bottom: 16px; justify-content: center; }
+}
+
+/* Moving ticker strip */
+.bmh-ticker {
+  position: relative;
+  overflow: hidden;
+  margin-top: 8px;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+.bmh-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: bmhTicker 40s linear infinite;
+}
+.bmh-ticker:hover .bmh-ticker-track { animation-play-state: paused; }
+.bmh-ticker-row { display: flex; flex-shrink: 0; }
+.bmh-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+}
+.bmh-ticker-dot { font-size: 12px; }
+@keyframes bmhTicker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bmh-ticker-track { animation: none !important; }
+  .bmh-ticker { overflow-x: auto; }
+  .bmh-banner-track, .bmh-banner-slide img, .bmh-banner-copy > * { transition: none !important; }
+}

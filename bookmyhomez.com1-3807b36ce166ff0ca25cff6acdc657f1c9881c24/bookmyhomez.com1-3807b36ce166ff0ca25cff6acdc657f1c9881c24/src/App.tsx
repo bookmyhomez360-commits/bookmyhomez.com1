@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import type { CSSProperties } from 'react';
 import { ThreeBackground, HeroSlide } from './components/ThreeBackground';
 import { NavLink } from './components/NavLink';
 import {
@@ -14,6 +15,10 @@ import {
 import { SplashScreen } from './components/SplashScreen';
 import { Header } from './components/Header';
 import { PropertyCard } from './components/PropertyCard';
+import { PropertyShowcase } from './components/PropertyShowcase';
+import { Mascot } from './components/Mascot';
+import { BannerCarousel } from './components/BannerCarousel';
+import { Ticker } from './components/Ticker';
 import { PropertyDetailsModal } from './components/PropertyDetailsModal';
 import WizardModal from './components/WizardModal';
 import { AuthModal } from './components/AuthModal';
@@ -272,6 +277,45 @@ export default function App() {
         onOpen: () => openProperty(p),
       }));
   }, [properties]);
+
+  // Home "Homes available now" strip: same real-photo rule as the hero (Cloudinary uploads only, not booked).
+  const showcaseProperties: Property[] = useMemo(() => {
+    const real = properties.filter(
+      (p) =>
+        String(p.status).toLowerCase() !== 'booked' &&
+        (p.images || []).some((i) => typeof i === 'string' && i.includes('res.cloudinary.com'))
+    );
+    const rank = (p: Property) => (p.category === 'Rent' ? 0 : 1);
+    return [...real].sort((a, b) => rank(a) - rank(b)).slice(0, 12);
+  }, [properties]);
+
+  // Scroll reveal for anything marked data-reveal (one observer for the whole app).
+  useEffect(() => {
+    if (!('IntersectionObserver' in window)) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const root = document.documentElement;
+    root.classList.add('bmh-reveal');
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-in');
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+    );
+    const scan = () => document.querySelectorAll('[data-reveal]:not(.is-in)').forEach((el) => io.observe(el));
+    scan();
+    const mo = new MutationObserver(scan);
+    mo.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      mo.disconnect();
+      io.disconnect();
+      root.classList.remove('bmh-reveal');
+    };
+  }, []);
 
   const countByCategory = (cat: CategoryType) => {
     return properties.filter((p) => p.category === cat).length;
@@ -615,6 +659,25 @@ export default function App() {
                 </div>
               </section>
 
+              {showcaseProperties.length > 0 && (
+                <Ticker properties={showcaseProperties} formatCurrency={formatCurrency} />
+              )}
+
+              <BannerCarousel
+                properties={showcaseProperties}
+                formatCurrency={formatCurrency}
+                onOpen={openProperty}
+              />
+
+              <PropertyShowcase
+                properties={showcaseProperties}
+                loaded={propertiesLoaded}
+                formatCurrency={formatCurrency}
+                onOpen={openProperty}
+                viewAllHref={CATEGORY_PATHS['All']}
+                onViewAll={() => navigateToCategory('All')}
+              />
+
               <section className="max-w-7xl mx-auto px-4 py-12">
                 <div className="flex items-center justify-between mb-6">
                   <div>
@@ -629,6 +692,8 @@ export default function App() {
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                   <NavLink
+                    data-reveal=""
+                    style={{ '--reveal-delay': '0ms' } as CSSProperties}
                     href={CATEGORY_PATHS['Buy']}
                     onNavigate={() => navigateToCategory('Buy')}
                     className="block group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-900/90 transition duration-300"
@@ -649,6 +714,8 @@ export default function App() {
                   </NavLink>
 
                   <NavLink
+                    data-reveal=""
+                    style={{ '--reveal-delay': '90ms' } as CSSProperties}
                     href={CATEGORY_PATHS['Rent']}
                     onNavigate={() => navigateToCategory('Rent')}
                     className="block group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900/90 transition duration-300"
@@ -669,6 +736,8 @@ export default function App() {
                   </NavLink>
 
                   <NavLink
+                    data-reveal=""
+                    style={{ '--reveal-delay': '180ms' } as CSSProperties}
                     href={CATEGORY_PATHS['Short Stay']}
                     onNavigate={() => navigateToCategory('Short Stay')}
                     className="block group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-amber-500/50 hover:bg-slate-900/90 transition duration-300"
@@ -689,6 +758,8 @@ export default function App() {
                   </NavLink>
 
                   <NavLink
+                    data-reveal=""
+                    style={{ '--reveal-delay': '270ms' } as CSSProperties}
                     href={CATEGORY_PATHS['Plots']}
                     onNavigate={() => navigateToCategory('Plots')}
                     className="block group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-violet-500/50 hover:bg-slate-900/90 transition duration-300"
@@ -897,8 +968,9 @@ export default function App() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProperties.map((item) => (
+                  {filteredProperties.map((item, idx) => (
                     <PropertyCard
+                      revealIndex={idx}
                       key={String((item as any).id || (item as any)._id)}
                       property={item}
                       currentUser={currentUser}
@@ -950,8 +1022,9 @@ export default function App() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {savedListings.map((item) => (
+                  {savedListings.map((item, idx) => (
                     <PropertyCard
+                      revealIndex={idx}
                       key={String((item as any).id || (item as any)._id)}
                       property={item}
                       currentUser={currentUser}
@@ -1005,8 +1078,9 @@ export default function App() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {userProperties.map((item) => (
+                  {userProperties.map((item, idx) => (
                     <PropertyCard
+                      revealIndex={idx}
                       key={String((item as any).id || (item as any)._id)}
                       property={item}
                       currentUser={currentUser}
@@ -1071,6 +1145,10 @@ export default function App() {
           navigateToCategory={navigateToCategory}
           filterByLocation={filterByLocation}
         />
+
+        {!showSplashScreen && (
+          <Mascot href={CATEGORY_PATHS['Rent']} onNavigate={() => navigateToCategory('Rent')} />
+        )}
       </div>
     </div>
   );
