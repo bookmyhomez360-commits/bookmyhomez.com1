@@ -6,7 +6,7 @@ import bodyImg from '../assets/images/brand/logo-mascot.webp';
 //
 // The whole figure really walks: after the logo intro it walks in from the left edge across the
 // screen to the right corner, waves ("Your Happy Home Partner 👋"), then keeps strolling back and
-// forth along a lane just above the bottom bars (featured home strip / call button), idling in
+// forth along a lane just above the bottom bars (call button / voice widget), idling in
 // between (bob, look around, a wave every ~7 s). While the page scrolls it walks in the scroll
 // direction (ping-pong at the lane ends). Motion is one requestAnimationFrame loop writing a single
 // transform (translate3d + small rotate) — no layout work per frame, no React re-renders.
@@ -58,7 +58,7 @@ export const Mascot: React.FC<MascotProps> = ({ href, onNavigate }) => {
       w = el.offsetWidth || w;
       minX = 6;
       maxX = Math.max(minX, vw - w - 6);
-      // keep the lane above any fixed bar along the bottom edge (featured home strip, call button)
+      // keep the lane above any fixed bar along the bottom edge (call button / voice widget)
       const vh = window.innerHeight;
       const phone = vw <= 640;
       let bottom = phone ? 70 : 88; // the floating "Call me" button sits at the bottom centre
