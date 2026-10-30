@@ -1,5 +1,16 @@
 import { useState, useEffect, useMemo } from 'react';
-import { ThreeBackground, REAL_VILLA_LIST } from './components/ThreeBackground';
+import { ThreeBackground, HeroSlide } from './components/ThreeBackground';
+import { NavLink } from './components/NavLink';
+import {
+  parseLocation,
+  pathForTab,
+  propertyPath,
+  metaFor,
+  applyMeta,
+  optimizeImage,
+  CATEGORY_PATHS,
+  Tab,
+} from './seo';
 import { SplashScreen } from './components/SplashScreen';
 import { Header } from './components/Header';
 import { PropertyCard } from './components/PropertyCard';
@@ -15,13 +26,10 @@ import {
   WizardData,
 } from './types';
 import {
-  INITIAL_PROPERTIES,
   GOOGLE_ACCOUNTS,
   REGISTERED_USERS,
 } from './data/initialProperties';
 import {
-  seedInitialPropertiesIfEmpty,
-  seedInitialUsersIfEmpty,
   subscribeToProperties,
   savePropertyToFirestore,
   updatePropertyInFirestore,
@@ -51,8 +59,12 @@ import {
 export default function App() {
   const [showSplashScreen, setShowSplashScreen] = useState(true);
   const [activeVillaIndex, setActiveVillaIndex] = useState(0);
-  const [currentTab, setCurrentTab] = useState<'explore' | 'listings' | 'favorites' | 'my_properties' | 'blog'>('explore');
-  const [activeFilterCategory, setActiveFilterCategory] = useState<CategoryType>('All');
+  // The page shown comes from the URL, so every page has its own address (/rentals, /property/<id>, ...)
+  const initialRoute = useMemo(() => parseLocation(window.location.pathname, window.location.search), []);
+  const [currentTab, setCurrentTab] = useState<Tab>(initialRoute.tab);
+  const [activeFilterCategory, setActiveFilterCategory] = useState<CategoryType>(initialRoute.category);
+  const [requestedPropertyId, setRequestedPropertyId] = useState<string | null>(initialRoute.propertyId);
+  const [propertiesLoaded, setPropertiesLoaded] = useState(false);
   const [selectedRentType, setSelectedRentType] = useState<'All' | 'Monthly' | 'Daily'>('All');
   const [filterCity, setFilterCity] = useState('All');
   const [filterBhk, setFilterBhk] = useState('All');
@@ -85,7 +97,7 @@ export default function App() {
     return [1, 3];
   });
 
-  const [properties, setProperties] = useState<Property[]>(INITIAL_PROPERTIES);
+  const [properties, setProperties] = useState<Property[]>([]);
 
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [showWizardModal, setShowWizardModal] = useState(false);
@@ -119,32 +131,59 @@ export default function App() {
     }
   };
 
+  // Back/forward buttons: re-read the page from the URL.
   useEffect(() => {
-    const checkUrlProperty = () => {
-      const params = new URLSearchParams(window.location.search);
-      const propIdParam = params.get('propertyId');
-      if (propIdParam) {
-        setIsUrlLoading(true);
-        const timer = setTimeout(() => {
-          const found = properties.find((p) => String(p.id) === propIdParam) || 
-                        INITIAL_PROPERTIES.find((p) => String(p.id) === propIdParam);
-          if (found) {
-            setSelectedProperty(found);
-          }
-          setIsUrlLoading(false);
-        }, 1500);
-
-        return () => clearTimeout(timer);
-      } else {
-        setSelectedProperty(null);
-        setIsUrlLoading(false);
-      }
+    const onPop = () => {
+      const route = parseLocation(window.location.pathname, window.location.search);
+      setCurrentTab(route.tab);
+      if (route.tab === 'listings') setActiveFilterCategory(route.category);
+      setRequestedPropertyId(route.propertyId);
+      if (!route.propertyId) setSelectedProperty(null);
     };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
 
-    checkUrlProperty();
-    window.addEventListener('popstate', checkUrlProperty);
-    return () => window.removeEventListener('popstate', checkUrlProperty);
-  }, [properties]);
+  // Open the property from the URL (/property/<id> or the older ?propertyId=<id> share links) once listings are loaded.
+  useEffect(() => {
+    if (!requestedPropertyId) return;
+    const found = properties.find((p) => String(p.id) === requestedPropertyId);
+    if (found) {
+      setSelectedProperty(found);
+      if (found.category) setActiveFilterCategory(found.category);
+      setIsUrlLoading(false);
+    } else if (propertiesLoaded) {
+      setIsUrlLoading(false);
+      setRequestedPropertyId(null);
+      setCurrentTab('not_found');
+    } else {
+      setIsUrlLoading(true);
+    }
+  }, [requestedPropertyId, properties, propertiesLoaded]);
+
+  // Per-page <title>, description, canonical and link-preview tags.
+  useEffect(() => {
+    applyMeta(metaFor({ tab: currentTab, category: activeFilterCategory, propertyId: null }, selectedProperty));
+  }, [currentTab, activeFilterCategory, selectedProperty]);
+
+  const pushPath = (path: string) => {
+    if (window.location.pathname + window.location.search !== path) {
+      window.history.pushState({}, '', path);
+    }
+  };
+
+  const openProperty = (prop: Property) => {
+    setSelectedProperty(prop);
+    setRequestedPropertyId(String(prop.id));
+    pushPath(propertyPath(prop.id));
+  };
+
+  const closeProperty = () => {
+    setSelectedProperty(null);
+    setRequestedPropertyId(null);
+    if (currentTab === 'not_found') return;
+    pushPath(pathForTab(currentTab, activeFilterCategory));
+  };
 
   const [registeredUsers, setRegisteredUsers] = useState<(User & { password?: string })[]>(() => {
     const saved = localStorage.getItem('bmh_registered_users');
@@ -177,10 +216,9 @@ export default function App() {
   }, [savedProperties]);
 
   useEffect(() => {
-    seedInitialPropertiesIfEmpty();
-    seedInitialUsersIfEmpty();
-
+    // Listings come only from the live database (no demo listings are seeded from code any more).
     const unsubscribe = subscribeToProperties((liveProperties) => {
+      setPropertiesLoaded(true);
       if (liveProperties && liveProperties.length > 0) {
         setProperties(liveProperties);
       }
@@ -195,6 +233,9 @@ export default function App() {
 
   const navigateTo = (tab: any) => {
     setCurrentTab(tab);
+    setSelectedProperty(null);
+    setRequestedPropertyId(null);
+    pushPath(pathForTab(tab, activeFilterCategory));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -202,14 +243,35 @@ export default function App() {
     setActiveFilterCategory(cat);
     setSelectedRentType('All');
     setCurrentTab('listings');
+    setSelectedProperty(null);
+    setRequestedPropertyId(null);
+    pushPath(pathForTab('listings', cat));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const filterByLocation = (city: string) => {
     setFilterCity(city);
     setCurrentTab('listings');
+    pushPath(pathForTab('listings', activeFilterCategory));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Hero background: real photos from the live rental listings (no stock photos).
+  const heroSlides: HeroSlide[] = useMemo(() => {
+    return properties
+      .filter((p) => p.category === 'Rent' && String(p.status).toLowerCase() !== 'booked')
+      .map((p) => ({ p, img: (p.images || []).find((i) => typeof i === 'string' && i.includes('res.cloudinary.com')) }))
+      .filter((x) => !!x.img)
+      .slice(0, 6)
+      .map(({ p, img }) => ({
+        id: String(p.id),
+        name: String(p.title || '').trim() || `${p.bhk} for rent`,
+        location: [String(p.locality || '').trim(), p.city].filter(Boolean).join(', '),
+        image: optimizeImage(img as string, 1600),
+        thumb: optimizeImage(img as string, 120),
+        onOpen: () => openProperty(p),
+      }));
+  }, [properties]);
 
   const countByCategory = (cat: CategoryType) => {
     return properties.filter((p) => p.category === cat).length;
@@ -378,6 +440,7 @@ export default function App() {
     <div className="flex flex-col min-h-screen bg-[#090D16] text-slate-100 font-sans selection:bg-indigo-600 selection:text-white relative">
       
       <ThreeBackground
+        slides={currentTab === 'explore' ? heroSlides : []}
         activeVillaIndex={activeVillaIndex}
         onVillaChange={setActiveVillaIndex}
       />
@@ -411,6 +474,31 @@ export default function App() {
           {currentTab === 'blog' && (
             <Blog />
           )}
+          {currentTab === 'not_found' && (
+            <section className="max-w-3xl mx-auto px-4 py-24 text-center">
+              <SearchX className="w-12 h-12 text-indigo-400 mx-auto mb-6" />
+              <h1 className="text-3xl sm:text-4xl font-black text-white mb-4">Page not found</h1>
+              <p className="text-sm text-slate-400 mb-8">
+                This page doesn’t exist or the listing has been removed. See the homes available for rent right now.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <NavLink
+                  href="/rentals"
+                  onNavigate={() => navigateToCategory('Rent')}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm"
+                >
+                  Flats for rent in Bangalore
+                </NavLink>
+                <NavLink
+                  href="/"
+                  onNavigate={() => navigateTo('explore')}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-5 py-2.5 rounded-xl text-sm border border-slate-700"
+                >
+                  Home
+                </NavLink>
+              </div>
+            </section>
+          )}
           {currentTab === 'explore' && (
             <div>
               <section className="relative min-h-[540px] lg:min-h-[620px] flex items-center justify-center px-4 py-16 overflow-hidden">
@@ -418,38 +506,35 @@ export default function App() {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#090D16] via-transparent to-transparent"></div>
                 </div>
 
-                <div className="relative z-10 max-w-4xl mx-auto text-center">
-                  {(() => {
-                    const currentVilla = REAL_VILLA_LIST[activeVillaIndex] || REAL_VILLA_LIST[0];
-                    return (
-                      <div key={activeVillaIndex} className="animate-hero-text-stagger">
-                        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-6 shadow-lg">
-                          <ShieldCheck className="w-4 h-4 text-amber-400" />
-                          {currentVilla.badgeText}
-                        </span>
+                <div className="relative z-10 w-full min-w-0 max-w-4xl mx-auto text-center">
+                  <div className="animate-hero-text-stagger">
+                    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-6 shadow-lg">
+                      <ShieldCheck className="w-4 h-4 text-amber-400" />
+                      1BHK • 2BHK • PG • Bangalore
+                    </span>
 
-                        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight sm:leading-none mb-6">
-                          {currentVilla.heroHeadline}{' '}
-                          <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-amber-300 bg-clip-text text-transparent">
-                            {currentVilla.heroHighlight}
-                          </span>
-                        </h1>
+                    <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight sm:leading-none mb-6 break-words">
+                      Flats &amp; PGs for Rent in{' '}
+                      <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-amber-300 bg-clip-text text-transparent">
+                        Bangalore
+                      </span>
+                    </h1>
 
-                        <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-medium mb-10 leading-relaxed">
-                          {currentVilla.heroSubtext}
-                        </p>
-                      </div>
-                    );
-                  })()}
+                    <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-medium mb-10 leading-relaxed">
+                      1BHK, 2BHK and 3BHK flats and PGs for rent across Bangalore.
+                      Call or WhatsApp <a href="tel:+919916475749" className="text-white font-bold underline decoration-indigo-400/60">99164 75749</a> to book a visit.
+                    </p>
+                  </div>
 
                   <div className="bg-slate-900/80 backdrop-blur-xl p-3 sm:p-5 rounded-3xl shadow-2xl border border-slate-700/60 max-w-3xl mx-auto text-left">
                     <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800/80 overflow-x-auto no-scrollbar">
                       {(
                         ['All', 'Buy', 'Rent', 'Short Stay', 'Plots'] as CategoryType[]
                       ).map((cat) => (
-                        <button
+                        <NavLink
                           key={cat}
-                          onClick={() => navigateToCategory(cat)}
+                          href={CATEGORY_PATHS[cat]}
+                          onNavigate={() => navigateToCategory(cat)}
                           className={`px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition cursor-pointer ${
                             activeFilterCategory === cat && currentTab === 'listings'
                               ? 'bg-indigo-600 text-white shadow-md'
@@ -457,7 +542,7 @@ export default function App() {
                           }`}
                         >
                           {cat === 'All' ? 'All Categories' : cat}
-                        </button>
+                        </NavLink>
                       ))}
                     </div>
 
@@ -543,9 +628,10 @@ export default function App() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                  <div
-                    onClick={() => navigateToCategory('Buy')}
-                    className="group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-900/90 transition duration-300"
+                  <NavLink
+                    href={CATEGORY_PATHS['Buy']}
+                    onNavigate={() => navigateToCategory('Buy')}
+                    className="block group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-900/90 transition duration-300"
                   >
                     <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
                       <House className="w-6 h-6" />
@@ -560,11 +646,12 @@ export default function App() {
                       Browse {countByCategory('Buy')} listings{' '}
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition transform" />
                     </span>
-                  </div>
+                  </NavLink>
 
-                  <div
-                    onClick={() => navigateToCategory('Rent')}
-                    className="group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900/90 transition duration-300"
+                  <NavLink
+                    href={CATEGORY_PATHS['Rent']}
+                    onNavigate={() => navigateToCategory('Rent')}
+                    className="block group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900/90 transition duration-300"
                   >
                     <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
                       <Key className="w-6 h-6" />
@@ -579,11 +666,12 @@ export default function App() {
                       Browse {countByCategory('Rent')} listings{' '}
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition transform" />
                     </span>
-                  </div>
+                  </NavLink>
 
-                  <div
-                    onClick={() => navigateToCategory('Short Stay')}
-                    className="group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-amber-500/50 hover:bg-slate-900/90 transition duration-300"
+                  <NavLink
+                    href={CATEGORY_PATHS['Short Stay']}
+                    onNavigate={() => navigateToCategory('Short Stay')}
+                    className="block group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-amber-500/50 hover:bg-slate-900/90 transition duration-300"
                   >
                     <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
                       <Umbrella className="w-6 h-6" />
@@ -598,11 +686,12 @@ export default function App() {
                       Browse {countByCategory('Short Stay')} listings{' '}
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition transform" />
                     </span>
-                  </div>
+                  </NavLink>
 
-                  <div
-                    onClick={() => navigateToCategory('Plots')}
-                    className="group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-violet-500/50 hover:bg-slate-900/90 transition duration-300"
+                  <NavLink
+                    href={CATEGORY_PATHS['Plots']}
+                    onNavigate={() => navigateToCategory('Plots')}
+                    className="block group cursor-pointer bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 hover:border-violet-500/50 hover:bg-slate-900/90 transition duration-300"
                   >
                     <div className="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
                       <Grid3X3 className="w-6 h-6" />
@@ -617,7 +706,7 @@ export default function App() {
                       Browse {countByCategory('Plots')} listings{' '}
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition transform" />
                     </span>
-                  </div>
+                  </NavLink>
                 </div>
               </section>
             </div>
@@ -627,12 +716,13 @@ export default function App() {
             <section className="max-w-7xl mx-auto px-4 py-8">
               <div className="bg-gradient-to-r from-slate-900 via-slate-900/90 to-indigo-950/30 p-6 sm:p-8 rounded-3xl border border-slate-800 mb-8">
                 <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
-                  <button
-                    onClick={() => navigateTo('explore')}
+                  <NavLink
+                    href="/"
+                    onNavigate={() => navigateTo('explore')}
                     className="hover:text-indigo-400 flex items-center gap-1 transition cursor-pointer"
                   >
                     <House className="w-3.5 h-3.5" /> Home
-                  </button>
+                  </NavLink>
                   <span>/</span>
                   <span className="text-indigo-400 font-bold uppercase tracking-wider">
                     {activeFilterCategory === 'All' ? 'All Properties' : activeFilterCategory}
@@ -641,28 +731,31 @@ export default function App() {
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-2xl sm:text-3xl font-black text-white">
+                    <h1 className="text-2xl sm:text-3xl font-black text-white">
                       {activeFilterCategory === 'All'
-                        ? 'Browse All Real Estate'
+                        ? 'All Properties in Bangalore'
                         : activeFilterCategory === 'Buy'
-                        ? 'Homes for Sale'
+                        ? 'Homes for Sale in Bangalore'
                         : activeFilterCategory === 'Rent'
-                        ? 'Rental Homes & PGs'
+                        ? 'Flats & PGs for Rent in Bangalore'
                         : activeFilterCategory === 'Short Stay'
-                        ? 'Short Stay & Vacation Rentals'
-                        : 'Land & Residential Plots'}
-                    </h2>
+                        ? 'Short Stay Flats in Bangalore'
+                        : activeFilterCategory === 'Plots'
+                        ? 'Land & Residential Plots'
+                        : 'PGs & Co-living in Bangalore'}
+                    </h1>
                     <p className="text-xs text-slate-400 mt-1">
                       Displaying {filteredProperties.length} verified listings matching your preferences
                     </p>
                   </div>
 
-                  <button
-                    onClick={() => navigateTo('explore')}
+                  <NavLink
+                    href="/"
+                    onNavigate={() => navigateTo('explore')}
                     className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2.5 rounded-xl border border-slate-700 transition flex items-center gap-2 self-start md:self-auto cursor-pointer"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
-                  </button>
+                  </NavLink>
                 </div>
 
                 <div className="flex items-center gap-2 mt-6 overflow-x-auto no-scrollbar pt-4 border-t border-slate-800/80">
@@ -811,7 +904,7 @@ export default function App() {
                       currentUser={currentUser}
                       isSaved={isSaved(Number((item as any).id || (item as any)._id))}
                       onToggleSave={(id) => toggleSave(Number(id))}
-                      onViewDetails={(prop) => setSelectedProperty(prop)}
+                      onViewDetails={(prop) => openProperty(prop)}
                       onToggleStatus={handleToggleStatus}
                       onEdit={handleEditProperty}
                       onDelete={handleDeleteProperty}
@@ -831,12 +924,13 @@ export default function App() {
                     <Heart className="w-6 h-6 text-rose-500 fill-rose-500" /> Saved Properties
                   </h2>
                 </div>
-                <button
-                  onClick={() => navigateTo('explore')}
+                <NavLink
+                  href="/"
+                  onNavigate={() => navigateTo('explore')}
                   className="text-xs bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl text-slate-300 hover:text-white cursor-pointer flex items-center gap-1.5"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" /> Back
-                </button>
+                </NavLink>
               </div>
 
               {savedListings.length === 0 ? (
@@ -846,12 +940,13 @@ export default function App() {
                   <p className="text-xs text-slate-500">
                     Click the heart icon on any property to bookmark it here
                   </p>
-                  <button
-                    onClick={() => navigateTo('explore')}
+                  <NavLink
+                    href="/"
+                    onNavigate={() => navigateTo('explore')}
                     className="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-6 py-3 rounded-xl cursor-pointer transition"
                   >
                     Explore Homes
-                  </button>
+                  </NavLink>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -862,7 +957,7 @@ export default function App() {
                       currentUser={currentUser}
                       isSaved={true}
                       onToggleSave={(id) => toggleSave(Number(id))}
-                      onViewDetails={(prop) => setSelectedProperty(prop)}
+                      onViewDetails={(prop) => openProperty(prop)}
                       onToggleStatus={handleToggleStatus}
                       onEdit={handleEditProperty}
                       onDelete={handleDeleteProperty}
@@ -917,7 +1012,7 @@ export default function App() {
                       currentUser={currentUser}
                       isSaved={isSaved(Number((item as any).id || (item as any)._id))}
                       onToggleSave={(id) => toggleSave(Number(id))}
-                      onViewDetails={(prop) => setSelectedProperty(prop)}
+                      onViewDetails={(prop) => openProperty(prop)}
                       onToggleStatus={handleToggleStatus}
                       onEdit={handleEditProperty}
                       onDelete={handleDeleteProperty}
@@ -933,12 +1028,7 @@ export default function App() {
         <PropertyDetailsModal
           property={selectedProperty}
           currentUser={currentUser}
-          onClose={() => {
-            setSelectedProperty(null);
-            const url = new URL(window.location.href);
-            url.searchParams.delete('propertyId');
-            window.history.pushState({}, '', url);
-          }}
+          onClose={closeProperty}
           onToggleStatus={handleToggleStatus}
           formatCurrency={formatCurrency}
         />

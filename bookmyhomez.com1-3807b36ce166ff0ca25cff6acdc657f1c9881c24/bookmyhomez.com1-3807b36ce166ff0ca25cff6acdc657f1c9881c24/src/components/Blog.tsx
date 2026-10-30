@@ -250,6 +250,8 @@ export default function Blog() {
                         <img 
                           key={index}
                           src={url} 
+                          loading="lazy"
+                          decoding="async"
                           alt={`${post.title} - ${index + 1}`} 
                           className={`w-full object-cover rounded-lg ${post.imageUrls.length === 1 ? 'h-64' : 'h-40'}`}
                         />
@@ -261,6 +263,8 @@ export default function Blog() {
                     <img 
                       src={post.imageUrl} 
                       alt={post.title} 
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-64 object-cover"
                     />
                   )}

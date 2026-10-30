@@ -85,6 +85,14 @@ async function startServer() {
   app.post('/api/trigger-ominidim-call', async (req, res) => {
     try {
       const { agentId, agent_id, fullName, mobile, email } = req.body;
+
+      // The Omnidim key must come from the hosting environment, never from the code.
+      const omnidimKey = process.env.OMNIDIM_API_KEY;
+      if (!omnidimKey) {
+        console.error("OMNIDIM_API_KEY is not set on the server.");
+        res.status(500).json({ success: false, message: "AI calling is not configured." });
+        return;
+      }
       
       // Clean mobile number and format properly with +91 country code
       let cleanMobile = mobile ? mobile.replace(/\D/g, '') : '';
@@ -97,7 +105,7 @@ async function startServer() {
       const response = await fetch('https://omnidim.io/api/v1/calls/dispatch', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer Ahnmi5AeuICUTssvjj28pHO7dL8EMlqPwomv-sY9U_M`,
+          'Authorization': `Bearer ${omnidimKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

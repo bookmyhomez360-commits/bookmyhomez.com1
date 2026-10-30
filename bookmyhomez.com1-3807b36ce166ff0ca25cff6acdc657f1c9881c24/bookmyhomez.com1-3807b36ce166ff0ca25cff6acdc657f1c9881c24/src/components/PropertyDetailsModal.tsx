@@ -21,6 +21,7 @@ import {
   Calendar,
   Save,
 } from 'lucide-react';
+import { optimizeImage, propertyPath } from '../seo';
 
 interface PropertyDetailsModalProps {
   property: Property | null;
@@ -179,7 +180,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
 
     const propertyId = (property as any).id || (property as any)._id || '';
     const shareUrl = propertyId
-      ? `${window.location.origin}/?propertyId=${propertyId}`
+      ? `${window.location.origin}${propertyPath(propertyId)}`
       : window.location.href;
 
     if (navigator.share) {
@@ -277,8 +278,9 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
             ></iframe>
           ) : (
             <img
-              src={currentMedia}
+              src={optimizeImage(currentMedia, 1400)}
               alt={property.title}
+              decoding="async"
               className="w-full h-full object-cover transition-all duration-300"
             />
           )}
@@ -406,7 +408,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
                     <Video className="w-6 h-6" />
                   </div>
                 ) : (
-                  <img src={mediaUrl} alt="thumb" className="w-full h-full object-cover" />
+                  <img src={optimizeImage(mediaUrl, 200)} alt={`${property.title} photo`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 )}
               </button>
             ))}

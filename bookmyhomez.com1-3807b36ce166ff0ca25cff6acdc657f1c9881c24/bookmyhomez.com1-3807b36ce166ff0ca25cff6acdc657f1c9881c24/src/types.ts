@@ -26,6 +26,8 @@ export interface Property {
   propType?: string;
   subType?: string;
   createdAt?: string;
+  rentType?: 'Monthly' | 'Daily';
+}
 
 export interface User {
   id: string;

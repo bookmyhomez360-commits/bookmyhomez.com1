@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Logo } from './Logo';
+import { NavLink } from './NavLink';
 import { User, CategoryType } from '../types';
 import AICallModal from './AICallModal';
 import {
@@ -57,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
               e.preventDefault();
               navigateTo('explore');
             }}
-            href="#"
+            href="/"
             className="flex items-center group transition transform hover:scale-105 cursor-pointer shrink-0"
           >
             <div className="h-16 px-2 py-1 flex items-center justify-center bg-white rounded-xl shadow-lg border border-indigo-500/40 overflow-hidden">
@@ -66,8 +67,9 @@ export const Header: React.FC<HeaderProps> = ({
           </a>
 
           <nav className="flex items-center gap-1 bg-slate-900/90 p-1.5 rounded-full border border-slate-800">
-            <button
-              onClick={() => navigateTo('explore')}
+            <NavLink
+              href="/"
+              onNavigate={() => navigateTo('explore')}
               className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'explore'
                   ? 'bg-indigo-600 text-white shadow-md'
@@ -75,9 +77,10 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Home className="w-3.5 h-3.5" /> Home
-            </button>
-            <button
-              onClick={() => navigateToCategory('Buy')}
+            </NavLink>
+            <NavLink
+              href="/buy"
+              onNavigate={() => navigateToCategory('Buy')}
               className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'listings' && activeFilterCategory === 'Buy'
                   ? 'bg-indigo-600 text-white shadow-md'
@@ -85,9 +88,10 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <ShoppingBag className="w-3.5 h-3.5" /> Buy
-            </button>
-            <button
-              onClick={() => navigateToCategory('Rent')}
+            </NavLink>
+            <NavLink
+              href="/rentals"
+              onNavigate={() => navigateToCategory('Rent')}
               className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'listings' && activeFilterCategory === 'Rent'
                   ? 'bg-indigo-600 text-white shadow-md'
@@ -95,9 +99,10 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Key className="w-3.5 h-3.5" /> Rent
-            </button>
-            <button
-              onClick={() => navigateToCategory('Short Stay')}
+            </NavLink>
+            <NavLink
+              href="/short-stay"
+              onNavigate={() => navigateToCategory('Short Stay')}
               className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'listings' && activeFilterCategory === 'Short Stay'
                   ? 'bg-indigo-600 text-white shadow-md'
@@ -105,9 +110,10 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Hotel className="w-3.5 h-3.5" /> Short Stay
-            </button>
-            <button
-              onClick={() => navigateToCategory('Plots')}
+            </NavLink>
+            <NavLink
+              href="/plots"
+              onNavigate={() => navigateToCategory('Plots')}
               className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 currentTab === 'listings' && activeFilterCategory === 'Plots'
                   ? 'bg-indigo-600 text-white shadow-md'
@@ -115,12 +121,13 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Layers className="w-3.5 h-3.5" /> Land & Plots
-            </button>
+            </NavLink>
           </nav>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigateTo('blog')}
+            <NavLink
+              href="/blog"
+              onNavigate={() => navigateTo('blog')}
               className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer shadow-md ${
                 currentTab === 'blog'
                   ? 'bg-indigo-600 text-white'
@@ -128,7 +135,7 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               Blog
-            </button>
+            </NavLink>
             <button
               onClick={() => setIsModalOpen(true)}
               className="flex items-center bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-bold px-3 py-2.5 rounded-xl transition-all shadow-lg shadow-green-500/30"
@@ -157,8 +164,9 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               )}
             </button>
-            <button
-              onClick={() => navigateTo('favorites')}
+            <NavLink
+              href="/saved"
+              onNavigate={() => navigateTo('favorites')}
               className="relative p-2.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition cursor-pointer"
             >
               <Heart
@@ -169,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {savedCount}
                 </span>
               )}
-            </button>
+            </NavLink>
             {currentUser && (
               <div className="relative">
                 <button
@@ -248,7 +256,7 @@ export const Header: React.FC<HeaderProps> = ({
               e.preventDefault();
               navigateTo('explore');
             }}
-            href="#"
+            href="/"
             className="flex items-center group transition transform hover:scale-105 cursor-pointer shrink-0 pr-0.5"
           >
             <div className="h-8 px-1 py-0.5 flex items-center justify-center bg-white rounded-md shadow border border-indigo-500/40 overflow-hidden">
@@ -257,8 +265,9 @@ export const Header: React.FC<HeaderProps> = ({
           </a>
 
           {/* Element 2: Blog */}
-          <button
-            onClick={() => navigateTo('blog')}
+          <NavLink
+            href="/blog"
+            onNavigate={() => navigateTo('blog')}
             className={`flex-1 text-center py-1.5 px-1 rounded text-[10px] font-bold transition cursor-pointer shadow truncate ${
               currentTab === 'blog'
                 ? 'bg-indigo-600 text-white'
@@ -266,7 +275,7 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             Blog
-          </button>
+          </NavLink>
 
           {/* Element 3: Fill Details */}
           <button
@@ -296,8 +305,9 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           {/* Element 5: Heart (Favorites) */}
-          <button
-            onClick={() => navigateTo('favorites')}
+          <NavLink
+            href="/saved"
+            onNavigate={() => navigateTo('favorites')}
             className="relative p-1.5 rounded border border-slate-800 bg-slate-900 text-slate-300 transition shrink-0 flex items-center justify-center ml-0.5"
           >
             <Heart
@@ -308,7 +318,7 @@ export const Header: React.FC<HeaderProps> = ({
                 {savedCount}
               </span>
             )}
-          </button>
+          </NavLink>
 
         </div>
 
@@ -317,8 +327,9 @@ export const Header: React.FC<HeaderProps> = ({
             3. MOBILE SCROLLABLE BAR (Home, Buy, Rent, Short Stay, Land & Plots)
            ========================================================================= */}
         <div className="flex lg:hidden items-center gap-1.5 overflow-x-auto px-2 py-1.5 bg-slate-950/90 border-t border-slate-800/60 scrollbar-none">
-          <button
-            onClick={() => navigateTo('explore')}
+          <NavLink
+            href="/"
+            onNavigate={() => navigateTo('explore')}
             className={`px-3 py-1 rounded-full text-[11px] font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1 shrink-0 ${
               currentTab === 'explore'
                 ? 'bg-indigo-600 text-white shadow-md'
@@ -326,9 +337,10 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             <Home className="w-3 h-3" /> Home
-          </button>
-          <button
-            onClick={() => navigateToCategory('Buy')}
+          </NavLink>
+          <NavLink
+            href="/buy"
+            onNavigate={() => navigateToCategory('Buy')}
             className={`px-3 py-1 rounded-full text-[11px] font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1 shrink-0 ${
               currentTab === 'listings' && activeFilterCategory === 'Buy'
                 ? 'bg-indigo-600 text-white shadow-md'
@@ -336,9 +348,10 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             <ShoppingBag className="w-3 h-3" /> Buy
-          </button>
-          <button
-            onClick={() => navigateToCategory('Rent')}
+          </NavLink>
+          <NavLink
+            href="/rentals"
+            onNavigate={() => navigateToCategory('Rent')}
             className={`px-3 py-1 rounded-full text-[11px] font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1 shrink-0 ${
               currentTab === 'listings' && activeFilterCategory === 'Rent'
                 ? 'bg-indigo-600 text-white shadow-md'
@@ -346,9 +359,10 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             <Key className="w-3 h-3" /> Rent
-          </button>
-          <button
-            onClick={() => navigateToCategory('Short Stay')}
+          </NavLink>
+          <NavLink
+            href="/short-stay"
+            onNavigate={() => navigateToCategory('Short Stay')}
             className={`px-3 py-1 rounded-full text-[11px] font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1 shrink-0 ${
               currentTab === 'listings' && activeFilterCategory === 'Short Stay'
                 ? 'bg-indigo-600 text-white shadow-md'
@@ -356,9 +370,10 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             <Hotel className="w-3 h-3" /> Short Stay
-          </button>
-          <button
-            onClick={() => navigateToCategory('Plots')}
+          </NavLink>
+          <NavLink
+            href="/plots"
+            onNavigate={() => navigateToCategory('Plots')}
             className={`px-3 py-1 rounded-full text-[11px] font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1 shrink-0 ${
               currentTab === 'listings' && activeFilterCategory === 'Plots'
                 ? 'bg-indigo-600 text-white shadow-md'
@@ -366,7 +381,7 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             <Layers className="w-3 h-3" /> Land & Plots
-          </button>
+          </NavLink>
         </div>
 
       </header>

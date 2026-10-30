@@ -1,54 +1,76 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
   <head>
-    <!-- BookMyHomez — Complete On-Page SEO Code -->
-    <title>BookMyHomez — Vacation Home Rentals, Luxury Villas & Holiday Homes</title>
-    <meta name="description" content="Find and book verified holiday homes, luxury beach villas, heritage havelis, and cozy apartments across India. Enjoy 100% verified hosts, best rate guarantee, and 24/7 guest support at BookMyHomez." />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flats &amp; PGs for Rent in Bangalore | BookMyHomez</title>
+    <meta name="description" content="Browse 1BHK &amp; 2BHK flats and PGs for rent in Bangalore (Bengaluru). Call or WhatsApp BookMyHomez on 99164 75749." />
     <link rel="canonical" href="https://bookmyhomez.com/" />
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#090D16" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- Link previews (WhatsApp / Facebook / X) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="BookMyHomez" />
+    <meta property="og:locale" content="en_IN" />
+    <meta property="og:url" content="https://bookmyhomez.com/" />
+    <meta property="og:title" content="Flats &amp; PGs for Rent in Bangalore | BookMyHomez" />
+    <meta property="og:description" content="Browse 1BHK &amp; 2BHK flats and PGs for rent in Bangalore (Bengaluru). Call or WhatsApp BookMyHomez on 99164 75749." />
+    <meta property="og:image" content="https://bookmyhomez.com/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="BookMyHomez logo" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Flats &amp; PGs for Rent in Bangalore | BookMyHomez" />
+    <meta name="twitter:description" content="Browse 1BHK &amp; 2BHK flats and PGs for rent in Bangalore (Bengaluru). Call or WhatsApp BookMyHomez on 99164 75749." />
+    <meta name="twitter:image" content="https://bookmyhomez.com/og-image.jpg" />
+
+    <!-- Business details for Google (same name, address and phone as the Google Maps listing) -->
+    <script type="application/ld+json" id="ld-business">
+    {
+      "@context": "https://schema.org",
+      "@type": "RealEstateAgent",
+      "@id": "https://bookmyhomez.com/#business",
+      "name": "BookMyHomez",
+      "url": "https://bookmyhomez.com/",
+      "logo": "https://bookmyhomez.com/icon-512.png",
+      "image": "https://bookmyhomez.com/og-image.jpg",
+      "telephone": "+91 99164 75749",
+      "email": "bookmyhomez360@gmail.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "457/b, 25th Main Rd, Parangi Palaya, Sector 2, HSR Layout",
+        "addressLocality": "Bengaluru",
+        "addressRegion": "Karnataka",
+        "postalCode": "560102",
+        "addressCountry": "IN"
+      },
+      "areaServed": { "@type": "City", "name": "Bangalore" },
+      "sameAs": [
+        "https://www.instagram.com/book.myhomez/",
+        "https://www.facebook.com/profile.php?id=61579564084213",
+        "https://www.youtube.com/@bookmyhomez"
+      ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
-
-    <!-- Hidden Audio Element for Real Human Voice -->
-    <audio id="welcomeAudio" src="/welcome.mp3" preload="auto"></audio>
-
-    <!-- React Root -->
+    <!-- React Root (the build step pre-fills this with crawlable content for each page) -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
-    <!-- ElevenLabs Voice Widget -->
+    <!-- ElevenLabs Voice Widget (loads after the page; no autoplay audio) -->
     <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
     <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
-
-    <!-- Real Human Voice Autoplay Logic -->
-    <script>
-      const audio = document.getElementById('welcomeAudio');
-
-      function playHumanVoice() {
-          if (audio) {
-              audio.play().catch(error => {
-                  console.log("Autoplay blocked, waiting for user interaction.");
-              });
-          }
-      }
-
-      // Website open avvagane voice play cheyyadaniki try chestundi
-      window.addEventListener('DOMContentLoaded', () => {
-          setTimeout(playHumanVoice, 800);
-      });
-
-      // Mobile lo touch cheyగానే voice play avvadaniki instant fallback
-      ['click', 'touchstart', 'keydown'].forEach(evt => {
-          window.addEventListener(evt, () => {
-              if (audio && audio.paused) {
-                  audio.play();
-              }
-          }, { once: true });
-      });
-    </script>
   </body>
 </html>

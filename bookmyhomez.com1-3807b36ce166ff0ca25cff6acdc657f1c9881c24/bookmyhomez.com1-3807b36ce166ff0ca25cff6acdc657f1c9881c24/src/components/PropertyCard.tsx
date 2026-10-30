@@ -5,6 +5,8 @@ import {
   Edit3, Trash2, Clock, X, Save 
 } from 'lucide-react';
 import { doc, setDoc, getFirestore } from "firebase/firestore";
+import { NavLink } from './NavLink';
+import { optimizeImage, propertyPath } from '../seo';
 
 interface PropertyCardProps {
   property: Property & { videoUrl?: string }; // added videoUrl support
@@ -107,8 +109,10 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           />
         ) : (
           <img 
-            src={property.images?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'} 
-            alt={property.title}
+            src={property.images?.[0] ? optimizeImage(property.images[0], 800) : '/og-image.jpg'} 
+            alt={`${property.title} – ${property.bhk || ''} in ${property.locality || ''}`.trim()}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
           />
         )}
@@ -149,7 +153,11 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       {/* Content */}
       <div className="p-5 flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="text-base font-bold text-white mb-1 line-clamp-1">{property.title}</h3>
+          <h3 className="text-base font-bold text-white mb-1 line-clamp-1">
+            <NavLink href={propertyPath(property.id)} onNavigate={() => onViewDetails(property)} className="hover:text-indigo-300 transition">
+              {property.title}
+            </NavLink>
+          </h3>
           <p className="text-xs text-slate-400 flex items-center gap-1 mb-4">
             <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
             {property.locality}, {property.city}
@@ -172,12 +180,13 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2 pt-2">
-          <button
-            onClick={() => onViewDetails(property)}
+          <NavLink
+            href={propertyPath(property.id)}
+            onNavigate={() => onViewDetails(property)}
             className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs transition cursor-pointer text-center"
           >
             View Details
-          </button>
+          </NavLink>
 
           {isOwnerOrAdmin && (
             <>
