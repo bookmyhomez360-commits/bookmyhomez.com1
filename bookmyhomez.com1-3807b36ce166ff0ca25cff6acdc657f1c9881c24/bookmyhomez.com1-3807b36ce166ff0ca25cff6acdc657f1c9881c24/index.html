@@ -121,6 +121,36 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
+    <!-- Welcome voice (restored Oct 31 2026 — the original site played /welcome.mp3 when it opened;
+         it was dropped by mistake in the Oct 30 SEO commit). Same file, same moment: tries 0.8 s
+         after the page opens; if the browser blocks sound until the visitor touches the page, it
+         plays on the first tap / click / key instead. Plays once per visit. -->
+    <audio id="welcomeAudio" src="/welcome.mp3" preload="none"></audio>
+    <script>
+      (function () {
+        var audio = document.getElementById('welcomeAudio');
+        var started = false;
+        function playHumanVoice() {
+          if (!audio || started) return;
+          var p = audio.play();
+          if (p && p.then) {
+            p.then(function () { started = true; window.__bmhVoice = 'playing'; })
+             .catch(function () { window.__bmhVoice = 'blocked-waiting-for-tap'; });
+          } else { started = true; }
+        }
+        function onFirstTouch() {
+          playHumanVoice();
+          if (started) ['click', 'touchend', 'keydown'].forEach(function (e) { window.removeEventListener(e, onFirstTouch); });
+        }
+        // Website open avvagane voice play cheyyadaniki try chestundi
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function () { setTimeout(playHumanVoice, 800); });
+        } else { setTimeout(playHumanVoice, 800); }
+        // Mobile lo touch cheyagane voice play avvadaniki fallback
+        ['click', 'touchend', 'keydown'].forEach(function (e) { window.addEventListener(e, onFirstTouch, { passive: true }); });
+      })();
+    </script>
+
     <!-- ElevenLabs Voice Widget (no autoplay audio). Its ~465 KB script loads on the visitor's first
          scroll/tap/key, or 8 s after the page has loaded, so it never slows down the first paint. -->
     <elevenlabs-convai agent-id="agent_6801kz63zg6xfpa896c7p2jc3epx"></elevenlabs-convai>
