@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, CalendarCheck, Phone, Users } from 'lucide-react';
 import { Property } from '../types';
-import { optimizeImage } from '../seo';
+import { optimizeImage, imageSrcSet } from '../seo';
 
 // Home hero banners: 4 auto-sliding slides (swipe on phones, dots, ~4.5 s each, pauses on touch/hover
 // and while off-screen). Backgrounds are the site's own listing photos (from the live listings);
@@ -157,6 +157,8 @@ export const HeroBanners: React.FC<HeroBannersProps> = ({ properties, rentalsHre
                 {img && (
                   <img
                     src={optimizeImage(img, 1200)}
+                    srcSet={imageSrcSet(img)}
+                    sizes="100vw"
                     alt={`Rental home listed on BookMyHomez, Bangalore`}
                     loading={i === 0 ? 'eager' : 'lazy'}
                     decoding="async"

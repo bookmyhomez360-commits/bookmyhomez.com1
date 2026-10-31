@@ -72,7 +72,7 @@ export function parseLocation(pathname: string, search: string): RouteState {
 }
 
 const DEFAULT_DESCRIPTION =
-  'Browse 1BHK & 2BHK flats and PGs for rent in Bangalore (Bengaluru). Call or WhatsApp BookMyHomez on 99164 75749.';
+  '1BHK & 2BHK flats and PGs for rent in HSR Layout and across Bangalore (Bengaluru), with photos and monthly rent. Call or WhatsApp BookMyHomez on 99164 75749.';
 
 export interface PageMeta {
   title: string;
@@ -84,9 +84,9 @@ export interface PageMeta {
 
 const CATEGORY_META: Record<CategoryType, { title: string; description: string }> = {
   Rent: {
-    title: 'Flats for Rent in Bangalore – 1BHK & 2BHK | BookMyHomez',
+    title: '1BHK & 2BHK Flats for Rent in HSR Layout, Bangalore | BookMyHomez',
     description:
-      'Current 1BHK, 2BHK and 3BHK flats for rent in Bangalore, with photos and monthly rent. Call or WhatsApp 99164 75749 for a visit.',
+      '1BHK, 2BHK and 3BHK flats for rent in HSR Layout and across Bangalore, with photos and monthly rent. Call or WhatsApp 99164 75749 to book a visit.',
   },
   All: {
     title: 'All Properties in Bangalore | BookMyHomez',
@@ -152,7 +152,7 @@ export function metaFor(state: RouteState, property: Property | null): PageMeta 
   }
   switch (state.tab) {
     case 'explore':
-      return { title: 'Flats & PGs for Rent in Bangalore | BookMyHomez', description: DEFAULT_DESCRIPTION, path: '/' };
+      return { title: 'Flats & PGs for Rent in Bangalore – HSR Layout | BookMyHomez', description: DEFAULT_DESCRIPTION, path: '/' };
     case 'listings':
       return { ...CATEGORY_META[state.category], path: CATEGORY_PATHS[state.category] };
     case 'blog':
@@ -196,6 +196,12 @@ export function applyMeta(meta: PageMeta) {
     document.head.appendChild(canonical);
   }
   canonical.href = url;
+}
+
+// Responsive srcset for Cloudinary photos so phones download a smaller file (same look).
+export function imageSrcSet(url: string, widths: number[] = [480, 800, 1200]): string | undefined {
+  if (typeof url !== 'string' || !url.includes('res.cloudinary.com') || !url.includes('/image/upload/')) return undefined;
+  return widths.map((w) => `${optimizeImage(url, w)} ${w}w`).join(', ');
 }
 
 // Cloudinary photos: ask for a resized, auto-format/quality version instead of the original upload.

@@ -584,7 +584,7 @@ export default function App() {
                     </h1>
 
                     <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-medium mb-10 leading-relaxed">
-                      1BHK, 2BHK and 3BHK flats and PGs for rent across Bangalore.
+                      1BHK, 2BHK and 3BHK flats and PGs for rent in HSR Layout and across Bangalore.
                       Call or WhatsApp <a href="tel:+919916475749" className="text-white font-bold underline decoration-indigo-400/60">99164 75749</a> to book a visit.
                     </p>
                   </div>
@@ -827,7 +827,7 @@ export default function App() {
                         : activeFilterCategory === 'Buy'
                         ? 'Homes for Sale in Bangalore'
                         : activeFilterCategory === 'Rent'
-                        ? 'Flats & PGs for Rent in Bangalore'
+                        ? 'Flats for Rent in Bangalore'
                         : activeFilterCategory === 'Short Stay'
                         ? 'Short Stay Flats in Bangalore'
                         : activeFilterCategory === 'Plots'

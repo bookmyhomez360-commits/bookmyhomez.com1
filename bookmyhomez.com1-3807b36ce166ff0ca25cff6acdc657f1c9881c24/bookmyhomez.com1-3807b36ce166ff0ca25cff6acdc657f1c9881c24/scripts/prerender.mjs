@@ -20,9 +20,10 @@ const FIREBASE_PROJECT = 'bookmyhomez-72feb';
 const FIREBASE_API_KEY = 'AIzaSyDb_M1SsUqhPsU1tYLtDXYyu01W4vpYUU8';
 
 const CATEGORY_PAGES = [
-  { cat: 'Rent', path: '/rentals', h1: 'Flats & PGs for Rent in Bangalore',
-    title: 'Flats for Rent in Bangalore – 1BHK & 2BHK | BookMyHomez',
-    description: 'Current 1BHK, 2BHK and 3BHK flats for rent in Bangalore, with photos and monthly rent. Call or WhatsApp 99164 75749 for a visit.' },
+  { cat: 'Rent', path: '/rentals', h1: 'Flats for Rent in Bangalore',
+    intro: '1BHK, 2BHK and 3BHK flats for rent in HSR Layout and across Bangalore, with photos and monthly rent.',
+    title: '1BHK & 2BHK Flats for Rent in HSR Layout, Bangalore | BookMyHomez',
+    description: '1BHK, 2BHK and 3BHK flats for rent in HSR Layout and across Bangalore, with photos and monthly rent. Call or WhatsApp 99164 75749 to book a visit.' },
   { cat: 'All', path: '/properties', h1: 'All Properties in Bangalore',
     title: 'All Properties in Bangalore | BookMyHomez',
     description: 'All homes listed on BookMyHomez – flats and PGs for rent in Bangalore. Call or WhatsApp 99164 75749.' },
@@ -42,8 +43,8 @@ const CATEGORY_PAGES = [
 
 const HOME = {
   path: '/',
-  title: 'Flats & PGs for Rent in Bangalore | BookMyHomez',
-  description: 'Browse 1BHK & 2BHK flats and PGs for rent in Bangalore (Bengaluru). Call or WhatsApp BookMyHomez on 99164 75749.',
+  title: 'Flats & PGs for Rent in Bangalore – HSR Layout | BookMyHomez',
+  description: '1BHK & 2BHK flats and PGs for rent in HSR Layout and across Bangalore (Bengaluru), with photos and monthly rent. Call or WhatsApp BookMyHomez on 99164 75749.',
 };
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -159,8 +160,21 @@ function listBlock(items) {
   return `<ul style="list-style:none;padding:0">${items.map(card).join('')}</ul>`;
 }
 
-function page(template, meta, body) {
-  const html = head(template, meta);
+// Extra structured data per page (breadcrumbs, website). The business JSON-LD stays in index.html.
+function ldScript(obj) {
+  return `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>`;
+}
+function breadcrumbs(items) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map(([name, path], i) => ({ '@type': 'ListItem', position: i + 1, name, item: SITE + path })),
+  };
+}
+
+function page(template, meta, body, ld = []) {
+  let html = head(template, meta);
+  if (ld.length) html = html.replace('</head>', `    ${ld.map(ldScript).join('\n    ')}\n  </head>`);
   return html.replace('<div id="root"></div>', `<div id="root"><div ${WRAP}>${nav()}${body}${contact()}</div></div>`);
 }
 
@@ -191,16 +205,18 @@ async function main() {
   const rentals = newestFirst.filter((p) => p.category === 'Rent');
   write('/', page(template, HOME,
     `<h1>Flats &amp; PGs for Rent in Bangalore</h1>` +
-    `<p>1BHK, 2BHK and 3BHK flats and PGs for rent across Bangalore.</p>` +
+    `<p>1BHK, 2BHK and 3BHK flats and PGs for rent in HSR Layout and across Bangalore.</p>` +
     `<h2>Latest flats for rent</h2>` + listBlock(rentals.slice(0, 12)) +
-    `<p><a href="/rentals" ${A}>See all flats for rent in Bangalore →</a></p>`));
+    `<p><a href="/rentals" ${A}>See all flats for rent in Bangalore →</a></p>`,
+    [{ '@context': 'https://schema.org', '@type': 'WebSite', '@id': `${SITE}/#website`, name: 'BookMyHomez', url: `${SITE}/`, inLanguage: 'en-IN', publisher: { '@id': `${SITE}/#business` } }]));
 
   // Category pages
   for (const c of CATEGORY_PAGES) {
     const items = c.cat === 'All' ? newestFirst : newestFirst.filter((p) => p.category === c.cat);
     write(c.path, page(template, { ...c, robots: items.length ? 'index, follow' : 'noindex, follow' },
       `<p><a href="/" ${A}>Home</a> / ${esc(c.h1)}</p><h1>${esc(c.h1)}</h1>` +
-      `<p>${items.length} listing${items.length === 1 ? '' : 's'}.</p>` + listBlock(items)));
+      (c.intro ? `<p>${esc(c.intro)}</p>` : '') + `<p>${items.length} listing${items.length === 1 ? '' : 's'}.</p>` + listBlock(items),
+      [breadcrumbs([['Home', '/'], [c.h1, c.path]])]));
     if (items.length) sitemap.push({ loc: SITE + c.path, lastmod: today, priority: c.cat === 'Rent' ? '0.9' : '0.6' });
   }
 
@@ -237,7 +253,8 @@ async function main() {
       `<ul>${facts}</ul>` +
       (desc && !/posted via BookMyHomez multi-step listing wizard/i.test(desc) ? `<p>${esc(desc)}</p>` : '') +
       imgs.slice(0, 4).map((u, i) => `<img src="${esc(cloud(u, 800))}" alt="${esc(name)} photo ${i + 1}" width="400" height="300" loading="lazy" decoding="async" style="object-fit:cover;border-radius:12px;margin:4px" />`).join('') +
-      `<p><a href="${WHATSAPP}?text=${encodeURIComponent(`Hi, I'm interested in ${name} (${p.bhk}) in ${area}`)}" ${A}>Ask about this home on WhatsApp</a></p>`));
+      `<p><a href="${WHATSAPP}?text=${encodeURIComponent(`Hi, I'm interested in ${name} (${p.bhk}) in ${area}`)}" ${A}>Ask about this home on WhatsApp</a></p>`,
+      [breadcrumbs([['Home', '/'], [catPage.h1, catPage.path], [name, propertyPath(p.id)]])]));
     sitemap.push({ loc: SITE + propertyPath(p.id), lastmod: String(p.updated || today).slice(0, 10), priority: '0.7' });
   }
 

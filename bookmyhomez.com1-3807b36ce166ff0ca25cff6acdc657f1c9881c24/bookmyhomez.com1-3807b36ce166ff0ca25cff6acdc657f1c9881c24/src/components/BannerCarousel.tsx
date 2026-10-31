@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Phone, MessageCircle, ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import { Property } from '../types';
-import { optimizeImage, propertyPath } from '../seo';
+import { optimizeImage, imageSrcSet, propertyPath } from '../seo';
 
 // Sliding banner carousel on the home page: real listing photos with short, factual
 // call-to-action lines (no invented offers or prices). Auto-slides every few seconds,
@@ -80,7 +80,9 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({ properties, form
               >
                 <img
                   src={optimizeImage(img, 1200)}
-                  alt=""
+                  srcSet={imageSrcSet(img)}
+                  sizes="100vw"
+                  alt={`${String(p.title || '').trim()}${p.bhk ? ` – ${p.bhk}` : ''} for rent, listed on BookMyHomez`}
                   loading={i === 0 ? 'eager' : 'lazy'}
                   decoding="async"
                   width={1200}
@@ -89,7 +91,7 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({ properties, form
                 <div className="bmh-banner-shade" />
                 <div className="bmh-banner-copy">
                   <span className="bmh-banner-kicker">{line.kicker}</span>
-                  <h3 className="bmh-banner-title">{line.title}</h3>
+                  <p className="bmh-banner-title">{line.title}</p>
                   <a
                     href={propertyPath(p.id)}
                     tabIndex={i === index ? 0 : -1}
