@@ -1,11 +1,69 @@
 rules_version = '2';
+// BookMyHomez — Firestore security rules (project bookmyhomez-72feb, database "(default)").
+// Live since Oct 30 2026 (team UID allowlist); Oct 31 2026 adds `reviews`.
+// Keep TEAM_UIDS in src/propertyUtils.ts in step with isAdmin() below.
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /properties/{propertyId} {
-      allow read, write: if true;
+
+    // BookMyHomez team accounts (Firebase Auth UIDs) allowed to add / edit / delete
+    // listings and blogs. Public sign-up is ON (Google + Email/Password), so we use
+    // a UID allowlist, not "any signed-in user".
+    function isAdmin() {
+      return request.auth != null && request.auth.uid in [
+        'ujeMPzHj5UdDhYfSgNLOIJtuQw42', // bookmyhomez360@gmail.com (main admin)
+        'USDtNwW2ujWwZgKqTFDSmVUZ3c13', // sudhan2256@gmail.com (project owner)
+        'd1aLdxCUKXeVczZORLw78MUTceB3', // ammub9206@gmail.com
+        '8fAhX7g16NUwi0ulXWUzc0Tv2BC2', // kongralahari602@gmail.com
+        'gVbSbpxFIEbBCeLRJkDVtA8D4JG3', // bookmyhomez369@gmail.com
+        'HQguNIyS0bNLWrfLeo0MqCZtfDr1'  // madmovies7007@gmail.com
+      ];
     }
+
+    // Property listings: anyone can view; only the team can change.
+    match /properties/{propertyId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Blog posts: anyone can read; only the team can write.
+    match /blogs/{blogId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // User records (some hold passwords): never public.
     match /users/{userId} {
-      allow read, write: if true;
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+      allow write: if isAdmin();
+    }
+
+    // Customer reviews (property page form).
+    // Anyone may SUBMIT a review, but only as "pending", with exactly these fields, for a
+    // listing that exists. The public can only READ approved reviews. Only the team can
+    // approve (update) or delete.
+    function validNewReview() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['propertyId', 'propertyTitle', 'name', 'rating', 'comment', 'status', 'createdAt'])
+        && d.keys().hasAll(['propertyId', 'name', 'rating', 'comment', 'status', 'createdAt'])
+        && d.status == 'pending'
+        && d.propertyId is string && d.propertyId.size() > 0 && d.propertyId.size() <= 100
+        && exists(/databases/$(database)/documents/properties/$(d.propertyId))
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 60
+        && d.comment is string && d.comment.size() > 0 && d.comment.size() <= 1000
+        && d.rating is int && d.rating >= 1 && d.rating <= 5
+        && (!('propertyTitle' in d) || (d.propertyTitle is string && d.propertyTitle.size() <= 200))
+        && d.createdAt == request.time;
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if resource.data.status == 'approved' || isAdmin();
+      allow create: if validNewReview();
+      allow update, delete: if isAdmin();
+    }
+
+    // Everything else: closed.
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
