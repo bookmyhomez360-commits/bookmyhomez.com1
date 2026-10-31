@@ -27,6 +27,12 @@ export interface Property {
   subType?: string;
   createdAt?: string;
   rentType?: 'Monthly' | 'Daily';
+  // optional details (Oct 31 2026) — empty on older listings
+  maintenance?: string;      // monthly amount in ₹ as text, or "Included"
+  floor?: string;            // "Ground", "2", ...
+  totalFloors?: string;      // "4"
+  parking?: string;          // None / Bike / Car / Bike & Car
+  preferredTenant?: string;  // Family / Bachelors / Any
 }
 
 export interface User {
@@ -63,4 +69,9 @@ export interface WizardData {
   deposit: number;
   availDate: string;
   images: string[];
+  maintenance?: string;
+  floor?: string;
+  totalFloors?: string;
+  parking?: string;
+  preferredTenant?: string;
 }

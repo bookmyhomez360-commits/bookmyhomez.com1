@@ -46,6 +46,7 @@ import {
 } from './firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
+import { isBooked, isTeam } from './propertyUtils';
 import {
   ShieldCheck,
   Sliders,
@@ -118,7 +119,8 @@ export default function App() {
 
   const handleToggleStatus = async (property: Property) => {
     const propertyId = String((property as any).id || (property as any)._id);
-    const newStatus = property.status === 'Booked' ? 'Available' : 'Booked';
+    // any spelling of "booked" (Booked / booked) flips to Available, everything else to Booked
+    const newStatus = isBooked(property) ? 'Available' : 'Booked';
 
     try {
       const propertyRef = doc(db, "properties", propertyId);
@@ -135,10 +137,9 @@ export default function App() {
       if (selectedProperty && (String((selectedProperty as any).id || (selectedProperty as any)._id) === propertyId)) {
         setSelectedProperty({ ...selectedProperty, status: newStatus });
       }
-
-      await updatePropertyInFirestore(propertyId, { status: newStatus });
     } catch (error) {
       console.error("Error toggling status in Firebase:", error);
+      alert('Status could not be changed. Please sign in again with your BookMyHomez team account.');
     }
   };
 
@@ -407,6 +408,10 @@ export default function App() {
       ownerName: currentUser ? currentUser.name : 'Owner',
       description: 'Verified real estate property posted via BookMyHomez multi-step listing wizard.',
       images: wizardData.images,
+      ...(['maintenance', 'floor', 'totalFloors', 'parking', 'preferredTenant'] as const).reduce(
+        (acc, k) => (String((wizardData as any)[k] ?? '').trim() ? { ...acc, [k]: String((wizardData as any)[k]).trim() } : acc),
+        {} as Partial<Property>
+      ),
     };
 
     if (editingFlag && editId) {
@@ -420,15 +425,9 @@ export default function App() {
     setShowWizardModal(false);
     navigateTo('my_properties');
 
-    try {
-      if (editingFlag && editId) {
-        await updatePropertyInFirestore(editId, payload);
-      } else {
-        await savePropertyToFirestore(payload);
-      }
-    } catch (error) {
-      console.error("Error saving/updating property in Firebase:", error);
-    }
+    // The wizard itself saves the listing to Firestore (WizardModal.handlePublishProperty).
+    // Saving it here as well created every new listing twice (7 duplicate pairs in the
+    // database on Oct 31 2026), so this only updates the screen now.
   };
 
   const filteredProperties = useMemo(() => {
@@ -475,7 +474,7 @@ export default function App() {
   const userProperties = useMemo(() => {
     return currentUser
       ? properties.filter(
-          (p) => p.ownerId === currentUser.id || currentUser.role === 'Administrator'
+          (p) => p.ownerId === currentUser.id || (p as any).ownerEmail === currentUser.email || isTeam(currentUser)
         )
       : [];
   }, [properties, currentUser]);

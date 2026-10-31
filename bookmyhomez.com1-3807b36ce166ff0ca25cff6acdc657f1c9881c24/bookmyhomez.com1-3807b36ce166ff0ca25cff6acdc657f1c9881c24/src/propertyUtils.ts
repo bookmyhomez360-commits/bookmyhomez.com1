@@ -8,6 +8,54 @@ export const WA_NUMBER = '919916475749';
 
 export const isBooked = (p: Property) => String(p.status || '').trim().toLowerCase() === 'booked';
 
+// What every visitor sees on a card / property page. Any spelling of available/booked counts;
+// a listing with no status (or an unknown one) shows no badge rather than a guess.
+export function statusKind(p: Property): 'available' | 'booked' | null {
+  const s = String((p as any)?.status || '').trim().toLowerCase();
+  if (s === 'booked') return 'booked';
+  if (s === 'available') return 'available';
+  return null;
+}
+
+// BookMyHomez team accounts (Firebase Auth UIDs). Same list as the Firestore rules
+// (firestore.rules): only these accounts can change listings, so only they see the
+// Available/Booked switch and the review approvals.
+export const TEAM_UIDS = [
+  'ujeMPzHj5UdDhYfSgNLOIJtuQw42', // bookmyhomez360@gmail.com
+  'USDtNwW2ujWwZgKqTFDSmVUZ3c13', // sudhan2256@gmail.com
+  'd1aLdxCUKXeVczZORLw78MUTceB3', // ammub9206@gmail.com
+  '8fAhX7g16NUwi0ulXWUzc0Tv2BC2', // kongralahari602@gmail.com
+  'gVbSbpxFIEbBCeLRJkDVtA8D4JG3', // bookmyhomez369@gmail.com
+  'HQguNIyS0bNLWrfLeo0MqCZtfDr1', // madmovies7007@gmail.com
+];
+
+export const isTeam = (u?: { id?: string; uid?: string; role?: string } | null) =>
+  !!u && (TEAM_UIDS.includes(String(u.id || u.uid || '')) || u.role === 'Administrator');
+
+// Optional details added Oct 31 2026 (maintenance, floor, parking, preferred tenant).
+// Old listings don't have them; every helper returns '' when the field is empty.
+export function maintenanceText(p: Property, money: (n: number) => string): string {
+  const m = String((p as any).maintenance ?? '').trim();
+  if (!m) return '';
+  if (/^included$/i.test(m)) return 'Included in rent';
+  const n = Number(m.replace(/[,₹\s]/g, ''));
+  return Number.isFinite(n) && n > 0 ? `${money(n)}/month` : '';
+}
+
+export function maintenanceAmount(p: Property): number {
+  const m = String((p as any).maintenance ?? '').trim();
+  const n = Number(m.replace(/[,₹\s]/g, ''));
+  return /^included$/i.test(m) || !Number.isFinite(n) || n <= 0 ? 0 : n;
+}
+
+export function floorText(p: Property): string {
+  const f = String((p as any).floor ?? '').trim();
+  const t = String((p as any).totalFloors ?? '').trim();
+  if (!f) return '';
+  const label = /^(0|g|ground)$/i.test(f) ? 'Ground' : f;
+  return t ? `${label} of ${t}` : label;
+}
+
 const titleCase = (s: string) => s.toLowerCase().replace(/\b[a-z]/g, (c) => c.toUpperCase());
 
 // "Hsrlayout ", "HSR LAYOUT sector 2" -> "HSR Layout", "HSR Layout Sector 2"

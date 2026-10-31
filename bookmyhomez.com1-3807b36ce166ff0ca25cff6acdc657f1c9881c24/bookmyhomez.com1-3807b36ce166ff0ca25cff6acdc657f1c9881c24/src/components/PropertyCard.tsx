@@ -4,10 +4,11 @@ import {
   Heart, MapPin, Bed, Maximize2, IndianRupee, 
   Edit3, Trash2, Clock, X, Save, Camera, Play, MessageCircle, CalendarDays
 } from 'lucide-react';
-import { doc, setDoc, getFirestore } from "firebase/firestore";
+import { doc, setDoc, getFirestore, deleteField } from "firebase/firestore";
+import { ExtraDetailsFields, ExtraDetails, EXTRA_KEYS, filledExtras } from './ExtraDetailsFields';
 import { NavLink } from './NavLink';
 import { optimizeImage, propertyPath } from '../seo';
-import { availableFrom, cleanTitle, isBooked, niceLocality, propertyImages, propertyUrl, propertyVideos, waLink } from '../propertyUtils';
+import { availableFrom, cleanTitle, isBooked, isTeam, niceLocality, statusKind, propertyImages, propertyUrl, propertyVideos, waLink } from '../propertyUtils';
 
 interface PropertyCardProps {
   property: Property & { videoUrl?: string }; // added videoUrl support
@@ -57,12 +58,22 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const [editAvailDate, setEditAvailDate] = useState(property.availDate || '');
   const [editDescription, setEditDescription] = useState(property.description || '');
   const [editVideoUrl, setEditVideoUrl] = useState(property.videoUrl || ''); // Video state
+  const [editExtras, setEditExtras] = useState<ExtraDetails>(() => ({
+    maintenance: (property as any).maintenance || '',
+    floor: (property as any).floor || '',
+    totalFloors: (property as any).totalFloors || '',
+    parking: (property as any).parking || '',
+    preferredTenant: (property as any).preferredTenant || '',
+  }));
 
   const propertyId = (property as any).id || (property as any)._id;
   const photoCount = propertyImages(property).length;
   const videoCount = propertyVideos(property).length;
   const availFrom = availableFrom(property);
-  const isOwnerOrAdmin = currentUser && (currentUser.role === 'Administrator' || property.ownerId === currentUser.id);
+  // Only the BookMyHomez team can change a listing (the Firestore rules allow nobody else),
+  // so only they see the switch. Every visitor sees the Available / Booked badge.
+  const isOwnerOrAdmin = isTeam(currentUser);
+  const status = statusKind(property);
 
   const handleSaveQuickEdit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,12 +99,21 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       description: editDescription,
       videoUrl: editVideoUrl, // Saving video URL
     };
+    // optional extras: write the filled ones, remove the ones that were cleared
+    const extras = filledExtras(editExtras);
+    EXTRA_KEYS.forEach((k) => {
+      if (extras[k]) (updated as any)[k] = extras[k];
+      else if ((property as any)[k] !== undefined) (updated as any)[k] = deleteField();
+      else delete (updated as any)[k];
+    });
 
     try {
       const propertyRef = doc(db, "properties", String(propertyId));
       await setDoc(propertyRef, updated, { merge: true });
       
-      onEdit(updated);
+      const local: any = { ...updated };
+      EXTRA_KEYS.forEach((k) => { if (!extras[k]) delete local[k]; });
+      onEdit(local);
       setIsQuickEditing(false);
     } catch (error) {
       console.error("Error updating document:", error);
@@ -133,11 +153,13 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           <span className="px-3 py-1 rounded-xl bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-extrabold border border-slate-700">
             {property.category}
           </span>
-          <span className={`px-3 py-1 rounded-xl backdrop-blur-md text-[11px] font-extrabold border ${
-            isBooked(property) ? 'bg-rose-600 text-white border-rose-400' : 'bg-emerald-500 text-slate-950 border-emerald-300'
-          }`}>
-            {isBooked(property) ? 'Booked' : property.status || 'Available'}
-          </span>
+          {status && (
+            <span className={`px-3 py-1 rounded-xl backdrop-blur-md text-[11px] font-extrabold border ${
+              status === 'booked' ? 'bg-rose-600 text-white border-rose-400' : 'bg-emerald-500 text-slate-950 border-emerald-300'
+            }`}>
+              {status === 'booked' ? 'Booked' : 'Available'}
+            </span>
+          )}
         </div>
 
         <button
@@ -444,6 +466,11 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none"
                   />
                 </div>
+              </div>
+
+              <div className="rounded-xl border border-slate-800 p-3">
+                <span className="block text-[10px] uppercase font-black tracking-wider text-indigo-400 mb-2">More details</span>
+                <ExtraDetailsFields value={editExtras} onChange={setEditExtras} dense />
               </div>
 
               <div className="grid grid-cols-2 gap-2">

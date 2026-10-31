@@ -5,11 +5,14 @@ import {
   Phone, CalendarDays, Maximize2, Play, Check, Minus, BedDouble, Ruler, Sofa, Bath, Wind, Compass,
   Hourglass, Building2, Wallet, IndianRupee, Clock, Copy, Cctv, ArrowUpDown, Zap, Trees, Dumbbell,
   Waves, Tv, Refrigerator, AirVent, WashingMachine, Microwave, CookingPot, Shirt, Home, Star,
+  Receipt, Layers, Car, Users, CircleCheck,
 } from 'lucide-react';
 import { Property, User } from '../types';
+import { PropertyReviews } from './PropertyReviews';
 import { CATEGORY_PATHS, optimizeImage } from '../seo';
 import {
   PHONE_TEL, PHONE_TEXT, availableFrom, cleanTitle, isBooked, niceLocality, playableVideo, postedOn,
+  statusKind, isTeam, maintenanceText, maintenanceAmount, floorText,
   priceSuffix, propertyImages, propertyUrl, propertyVideos, similarProperties, videoPoster, waLink,
 } from '../propertyUtils';
 
@@ -127,7 +130,9 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
   const suffix = priceSuffix(property);
   const avail = availableFrom(property);
   const posted = postedOn(property);
-  const isAdmin = !!currentUser && (currentUser.role === 'Administrator' || currentUser.id === property.ownerId);
+  // only BookMyHomez team accounts can change a listing (Firestore rules), so only they get the switch
+  const isAdmin = isTeam(currentUser);
+  const status = statusKind(property);
   const desc = property.description && !GENERIC_DESC.test(property.description) ? property.description.trim() : '';
   const categoryPath = CATEGORY_PATHS[property.category] || CATEGORY_PATHS.All;
   const categoryName = property.category === 'Rent' ? 'Rentals' : property.category === 'All' ? 'Properties' : property.category;
@@ -136,7 +141,8 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
   const furnishingsAll = Object.entries(property.furnishings || {}).map(([name, n]) => [name, Number(n) || 0] as const);
   // all items 0 usually means the checklist was never filled in - don't show a row of crosses then
   const furnishings = furnishingsAll.some(([, n]) => n > 0) ? furnishingsAll : [];
-  const realReviews = Array.isArray((property as any).reviews) ? ((property as any).reviews as any[]) : [];
+  const maint = maintenanceText(property, (n) => `₹${formatCurrency(n)}`);
+  const maintAmt = maintenanceAmount(property);
 
   const enquiry = `Hi, I'm interested in ${title}${locality ? `, ${locality}` : ''} (${property.bhk}${property.price ? `, ${money(property.price)}${suffix}` : ''}) — ${url}`;
   const visitMsg = `Hi, I'd like to schedule a visit for ${title}${locality ? `, ${locality}` : ''} — ${url}\nPreferred date & time: `;
@@ -154,6 +160,10 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
     { icon: Hourglass, label: 'Property age', value: property.propertyAge || '' },
     { icon: Building2, label: 'Property type', value: property.subType || '' },
     { icon: Clock, label: 'Rent type', value: suffix && property.rentType ? property.rentType : '' },
+    { icon: Receipt, label: 'Maintenance', value: maint },
+    { icon: Layers, label: 'Floor', value: floorText(property) },
+    { icon: Car, label: 'Parking', value: String((property as any).parking || '').trim() },
+    { icon: Users, label: 'Preferred tenant', value: String((property as any).preferredTenant || '').trim() },
   ].filter((f) => f.value);
 
   const onGalleryScroll = () => {
@@ -269,8 +279,10 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           )}
 
           <div className="pointer-events-none absolute left-3 top-3 flex gap-2">
-            {booked ? (
+            {status === 'booked' ? (
               <span className="rounded-full bg-rose-600 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white shadow">Booked</span>
+            ) : status === 'available' ? (
+              <span className="rounded-full bg-emerald-500 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-slate-950 shadow">Available</span>
             ) : null}
             {property.furnishing && (
               <span className="rounded-full bg-black/60 px-3 py-1 text-[11px] font-semibold text-white">{property.furnishing}</span>
@@ -306,8 +318,12 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           <header>
             <div className="flex flex-wrap items-center gap-2 mb-1.5">
               <span className="text-[11px] font-semibold uppercase tracking-wide text-indigo-300">{property.bhk}{property.subType ? ` · ${property.subType}` : ''}</span>
-              {booked ? (
-                <span className="rounded-full bg-rose-500/15 border border-rose-500/40 px-2 py-0.5 text-[10px] font-bold text-rose-300">Booked</span>
+              {status === 'booked' ? (
+                <span className="rounded-full bg-rose-600 px-2.5 py-0.5 text-[11px] font-bold text-white">Booked</span>
+              ) : status === 'available' ? (
+                <span className="flex items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-0.5 text-[11px] font-bold text-slate-950">
+                  <CircleCheck className="w-3 h-3" /> Available{avail ? ` from ${avail}` : ''}
+                </span>
               ) : avail ? (
                 <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">Available from {avail}</span>
               ) : null}
@@ -337,9 +353,12 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
               <dl className="space-y-1.5 text-sm">
                 <div className="flex justify-between"><dt className="text-slate-400">First month rent</dt><dd className="font-semibold text-white">{money(property.price)}</dd></div>
                 <div className="flex justify-between"><dt className="text-slate-400">Security deposit (refundable)</dt><dd className="font-semibold text-white">{money(property.deposit)}</dd></div>
-                <div className="flex justify-between border-t border-amber-500/20 pt-1.5"><dt className="font-semibold text-amber-200">Total to move in</dt><dd className="font-extrabold text-amber-400">{money(Number(property.price) + Number(property.deposit))}</dd></div>
+                {maint && (
+                  <div className="flex justify-between"><dt className="text-slate-400">{maintAmt ? 'First month maintenance' : 'Maintenance'}</dt><dd className="font-semibold text-white">{maintAmt ? money(maintAmt) : maint}</dd></div>
+                )}
+                <div className="flex justify-between border-t border-amber-500/20 pt-1.5"><dt className="font-semibold text-amber-200">Total to move in</dt><dd className="font-extrabold text-amber-400">{money(Number(property.price) + Number(property.deposit) + maintAmt)}</dd></div>
               </dl>
-              <p className="mt-2 text-[11px] text-slate-400">Maintenance and other charges, if any, will be confirmed by our team.</p>
+              <p className="mt-2 text-[11px] text-slate-400">{maint ? 'Other charges, if any, will be confirmed by our team.' : 'Maintenance and other charges, if any, will be confirmed by our team.'}</p>
             </section>
           )}
 
@@ -466,23 +485,8 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
             </section>
           )}
 
-          {/* Reviews: only real ones stored on the listing */}
-          {realReviews.length > 0 && (
-            <section aria-labelledby="rev-h">
-              <h2 id="rev-h" className="bmh-pd-h">Reviews</h2>
-              <ul className="space-y-2">
-                {realReviews.map((r, i) => (
-                  <li key={i} className="rounded-xl border border-slate-800 bg-slate-900/50 p-3 text-sm">
-                    <div className="flex items-center gap-2 text-xs font-bold text-white">
-                      {r.userName || r.name}
-                      {r.rating ? <span className="flex items-center gap-0.5 text-amber-400"><Star className="w-3 h-3 fill-amber-400" />{r.rating}/5</span> : null}
-                    </div>
-                    <p className="mt-1 text-slate-300">{r.comment}</p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+          {/* Customer reviews (Suresh Kumar's real review + approved reviews from Firestore) and the review form */}
+          <PropertyReviews property={property} propertyId={String((property as any).id || (property as any)._id || '')} title={title} isAdmin={isAdmin} />
 
           {/* Similar homes */}
           {similar.length > 0 && (
@@ -505,7 +509,8 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
                     >
                       <div className="relative aspect-[4/3] bg-slate-800">
                         {si && <img src={img(si, 400)} alt={cleanTitle(s.title)} loading="lazy" decoding="async" className="w-full h-full object-cover" />}
-                        {isBooked(s) && <span className="absolute left-2 top-2 rounded-full bg-rose-600 px-2 py-0.5 text-[10px] font-bold text-white">Booked</span>}
+                        {statusKind(s) === 'booked' && <span className="absolute left-2 top-2 rounded-full bg-rose-600 px-2 py-0.5 text-[10px] font-bold text-white">Booked</span>}
+                        {statusKind(s) === 'available' && <span className="absolute left-2 top-2 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold text-slate-950">Available</span>}
                       </div>
                       <div className="p-2.5">
                         <p className="truncate text-[13px] font-semibold text-white">{cleanTitle(s.title)}</p>
@@ -522,7 +527,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
           {/* Owner / admin only */}
           {isAdmin && (
             <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 flex items-center justify-between gap-2">
-              <span className="text-xs text-amber-200">Admin: status is <b>{property.status || 'Available'}</b></span>
+              <span className="text-xs text-amber-200">Team only: status is <b>{status === 'booked' ? 'Booked' : status === 'available' ? 'Available' : 'not set'}</b></span>
               <button type="button" onClick={() => onToggleStatus(property)} className="flex items-center gap-1.5 rounded-lg bg-amber-500/20 px-3 py-2 text-xs font-bold text-amber-200 hover:bg-amber-500 hover:text-slate-950 cursor-pointer">
                 <RefreshCw className="w-3.5 h-3.5" /> Mark as {booked ? 'Available' : 'Booked'}
               </button>

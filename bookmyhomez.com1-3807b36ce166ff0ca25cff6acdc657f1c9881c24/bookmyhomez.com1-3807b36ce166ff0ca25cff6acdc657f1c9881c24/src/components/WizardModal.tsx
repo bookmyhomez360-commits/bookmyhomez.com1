@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { WizardData, CategoryType } from '../types';
 import { db } from '../firebase';
 import { collection, addDoc, setDoc, doc } from 'firebase/firestore';
+import { ExtraDetailsFields, filledExtras, EXTRA_KEYS } from './ExtraDetailsFields';
 import {
   X,
   MapPin,
@@ -100,6 +101,11 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     availDate: 'Immediate',
     images: [],
     videos: [],
+    maintenance: '',
+    floor: '',
+    totalFloors: '',
+    parking: '',
+    preferredTenant: '',
   });
 
   if (!isOpen) return null;
@@ -269,11 +275,15 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     try {
       const propertyId = editingId ? String(editingId) : String(Date.now());
 
+      const base: any = { ...wizardData };
+      EXTRA_KEYS.forEach((k) => delete base[k]); // optional extras: only the filled ones are saved
       const propertyPayload = {
-        ...wizardData,
+        ...base,
+        ...filledExtras(wizardData),
         id: propertyId,
         availDate: wizardData.availDate || 'Immediate',
-        ownerId: currentUser?.uid || 'anonymous_user',
+        // the signed-in user object carries the Firebase UID as `id` (there is no `uid`)
+        ownerId: currentUser?.uid || currentUser?.id || 'anonymous_user',
         ownerEmail: currentUser?.email || 'unknown',
         createdAt: new Date().toISOString(),
       };
@@ -927,6 +937,14 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                   </div>
                 </div>
               </div>
+
+              <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+                <span className="block text-[11px] uppercase font-black tracking-wider text-indigo-400 mb-2">More details (optional)</span>
+                <ExtraDetailsFields
+                  value={wizardData}
+                  onChange={(next) => setWizardData((prev) => ({ ...prev, ...next }))}
+                />
+              </div>
             </div>
           )}
 
@@ -1120,6 +1138,30 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                     <span className="text-indigo-400 block font-bold">Available From:</span>
                     <span className="font-black text-white">{wizardData.availDate || 'Immediate'}</span>
                   </div>
+                  {wizardData.maintenance && (
+                    <div>
+                      <span className="text-slate-500 block">Maintenance:</span>
+                      <span className="font-bold text-white">{/^included$/i.test(wizardData.maintenance) ? 'Included in rent' : `₹${formatCurrency(Number(wizardData.maintenance))}/month`}</span>
+                    </div>
+                  )}
+                  {wizardData.floor && (
+                    <div>
+                      <span className="text-slate-500 block">Floor:</span>
+                      <span className="font-bold text-white">{wizardData.floor}{wizardData.totalFloors ? ` of ${wizardData.totalFloors}` : ''}</span>
+                    </div>
+                  )}
+                  {wizardData.parking && (
+                    <div>
+                      <span className="text-slate-500 block">Parking:</span>
+                      <span className="font-bold text-white">{wizardData.parking}</span>
+                    </div>
+                  )}
+                  {wizardData.preferredTenant && (
+                    <div>
+                      <span className="text-slate-500 block">Preferred Tenant:</span>
+                      <span className="font-bold text-white">{wizardData.preferredTenant}</span>
+                    </div>
+                  )}
                   <div>
                     <span className="text-slate-500 block">Media Uploaded:</span>
                     <span className="font-bold text-indigo-400">
