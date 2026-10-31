@@ -4,28 +4,64 @@ import markImg from '../assets/images/brand/logo-mark.webp';
 import wordImg from '../assets/images/brand/logo-word.webp';
 import tagImg from '../assets/images/brand/logo-tag.webp';
 
-// Short branded logo moment: on first load and whenever the visitor moves to another page.
-// The BookMyHomez logo (Ammu's exact artwork, split into its own three parts: house + hand + key,
-// "BOOK MY HOMEZ", "YOUR HAPPY HOME PARTNER") builds itself up, then the overlay fades away.
-// Purely visual: aria-hidden, the page content underneath is already in the HTML; a tap skips it;
-// nothing is shown at all for prefers-reduced-motion.
+// Short branded logo moment.
+// - First load: the logo splash is already in the HTML (index.html, #bmh-splash) and painted with
+//   the very first frame, so there is no flash of the plain crawlable list. This component just
+//   takes that splash over: once the app has drawn the real page it holds the logo until ~1 s after
+//   the page started loading (at least 250 ms after the app is up) and fades it out. ONE logo moment.
+// - Page changes ('nav'): the logo (Ammu's exact artwork in its three parts) builds itself up quickly.
+// Purely visual: aria-hidden; a tap skips it; nothing is shown for prefers-reduced-motion.
 interface LogoIntroProps {
   variant: 'first' | 'nav';
   onDone: () => void;
 }
 
 const TIMING = {
-  first: { hold: 1150, fade: 260 },
+  first: { hold: 1000, fade: 260 },
   nav: { hold: 640, fade: 220 },
 };
+
+declare global {
+  interface Window {
+    __bmhHideSplash?: () => void;
+  }
+}
 
 export const LogoIntro: React.FC<LogoIntroProps> = ({ variant, onDone }) => {
   const [leaving, setLeaving] = useState(false);
   const [reduce] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   );
+  const [staticSplash] = useState(
+    () => variant === 'first' && typeof document !== 'undefined' && !!document.getElementById('bmh-splash'),
+  );
 
   useEffect(() => {
+    if (staticSplash) {
+      const el = document.getElementById('bmh-splash');
+      let done = false;
+      const timers: number[] = [];
+      const finish = () => {
+        if (done) return;
+        done = true;
+        window.__bmhHideSplash?.();
+        timers.push(window.setTimeout(onDone, TIMING.first.fade));
+      };
+      el?.addEventListener('click', finish, { once: true });
+      // wait for the browser to actually paint the app underneath before uncovering it
+      const raf = requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          const sinceStart = performance.now();
+          const wait = reduce ? 0 : Math.max(250, TIMING.first.hold - sinceStart);
+          timers.push(window.setTimeout(finish, wait));
+        }),
+      );
+      return () => {
+        cancelAnimationFrame(raf);
+        timers.forEach((t) => window.clearTimeout(t));
+        el?.removeEventListener('click', finish);
+      };
+    }
     if (reduce) {
       onDone();
       return;
@@ -44,7 +80,7 @@ export const LogoIntro: React.FC<LogoIntroProps> = ({ variant, onDone }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (reduce) return null;
+  if (staticSplash || reduce) return null;
 
   const skip = () => {
     if (leaving) return;

@@ -24,7 +24,7 @@
     <meta property="og:image" content="https://bookmyhomez.com/og-image.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="BookMyHomez – flats and PGs for rent in Bangalore" />
+    <meta property="og:image:alt" content="BookMyHomez – Your Happy Home Partner (logo)" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Flats &amp; PGs for Rent in Bangalore – HSR Layout | BookMyHomez" />
     <meta name="twitter:description" content="1BHK &amp; 2BHK flats and PGs for rent in HSR Layout and across Bangalore (Bengaluru), with photos and monthly rent. Call or WhatsApp BookMyHomez on 99164 75749." />
@@ -63,8 +63,60 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- First paint: a BookMyHomez logo splash sits ON TOP of the page until the app is ready.
+         The crawlable page content inside #root is never hidden with CSS (no display:none /
+         visibility / opacity on it) - it is simply covered for a moment by this overlay, which
+         the app removes as soon as it has drawn the real page (failsafe: 8 s; without JavaScript
+         the overlay is not shown at all). Same look as the logo intro, so there is one logo moment. -->
+    <link rel="preload" as="image" href="/brand/bmh-logo.webp" type="image/webp" fetchpriority="high" />
+    <style>
+      html, body { background: #090D16; }
+      #bmh-splash { position: fixed; inset: 0; z-index: 2147483647; display: flex; align-items: center; justify-content: center; padding: 24px;
+        background: radial-gradient(60% 45% at 50% 48%, rgba(124,58,237,.55), rgba(76,29,149,.25) 55%, transparent 80%), #0b0820;
+        transition: opacity .26s ease, visibility .26s; cursor: pointer; }
+      #bmh-splash.is-leaving { opacity: 0; visibility: hidden; }
+      #bmh-splash .bmh-s-card { position: relative; width: min(72vw, 330px); aspect-ratio: 520 / 479; box-sizing: content-box; padding: 14px 16px;
+        border-radius: 24px; border: 3px solid transparent; overflow: hidden; }
+      /* the white card appears together with the logo picture (never an empty card); transform-only animation
+         so the logo counts as the first big paint */
+      #bmh-splash.ready .bmh-s-card { background: #fff; border-color: #f2b705;
+        box-shadow: 0 0 0 6px rgba(242,183,5,.18), 0 24px 60px rgba(0,0,0,.55), 0 0 90px rgba(124,58,237,.55);
+        animation: bmhSCard .5s cubic-bezier(.2,1.4,.4,1) both; }
+      #bmh-splash.is-leaving .bmh-s-card { transform: scale(.94); transition: transform .26s ease; }
+      #bmh-splash img { display: block; width: 100%; height: 100%; object-fit: contain; }
+      #bmh-splash .bmh-s-shine { position: absolute; inset: -20% auto -20% -60%; width: 45%; pointer-events: none; transform: skewX(-18deg);
+        background: linear-gradient(100deg, transparent, rgba(255,255,255,.85), transparent); }
+      #bmh-splash.ready .bmh-s-shine { animation: bmhSShine .6s ease-in-out .45s both; }
+      html.bmh-splash-on elevenlabs-convai { visibility: hidden; }
+      @keyframes bmhSCard { from { transform: scale(.86) translateY(8px); } to { transform: none; } }
+      @keyframes bmhSShine { from { left: -60%; } to { left: 130%; } }
+      @media (prefers-reduced-motion: reduce) { #bmh-splash.ready .bmh-s-card, #bmh-splash.ready .bmh-s-shine { animation: none; } }
+    </style>
+    <noscript><style>#bmh-splash { display: none !important; }</style></noscript>
   </head>
   <body>
+    <div id="bmh-splash" aria-hidden="true"><div class="bmh-s-card"><img src="/brand/bmh-logo.webp" width="520" height="479" alt="" decoding="sync" fetchpriority="high" onload="this.closest('#bmh-splash').classList.add('ready')" onerror="this.closest('#bmh-splash').classList.add('ready')" /><span class="bmh-s-shine"></span></div></div>
+    <script>
+      // The app removes the splash itself (LogoIntro). Failsafe so it can never stay up.
+      (function () {
+        document.documentElement.classList.add('bmh-splash-on');
+        window.__bmhSplashT0 = Date.now();
+        function hide() {
+          var s = document.getElementById('bmh-splash');
+          document.documentElement.classList.remove('bmh-splash-on');
+          if (!s) return;
+          s.classList.add('is-leaving');
+          setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, 300);
+        }
+        window.__bmhHideSplash = hide;
+        // show the logo card as soon as its picture is ready (never an empty white card); 1.5 s at the latest
+        var s0 = document.getElementById('bmh-splash');
+        var im = s0 && s0.querySelector('img');
+        if (im && im.complete) s0.classList.add('ready');
+        setTimeout(function () { if (s0) s0.classList.add('ready'); }, 1500);
+        setTimeout(hide, 8000);
+      })();
+    </script>
     <!-- React Root (the build step pre-fills this with crawlable content for each page) -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
