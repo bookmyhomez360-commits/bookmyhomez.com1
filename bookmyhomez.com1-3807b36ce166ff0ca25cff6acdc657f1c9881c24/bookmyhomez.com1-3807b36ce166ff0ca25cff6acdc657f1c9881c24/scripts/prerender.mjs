@@ -62,6 +62,11 @@ const cloud = (url, w) =>
   typeof url === 'string' && url.includes('res.cloudinary.com') && url.includes('/image/upload/') && !url.includes('/image/upload/f_auto')
     ? url.replace('/image/upload/', `/image/upload/f_auto,q_auto,c_limit,w_${w}/`)
     : url;
+// Link-preview photo (WhatsApp / Facebook): a 1200x630 JPEG crop of the listing's first Cloudinary photo.
+const ogPhoto = (url) =>
+  url.includes('res.cloudinary.com') && url.includes('/image/upload/')
+    ? url.replace('/image/upload/', '/image/upload/c_fill,g_auto,w_1200,h_630,q_auto:good,f_jpg/')
+    : url;
 const httpImages = (p) => (Array.isArray(p.images) ? p.images : []).filter((i) => typeof i === 'string' && /^https:\/\//.test(i));
 
 // Demo listings that the old code seeded into the database (ids from src/data/initialProperties.ts):
@@ -98,6 +103,7 @@ async function loadListings() {
       `&mask.fieldPaths=title&mask.fieldPaths=category&mask.fieldPaths=status&mask.fieldPaths=city` +
       `&mask.fieldPaths=locality&mask.fieldPaths=bhk&mask.fieldPaths=price&mask.fieldPaths=deposit` +
       `&mask.fieldPaths=area&mask.fieldPaths=furnishing&mask.fieldPaths=description&mask.fieldPaths=images` +
+      `&mask.fieldPaths=availDate&mask.fieldPaths=bathrooms&mask.fieldPaths=facing&mask.fieldPaths=subType&mask.fieldPaths=rentType` +
       (pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : '');
     const res = await fetch(url, { signal: AbortSignal.timeout(20000) });
     if (!res.ok) throw new Error(`Firestore answered ${res.status}`);
@@ -112,7 +118,7 @@ async function loadListings() {
   return out;
 }
 
-function head(html, { title, description, path, robots = 'index, follow', image }) {
+function head(html, { title, description, path, robots = 'index, follow', image, imageAlt }) {
   const url = SITE + path;
   const img = image || `${SITE}/og-image.jpg`;
   const set = (re, val) => { html = html.replace(re, val); };
@@ -127,10 +133,11 @@ function head(html, { title, description, path, robots = 'index, follow', image 
   set(/<meta name="twitter:title" content="[^"]*"\s*\/?>/, `<meta name="twitter:title" content="${esc(title)}" />`);
   set(/<meta name="twitter:description" content="[^"]*"\s*\/?>/, `<meta name="twitter:description" content="${esc(description)}" />`);
   set(/<meta name="twitter:image" content="[^"]*"\s*\/?>/, `<meta name="twitter:image" content="${esc(img)}" />`);
-  if (image) {
-    // Listing photos are not 1200x630, so drop the fixed size hints of the default image.
+  if (image && !/c_fill,g_auto,w_1200,h_630/.test(image)) {
+    // Not a 1200x630 crop: drop the fixed size hints of the default image.
     html = html.replace(/\s*<meta property="og:image:width" content="[^"]*"\s*\/?>/, '').replace(/\s*<meta property="og:image:height" content="[^"]*"\s*\/?>/, '');
   }
+  if (imageAlt) set(/<meta property="og:image:alt" content="[^"]*"\s*\/?>/, `<meta property="og:image:alt" content="${esc(imageAlt)}" />`);
   return html;
 }
 
@@ -235,7 +242,7 @@ async function main() {
     const kind = isSale(p) ? 'for Sale' : 'for Rent';
     const price = p.price ? `₹${inr(p.price)}${isSale(p) ? '' : '/month'}` : '';
     const title = `${name} – ${p.bhk ? p.bhk + ' ' : ''}${kind} in ${area} | BookMyHomez`;
-    const description = `${[`${p.bhk || ''} ${kind.toLowerCase()} in ${area}`.trim(), price, p.furnishing].filter(Boolean).join(' · ')}. Photos and details on BookMyHomez – call or WhatsApp ${PHONE}.`;
+    const description = `${[`${p.bhk || ''} ${kind.toLowerCase()} in ${area}`.trim(), price, p.deposit && `deposit ₹${inr(p.deposit)}`, p.area && `${p.area} sq.ft`, p.furnishing].filter(Boolean).join(' · ')}. Photos and details on BookMyHomez – call or WhatsApp ${PHONE}.`;
     const imgs = httpImages(p);
     const desc = clean(p.description);
     const facts = [
@@ -244,10 +251,14 @@ async function main() {
       p.deposit && `<li>Deposit: ₹${inr(p.deposit)}</li>`,
       p.area && `<li>Area: ${esc(p.area)} sq.ft</li>`,
       p.furnishing && `<li>Furnishing: ${esc(p.furnishing)}</li>`,
+      p.bathrooms && `<li>Bathrooms: ${esc(p.bathrooms)}</li>`,
+      p.facing && `<li>Facing: ${esc(p.facing)}</li>`,
+      p.subType && `<li>Property type: ${esc(p.subType)}</li>`,
+      p.availDate && `<li>Available from: ${esc(p.availDate)}</li>`,
       p.status && `<li>Status: ${esc(p.status)}</li>`,
     ].filter(Boolean).join('');
     const catPage = CATEGORY_PAGES.find((c) => c.cat === p.category) || CATEGORY_PAGES[1];
-    write(propertyPath(p.id), page(template, { path: propertyPath(p.id), title, description, image: imgs[0] ? cloud(imgs[0], 1200) : undefined },
+    write(propertyPath(p.id), page(template, { path: propertyPath(p.id), title, description, image: imgs[0] ? ogPhoto(imgs[0]) : undefined, imageAlt: imgs[0] ? `${name} – ${p.bhk || ''} ${kind.toLowerCase()} in ${area}` : undefined },
       `<p><a href="/" ${A}>Home</a> / <a href="${catPage.path}" ${A}>${esc(catPage.h1)}</a> / ${esc(name)}</p>` +
       `<h1>${esc(name)} – ${esc(p.bhk)} ${kind} in ${esc(area)}</h1>` +
       `<ul>${facts}</ul>` +

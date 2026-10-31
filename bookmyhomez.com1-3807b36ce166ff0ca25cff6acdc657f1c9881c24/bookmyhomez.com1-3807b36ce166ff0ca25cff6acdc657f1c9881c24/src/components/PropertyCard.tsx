@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { Property, User } from '../types';
 import { 
   Heart, MapPin, Bed, Maximize2, IndianRupee, 
-  Edit3, Trash2, Clock, X, Save 
+  Edit3, Trash2, Clock, X, Save, Camera, Play, MessageCircle, CalendarDays
 } from 'lucide-react';
 import { doc, setDoc, getFirestore } from "firebase/firestore";
 import { NavLink } from './NavLink';
 import { optimizeImage, propertyPath } from '../seo';
+import { availableFrom, cleanTitle, isBooked, niceLocality, propertyImages, propertyUrl, propertyVideos, waLink } from '../propertyUtils';
 
 interface PropertyCardProps {
   property: Property & { videoUrl?: string }; // added videoUrl support
@@ -58,6 +59,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const [editVideoUrl, setEditVideoUrl] = useState(property.videoUrl || ''); // Video state
 
   const propertyId = (property as any).id || (property as any)._id;
+  const photoCount = propertyImages(property).length;
+  const videoCount = propertyVideos(property).length;
+  const availFrom = availableFrom(property);
   const isOwnerOrAdmin = currentUser && (currentUser.role === 'Administrator' || property.ownerId === currentUser.id);
 
   const handleSaveQuickEdit = async (e: React.FormEvent) => {
@@ -130,14 +134,15 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             {property.category}
           </span>
           <span className={`px-3 py-1 rounded-xl backdrop-blur-md text-[11px] font-extrabold border ${
-            property.status === 'Booked' ? 'bg-rose-600 text-white border-rose-400' : 'bg-emerald-500 text-slate-950 border-emerald-300'
+            isBooked(property) ? 'bg-rose-600 text-white border-rose-400' : 'bg-emerald-500 text-slate-950 border-emerald-300'
           }`}>
-            {property.status || 'Available'}
+            {isBooked(property) ? 'Booked' : property.status || 'Available'}
           </span>
         </div>
 
         <button
           onClick={() => onToggleSave(propertyId)}
+          aria-label={isSaved ? 'Remove from saved homes' : 'Save this home'}
           className="absolute top-3 right-3 w-9 h-9 rounded-full bg-slate-900/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-slate-800 transition cursor-pointer border border-slate-700 z-10"
         >
           <Heart className={`w-4 h-4 ${isSaved ? 'text-rose-500 fill-rose-500' : 'text-slate-300'}`} />
@@ -153,6 +158,20 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               </span>
             )}
           </div>
+          {(photoCount > 0 || videoCount > 0) && (
+            <div className="flex items-center gap-1.5">
+              {videoCount > 0 && (
+                <span className="flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-[10px] font-bold text-white">
+                  <Play className="w-3 h-3 fill-white" /> Video
+                </span>
+              )}
+              {photoCount > 0 && (
+                <span className="flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-[10px] font-bold text-white" aria-label={`${photoCount} photos`}>
+                  <Camera className="w-3 h-3" /> {photoCount}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -166,8 +185,13 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           </h3>
           <p className="text-xs text-slate-400 flex items-center gap-1 mb-4">
             <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-            {property.locality}, {property.city}
+            {niceLocality(property.locality) || property.locality}, {property.city}
           </p>
+          {!isBooked(property) && availFrom && (
+            <p className="-mt-3 mb-3 text-[11px] text-emerald-300/90 flex items-center gap-1">
+              <CalendarDays className="w-3.5 h-3.5 shrink-0" /> Available from {availFrom}
+            </p>
+          )}
 
           <div className="grid grid-cols-3 gap-2 py-3 border-t border-b border-slate-800/80 text-xs text-slate-300 font-semibold mb-4">
             <div className="flex items-center gap-1.5">
@@ -179,7 +203,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               <span>{property.area} sq.ft</span>
             </div>
             <div className="text-right text-slate-400 font-normal">
-              {property.furnishing || 'Furnished'}
+              {property.furnishing || ''}
             </div>
           </div>
         </div>
@@ -193,6 +217,19 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           >
             View Details
           </NavLink>
+
+          {!isBooked(property) && (
+            <a
+              href={waLink(`Hi, I'm interested in ${cleanTitle(property.title)}${niceLocality(property.locality) ? `, ${niceLocality(property.locality)}` : ''} — ${propertyUrl(property)}`)}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Ask on WhatsApp"
+              aria-label={`Ask about ${cleanTitle(property.title)} on WhatsApp`}
+              className="p-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white transition cursor-pointer"
+            >
+              <MessageCircle className="w-4 h-4" />
+            </a>
+          )}
 
           {isOwnerOrAdmin && (
             <>

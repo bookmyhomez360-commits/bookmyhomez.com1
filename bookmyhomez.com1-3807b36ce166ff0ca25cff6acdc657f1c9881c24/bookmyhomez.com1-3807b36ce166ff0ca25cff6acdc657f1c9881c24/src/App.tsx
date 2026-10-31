@@ -1124,6 +1124,8 @@ export default function App() {
           onClose={closeProperty}
           onToggleStatus={handleToggleStatus}
           formatCurrency={formatCurrency}
+          allProperties={properties}
+          onOpenProperty={openProperty}
         />
 
         <WizardModal

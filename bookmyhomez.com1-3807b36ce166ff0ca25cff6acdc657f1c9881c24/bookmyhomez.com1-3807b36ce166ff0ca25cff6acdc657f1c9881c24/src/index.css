@@ -687,3 +687,10 @@ a.bmh-strip-item:hover { text-decoration: underline; }
   .bmh-strip { overflow-x: auto; }
   .bmh-cta-glow { display: none; }
 }
+
+
+/* Property page */
+.bmh-noscroll { scrollbar-width: none; -ms-overflow-style: none; }
+.bmh-noscroll::-webkit-scrollbar { display: none; }
+.bmh-pd-h { margin-bottom: 0.65rem; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #cbd5e1; }
+.bmh-pd-open elevenlabs-convai, .bmh-pd-open .bmh-masc, .bmh-pd-open .bmh-lane { visibility: hidden !important; }
